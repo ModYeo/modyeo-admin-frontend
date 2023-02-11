@@ -10,7 +10,7 @@ export const Container = styled.div`
 
 export const SignForm = styled.form`
   width: 350px;
-  height: 200px;
+  height: 250px;
   padding: 12px;
   box-sizing: border-box;
   background-color: #eee;
