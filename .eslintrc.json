@@ -22,6 +22,8 @@
     "prettier/prettier": "error",
     "no-var": "error",
     "import/no-extraneous-dependencies": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "class-methods-use-this": "off",
+    "@typescript-eslint/no-misused-promises": "off"
   }
 }

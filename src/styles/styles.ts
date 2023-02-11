@@ -12,7 +12,6 @@ export const SignForm = styled.form`
   width: 350px;
   height: 250px;
   padding: 12px;
-  box-sizing: border-box;
   background-color: #eee;
   justify-content: flex;
   display: flex;
@@ -24,9 +23,22 @@ export const SignInput = styled.input`
   width: 100%;
   height: 40px;
   padding: 0 10px;
-  box-sizing: border-box;
 `;
 
 export const SignButton = styled.button`
   height: 50px;
+`;
+
+export const NavBarContainer = styled.div`
+  width: 100vw;
+  height: 50px;
+  padding: 0 30px;
+  background-color: #eee;
+`;
+
+export const NavBarSection = styled.section`
+  max-width: 1000px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
 `;
