@@ -16,6 +16,7 @@ class SignAPIManager implements ISignAPIManager {
 
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.signInAxios = axios.create();
+    // TODO: add axios interceptor for showing toast UI.
     this.authCookieManager = authCookieManagerParam;
   }
 
