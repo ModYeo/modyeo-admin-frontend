@@ -3,8 +3,8 @@ const routes = {
     admin: "/admin",
   },
   server: {
-    signin: "/signin",
-    signout: "/signout",
+    signin: "/api/auth/login",
+    signout: "/api/auth/logout",
   },
 } as const;
 
