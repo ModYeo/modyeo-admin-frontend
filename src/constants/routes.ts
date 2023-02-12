@@ -1,5 +1,6 @@
 const routes = {
   client: {
+    signin: "/",
     admin: "/admin",
   },
   server: {
