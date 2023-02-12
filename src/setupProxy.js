@@ -5,7 +5,7 @@ module.exports = (app) => {
   app.use(
     "/api",
     createProxyMiddleware({
-      target: "http://skysrd.iptime.org:8080",
+      target: process.env.REACT_APP_API_URL,
       changeOrigin: true,
     }),
   );
