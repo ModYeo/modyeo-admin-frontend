@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
+import { IAuth } from "../type/types";
 
 interface ISignAPIManager {
   handleSignIn: (id: string, password: string) => Promise<boolean | null>;
@@ -12,22 +13,26 @@ class SignAPIManager implements ISignAPIManager {
 
   constructor() {
     this.signInAxios = axios.create();
-    this.signInAxios.defaults.baseURL = "/";
   }
 
   async handleSignIn(id: string, password: string) {
     if (this.signInAxios) {
       try {
+        const encodedAuth = `Basic ${btoa(`${id}:${password}`)}`;
         const {
-          data: { token },
-        }: { data: { token: string } } = await this.signInAxios.post(
+          data: {
+            data: { accessToken, refreshToken },
+          },
+        } = await this.signInAxios.post<{ data: IAuth }>(
           routes.server.signin,
+          {},
           {
-            id,
-            password,
+            headers: {
+              Authorization: encodedAuth,
+            },
           },
         );
-        this.saveAccessTokenAsCookie(token);
+        this.saveAccessTokenAsCookie(accessToken, refreshToken);
         return true;
       } catch (e) {
         // TODO: show error toast.
@@ -37,9 +42,9 @@ class SignAPIManager implements ISignAPIManager {
     return false;
   }
 
-  private saveAccessTokenAsCookie(token: string) {
+  private saveAccessTokenAsCookie(accessToken: string, refreshToken: string) {
     // TODO: save token in cookie storage.
-    console.log(token);
+    console.log(`${accessToken} ${refreshToken}`);
   }
 
   async handleSignOut() {

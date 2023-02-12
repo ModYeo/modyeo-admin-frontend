@@ -5,7 +5,7 @@ import routes from "../constants/routes";
 import { Container, SignButton, SignForm, SignInput } from "../styles/styles";
 
 function SignIn() {
-  const navigation = useNavigate();
+  const navigatior = useNavigate();
   const idInputRef = useRef<HTMLInputElement>(null);
   const pwInputRef = useRef<HTMLInputElement>(null);
   const handleSignInSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -17,7 +17,7 @@ function SignIn() {
         idCurrent.value,
         pwCurrent.value,
       );
-      if (isSignInSuccessful) navigation(routes.client.admin);
+      if (isSignInSuccessful) navigatior(routes.client.admin);
     }
   };
 
