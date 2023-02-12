@@ -1,6 +1,6 @@
 import React, { useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import signAPIManager from "../apis/signAPI";
+import signAPIManager from "../modules/signAPI";
 import routes from "../constants/routes";
 import { Container, SignButton, SignForm, SignInput } from "../styles/styles";
 

@@ -1,4 +1,7 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import routes from "../../constants/routes";
+import signAPIManager from "../../modules/signAPI";
 import {
   NavBarContainer,
   NavBarSection,
@@ -6,6 +9,11 @@ import {
 } from "../../styles/styles";
 
 function NavBar() {
+  const navigator = useNavigate();
+  const handleSignOut = async () => {
+    const isSignOutSuccessful = await signAPIManager.handleSignOut();
+    if (isSignOutSuccessful) navigator(routes.client.signin);
+  };
   return (
     <NavBarContainer>
       <NavBarSection>
@@ -15,7 +23,7 @@ function NavBar() {
           <SignButton>ipsum lorem</SignButton>
         </span>
         <span>
-          <SignButton>sign out</SignButton>
+          <SignButton onClick={handleSignOut}>sign out</SignButton>
         </span>
       </NavBarSection>
     </NavBarContainer>
