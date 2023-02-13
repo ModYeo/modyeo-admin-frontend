@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from "axios";
+import { toast } from "react-toastify";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
+import { toastSentences } from "../constants/toastSentences";
 import { IAuth } from "../type/types";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
 
@@ -45,7 +47,7 @@ class SignAPIManager implements ISignAPIManager {
         );
         return true;
       } catch (e) {
-        // TODO: show error toast.
+        toast.error(toastSentences.signInFail);
       }
     }
     return false;
@@ -66,7 +68,7 @@ class SignAPIManager implements ISignAPIManager {
         }
         throw new Error();
       } catch (e) {
-        // TODO: show error toast.
+        toast.error(toastSentences.requestResignIn);
       }
     }
     return false;

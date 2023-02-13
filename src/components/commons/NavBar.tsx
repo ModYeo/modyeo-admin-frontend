@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import routes from "../../constants/routes";
+import authCookieManager from "../../modules/authCookie";
 import signAPIManager from "../../modules/signAPI";
 import {
   NavBarContainer,
@@ -12,7 +13,8 @@ function NavBar() {
   const navigator = useNavigate();
   const handleSignOut = async () => {
     const isSignOutSuccessful = await signAPIManager.handleSignOut();
-    if (isSignOutSuccessful) navigator(routes.client.signin);
+    if (!isSignOutSuccessful) authCookieManager.deleteAccessAndRefreshToken();
+    navigator(routes.client.signin);
   };
   return (
     <NavBarContainer>
