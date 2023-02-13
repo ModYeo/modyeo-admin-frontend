@@ -1,22 +1,46 @@
+import { Cookies } from "react-cookie";
+import { tokenName } from "../constants/tokens";
+
 interface IAuthCookieManager {
-  saveAccessTokenAsCookie: (accessToken: string, refreshToken: string) => void;
-  getTokensFromCookie: () => Array<string>;
-  deleteAccessToken: () => void;
+  saveAccessAndRefreshTokenAsCookie: (
+    accessToken: string,
+    refreshToken: string,
+    accessTokenExpiresIn: number,
+  ) => void;
+  getAccessAndRefreshTokenFromCookie: () => [string, string];
+  deleteAccessAndRefreshToken: () => void;
 }
 
 export class AuthCookieManager implements IAuthCookieManager {
-  saveAccessTokenAsCookie(accessToken: string, refreshToken: string) {
-    // TODO: save token in cookie storage.
-    console.log(`${accessToken} ${refreshToken}`);
+  private cookies;
+
+  constructor() {
+    this.cookies = new Cookies();
   }
 
-  getTokensFromCookie() {
-    // TODO: get acess, refresh token from cookie.
-    return ["tmpAccessToken", "tmpRefreshToken"];
+  saveAccessAndRefreshTokenAsCookie(
+    accessToken: string,
+    refreshToken: string,
+    accessTokenExpiresIn: number,
+  ) {
+    this.cookies.set(tokenName.accessToken, accessToken, {
+      path: "/",
+      expires: new Date(accessTokenExpiresIn),
+    });
+    this.cookies.set(tokenName.refreshToken, refreshToken, {
+      path: "/",
+    });
   }
 
-  deleteAccessToken() {
-    // TODO: delete access token in cookie storage.
+  getAccessAndRefreshTokenFromCookie(): [string, string] {
+    const accessToken = this.cookies.get(tokenName.accessToken) as string;
+    const refreshToken = this.cookies.get(tokenName.refreshToken) as string;
+    return [accessToken, refreshToken];
+  }
+
+  deleteAccessAndRefreshToken() {
+    this.cookies.remove(tokenName.accessToken);
+    this.cookies.remove(tokenName.refreshToken);
   }
 }
 

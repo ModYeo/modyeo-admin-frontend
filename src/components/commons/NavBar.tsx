@@ -18,9 +18,9 @@ function NavBar() {
     <NavBarContainer>
       <NavBarSection>
         <span>
-          <SignButton>ipsum lorem</SignButton>
-          <SignButton>ipsum lorem</SignButton>
-          <SignButton>ipsum lorem</SignButton>
+          <SignButton>게시글 신고관리</SignButton>
+          <SignButton>공지 관리</SignButton>
+          <SignButton>카테고리 생성</SignButton>
         </span>
         <span>
           <SignButton onClick={handleSignOut}>sign out</SignButton>
