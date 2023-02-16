@@ -8,7 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const router = createBrowserRouter([
   {
-    path: "/admin",
+    path: "/admin/*",
     element: <Admin />,
   },
   {

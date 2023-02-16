@@ -4,3 +4,9 @@ export interface IAuth {
   grantType: string;
   refreshToken: string;
 }
+
+export interface ICategories {
+  id: number;
+  imagePath: string | null;
+  name: string;
+}

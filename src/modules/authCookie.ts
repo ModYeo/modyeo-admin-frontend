@@ -8,6 +8,7 @@ interface IAuthCookieManager {
     accessTokenExpiresIn: number,
   ) => void;
   getAccessAndRefreshTokenFromCookie: () => [string, string];
+  getAccessTokenWithBearer: () => string;
   deleteAccessAndRefreshToken: () => void;
 }
 
@@ -36,6 +37,11 @@ export class AuthCookieManager implements IAuthCookieManager {
     const accessToken = this.cookies.get(tokenName.accessToken) as string;
     const refreshToken = this.cookies.get(tokenName.refreshToken) as string;
     return [accessToken, refreshToken];
+  }
+
+  getAccessTokenWithBearer() {
+    const accessToken = this.cookies.get(tokenName.accessToken) as string;
+    return `Bearer ${accessToken}`;
   }
 
   deleteAccessAndRefreshToken() {

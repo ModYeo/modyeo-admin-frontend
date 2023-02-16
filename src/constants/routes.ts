@@ -6,6 +6,7 @@ const routes = {
   server: {
     signin: "/api/auth/login",
     signout: "/api/auth/logout",
+    category: "/api/category",
   },
 } as const;
 
