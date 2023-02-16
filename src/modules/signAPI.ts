@@ -25,7 +25,7 @@ class SignAPIManager implements ISignAPIManager {
   async handleSignIn(id: string, password: string) {
     if (this.signInAxios) {
       try {
-        const encodedAuth = `Basic ${btoa(`${id}:${password}`)}`;
+        const encodedAuth = this.encodeIdAndPassword(id, password);
         const {
           data: {
             data: { accessToken, refreshToken, accessTokenExpiresIn },
@@ -80,6 +80,10 @@ class SignAPIManager implements ISignAPIManager {
       this.authCookieManager.getAccessAndRefreshTokenFromCookie();
     if (!accessToken || !refreshToken) return false;
     return true;
+  }
+
+  private encodeIdAndPassword(id: string, password: string) {
+    return `Basic ${btoa(`${id}:${password}`)}`;
   }
 }
 

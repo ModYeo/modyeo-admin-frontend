@@ -13,6 +13,10 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
     text-align: center;
   }
+  ul {
+    padding-left: 0;
+    list-style: none;
+  }
   button {
     cursor: pointer;
   }

@@ -23,19 +23,23 @@ function SignIn() {
   };
   useEffect(() => {
     const isAllTokensValid = signAPIManager.checkTokensValidation();
-    if (isAllTokensValid) {
-      navigator(routes.client.admin);
-    } else authCookieManager.deleteAccessAndRefreshToken();
+    if (isAllTokensValid) navigator(routes.client.admin);
+    else authCookieManager.deleteAccessAndRefreshToken();
   }, [navigator]);
   return (
     <Container>
       <SignForm onSubmit={handleSignInSubmit}>
         <h5>MODYEO ADMIN SERVICE</h5>
         <div>
-          <SignInput placeholder="ID" ref={idInputRef} />
+          <SignInput placeholder="ID" ref={idInputRef} required />
         </div>
         <div>
-          <SignInput type="password" placeholder="password" ref={pwInputRef} />
+          <SignInput
+            type="password"
+            placeholder="password"
+            ref={pwInputRef}
+            required
+          />
         </div>
         <SignButton type="submit">submit</SignButton>
       </SignForm>

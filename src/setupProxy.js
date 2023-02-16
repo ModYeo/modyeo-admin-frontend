@@ -10,3 +10,5 @@ module.exports = (app) => {
     }),
   );
 };
+
+// DO NOT EDIT: cors 에러 우회용 프록시 서버 설정 파일

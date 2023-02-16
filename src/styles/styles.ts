@@ -42,3 +42,22 @@ export const NavBarSection = styled.section`
   display: flex;
   justify-content: space-between;
 `;
+
+export const ListContainer = styled.ul`
+  width: 450px;
+  margin: 100px auto;
+  padding: 10px;
+  background-color: #eee;
+`;
+
+export const List = styled.li`
+  margin: 10px 0;
+  padding: 10px;
+  background-color: white;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const CategoryInput = styled(SignInput)`
+  width: 50%;
+`;

@@ -8,8 +8,13 @@ import {
   NavBarSection,
   SignButton,
 } from "../../styles/styles";
+import { ChosenTabMenuEnum } from "../../type/enums";
 
-function NavBar() {
+function NavBar({
+  changeChosenTabMenu,
+}: {
+  changeChosenTabMenu: (tabMenu: ChosenTabMenuEnum) => void;
+}) {
   const navigator = useNavigate();
   const handleSignOut = async () => {
     const isSignOutSuccessful = await signAPIManager.handleSignOut();
@@ -20,9 +25,21 @@ function NavBar() {
     <NavBarContainer>
       <NavBarSection>
         <span>
-          <SignButton>게시글 신고관리</SignButton>
-          <SignButton>공지 관리</SignButton>
-          <SignButton>카테고리 생성</SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.report)}
+          >
+            게시글 신고관리
+          </SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.announcement)}
+          >
+            공지 관리
+          </SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.category)}
+          >
+            카테고리 생성
+          </SignButton>
         </span>
         <span>
           <SignButton onClick={handleSignOut}>sign out</SignButton>
