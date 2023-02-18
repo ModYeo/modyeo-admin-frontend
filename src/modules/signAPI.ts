@@ -47,7 +47,7 @@ class SignAPIManager implements ISignAPIManager {
         );
         return true;
       } catch (e) {
-        toast.error(toastSentences.signInFail);
+        toast.error(toastSentences.signInFailed);
       }
     }
     return false;
