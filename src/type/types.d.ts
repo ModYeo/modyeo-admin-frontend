@@ -5,7 +5,7 @@ export interface IAuth {
   refreshToken: string;
 }
 
-export interface ICategories {
+export interface ICategory {
   id: number;
   imagePath: string | null;
   name: string;

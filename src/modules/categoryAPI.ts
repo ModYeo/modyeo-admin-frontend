@@ -1,18 +1,24 @@
 import axios, { AxiosInstance } from "axios";
+import { toast } from "react-toastify";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
-import { ICategories } from "../type/types";
+import { toastSentences } from "../constants/toastSentences";
+import { ICategory } from "../type/types";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
 
 interface ICategoryAPIManager {
-  fetchAllCategories: () => Promise<Array<ICategories> | null>;
+  fetchAllCategories: () => Promise<Array<ICategory> | null>;
   makeNewCategory: (newCategoryName: string) => Promise<boolean>;
+  fetchDetailedCategoryInfo: (categoryId: number) => Promise<ICategory | null>;
+  deleteCategory: (categoryId: number) => Promise<boolean>;
 }
 
 class CategoryAPIManager implements ICategoryAPIManager {
   private categoryAxios: AxiosInstance;
 
   private authCookieManager: AuthCookieManager;
+
+  private useYn: "Y" | "N" = "N";
 
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.categoryAxios = axios.create();
@@ -30,7 +36,7 @@ class CategoryAPIManager implements ICategoryAPIManager {
       const {
         data: { data: fetchedCategories },
       } = await this.categoryAxios.get<{
-        data: Array<ICategories>;
+        data: Array<ICategory>;
       }>(routes.server.category);
       return fetchedCategories;
     } catch (e) {
@@ -44,10 +50,40 @@ class CategoryAPIManager implements ICategoryAPIManager {
       const { status } = await this.categoryAxios.post(routes.server.category, {
         imagePath: "",
         name: newCategoryName,
-        useYn: "N",
+        useYn: this.useYn,
       });
       // FIX: now this request gets 400 Bad request response.
       if (status === serverStatus.OK) return true;
+      throw new Error();
+    } catch (e) {
+      // TODO: show error toast.
+      return false;
+    }
+  }
+
+  async fetchDetailedCategoryInfo(categoryId: number) {
+    try {
+      const {
+        data: { data: fetchedCategory },
+      } = await this.categoryAxios.get<{
+        data: ICategory;
+      }>(`${routes.server.category}/${categoryId}`);
+      return fetchedCategory;
+    } catch (e) {
+      // TODO: show error toast.
+      return null;
+    }
+  }
+
+  async deleteCategory(categoryId: number) {
+    try {
+      const { status } = await this.categoryAxios.delete(
+        `${routes.server.category}/${categoryId}`,
+      );
+      if (status === serverStatus.OK || status === serverStatus.NO_CONTENT) {
+        toast.info(toastSentences.categoryDeleted);
+        return true;
+      }
       throw new Error();
     } catch (e) {
       // TODO: show error toast.

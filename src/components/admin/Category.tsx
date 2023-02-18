@@ -1,10 +1,10 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import categoryAPIManager from "../../modules/categoryAPI";
 import { CategoryInput, List, ListContainer } from "../../styles/styles";
-import { ICategories } from "../../type/types";
+import { ICategory } from "../../type/types";
 
 function Category() {
-  const [categories, setCategories] = useState<Array<ICategories>>([]);
+  const [categories, setCategories] = useState<Array<ICategory>>([]);
   const categoryInputRef = useRef<HTMLInputElement>(null);
   const handleOnCategoryFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -15,6 +15,27 @@ function Category() {
       );
       console.log(isNewCategoryMaden);
       // TODO: update UI with setCategories adding the new category.
+    }
+  };
+  const fetchedDetailedCategory = async (categoryId: number) => {
+    const detailedCategoryIndo =
+      await categoryAPIManager.fetchDetailedCategoryInfo(categoryId);
+    console.log(detailedCategoryIndo);
+    // TODO: show modal with detailed category info.
+  };
+  const deleteCategory = async (categoryId: number) => {
+    // TODO: show confirm modal.
+    const isCategoryDeleteSuccessful = await categoryAPIManager.deleteCategory(
+      categoryId,
+    );
+    if (isCategoryDeleteSuccessful) {
+      const targetCategoryIndex = categories.findIndex(
+        (category) => category.id === categoryId,
+      );
+      if (targetCategoryIndex !== -1) {
+        categories.splice(targetCategoryIndex, 1);
+        setCategories([...categories]);
+      }
     }
   };
   useEffect(() => {
@@ -36,9 +57,16 @@ function Category() {
         <List key={category.id}>
           {category.name}
           <span>
-            <button type="button">about</button>
+            <button
+              type="button"
+              onClick={() => fetchedDetailedCategory(category.id)}
+            >
+              about
+            </button>
             <button type="button">modify</button>
-            <button type="button">delete</button>
+            <button type="button" onClick={() => deleteCategory(category.id)}>
+              delete
+            </button>
           </span>
         </List>
       ))}
