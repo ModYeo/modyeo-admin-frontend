@@ -1,10 +1,10 @@
 import axios, { AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 import routes from "../constants/routes";
-import serverStatus from "../constants/serverStatus";
 import { toastSentences } from "../constants/toastSentences";
 import { ICategory } from "../type/types";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
+import StatusCodeCheckManager from "./StatusCode";
 
 interface ICategoryAPIManager {
   fetchAllCategories: () => Promise<Array<ICategory> | null>;
@@ -53,7 +53,7 @@ class CategoryAPIManager implements ICategoryAPIManager {
         useYn: this.useYn,
       });
       // FIX: now this request gets 400 Bad request response.
-      if (status === serverStatus.OK) return true;
+      if (StatusCodeCheckManager.checkIfIsRequestSucceeded(status)) return true;
       throw new Error();
     } catch (e) {
       // TODO: show error toast.
@@ -80,7 +80,7 @@ class CategoryAPIManager implements ICategoryAPIManager {
       const { status } = await this.categoryAxios.delete(
         `${routes.server.category}/${categoryId}`,
       );
-      if (status === serverStatus.OK || status === serverStatus.NO_CONTENT) {
+      if (StatusCodeCheckManager.checkIfIsRequestSucceeded(status)) {
         toast.info(toastSentences.categoryDeleted);
         return true;
       }
