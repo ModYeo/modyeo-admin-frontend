@@ -4,11 +4,11 @@ import routes from "../constants/routes";
 import { toastSentences } from "../constants/toastSentences";
 import { ICategory } from "../type/types";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
-import StatusCodeCheckManager from "./StatusCode";
+import StatusCodeCheckManager from "./statusCode";
 
 interface ICategoryAPIManager {
   fetchAllCategories: () => Promise<Array<ICategory> | null>;
-  makeNewCategory: (newCategoryName: string) => Promise<boolean>;
+  makeNewCategory: (newCategoryName: string) => Promise<number | null>;
   fetchDetailedCategoryInfo: (categoryId: number) => Promise<ICategory | null>;
   deleteCategory: (categoryId: number) => Promise<boolean>;
 }
@@ -38,7 +38,7 @@ class CategoryAPIManager implements ICategoryAPIManager {
       } = await this.categoryAxios.get<{
         data: Array<ICategory>;
       }>(routes.server.category);
-      return fetchedCategories;
+      return fetchedCategories.reverse();
     } catch (e) {
       // TODO: show error toast.
       return null;
@@ -47,17 +47,20 @@ class CategoryAPIManager implements ICategoryAPIManager {
 
   async makeNewCategory(newCategoryName: string) {
     try {
-      const { status } = await this.categoryAxios.post(routes.server.category, {
+      const {
+        data: { data: newCategoryId },
+      } = await this.categoryAxios.post<{
+        data: number;
+        error: null;
+      }>(routes.server.category, {
         imagePath: "",
         name: newCategoryName,
         useYn: this.useYn,
       });
-      // FIX: now this request gets 400 Bad request response.
-      if (StatusCodeCheckManager.checkIfIsRequestSucceeded(status)) return true;
-      throw new Error();
+      return newCategoryId;
     } catch (e) {
       // TODO: show error toast.
-      return false;
+      return null;
     }
   }
 

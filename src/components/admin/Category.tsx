@@ -10,21 +10,29 @@ function Category() {
     e.preventDefault();
     const inputNewCategoryName = categoryInputRef.current?.value;
     if (inputNewCategoryName) {
-      const isNewCategoryMaden = await categoryAPIManager.makeNewCategory(
+      const newCategoryId = await categoryAPIManager.makeNewCategory(
         inputNewCategoryName,
       );
-      console.log(isNewCategoryMaden);
-      // TODO: update UI with setCategories adding the new category.
+      if (newCategoryId) {
+        const newCategory: ICategory = {
+          id: newCategoryId,
+          imagePath: "/",
+          name: inputNewCategoryName,
+        };
+        setCategories([newCategory, ...categories]);
+      }
     }
   };
   const fetchedDetailedCategory = async (categoryId: number) => {
-    const detailedCategoryIndo =
+    const detailedCategoryInfo =
       await categoryAPIManager.fetchDetailedCategoryInfo(categoryId);
-    console.log(detailedCategoryIndo);
+    console.log(detailedCategoryInfo);
     // TODO: show modal with detailed category info.
   };
   const deleteCategory = async (categoryId: number) => {
-    // TODO: show confirm modal.
+    const isDeleteConfirmed =
+      window.confirm("정말 카테고리를 삭제하시겠습니까?");
+    if (!isDeleteConfirmed) return;
     const isCategoryDeleteSuccessful = await categoryAPIManager.deleteCategory(
       categoryId,
     );
