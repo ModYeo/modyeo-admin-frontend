@@ -19,7 +19,7 @@ function showChosenTabMenu(chosenTabMenu: ChosenTabMenuEnum) {
   if (chosenTabMenu === ChosenTabMenuEnum.category) {
     return <Category />;
   }
-  return <div>chose tab menu</div>;
+  return <div>chose admin tab menu</div>;
 }
 
 function Admin() {

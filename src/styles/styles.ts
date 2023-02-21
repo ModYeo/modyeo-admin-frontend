@@ -61,3 +61,15 @@ export const List = styled.li`
 export const CategoryInput = styled(SignInput)`
   width: 50%;
 `;
+
+export const ModalBackground = styled.div`
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.4);
+`;
