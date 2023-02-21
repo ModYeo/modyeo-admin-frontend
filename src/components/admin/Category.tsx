@@ -1,11 +1,19 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import categoryAPIManager from "../../modules/categoryAPI";
-import { CategoryInput, List, ListContainer } from "../../styles/styles";
+import {
+  CategoryInput,
+  List,
+  ListContainer,
+  ModalBackground,
+} from "../../styles/styles";
 import { ICategory } from "../../type/types";
+import Modal from "../commons/Modal";
 
 function Category() {
   const [categories, setCategories] = useState<Array<ICategory>>([]);
+  const [targetCategoryId, setTargetCategoryId] = useState(-1);
   const categoryInputRef = useRef<HTMLInputElement>(null);
+  const categoryModifyInputRef = useRef<HTMLInputElement>(null);
   const handleOnCategoryFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const inputNewCategoryName = categoryInputRef.current?.value;
@@ -46,6 +54,13 @@ function Category() {
       }
     }
   };
+  const modifyCategory = () => {
+    const inputModifiedCategoryName = categoryModifyInputRef.current?.value;
+    if (inputModifiedCategoryName) {
+      // TODO: Call category modify API.
+      categoryModifyInputRef.current.value = "";
+    }
+  };
   useEffect(() => {
     (async () => {
       const fetchedCategories = await categoryAPIManager.fetchAllCategories();
@@ -71,13 +86,32 @@ function Category() {
             >
               about
             </button>
-            <button type="button">modify</button>
+            <button
+              type="button"
+              onClick={() => setTargetCategoryId(category.id)}
+            >
+              modify
+            </button>
             <button type="button" onClick={() => deleteCategory(category.id)}>
               delete
             </button>
           </span>
         </List>
       ))}
+      {targetCategoryId !== -1 && (
+        <ModalBackground onClick={() => setTargetCategoryId(-1)}>
+          <Modal width={350} height={200}>
+            <h5>{categories[targetCategoryId].name}</h5>
+            <CategoryInput
+              placeholder="new category name"
+              ref={categoryModifyInputRef}
+            />
+            <button type="button" onClick={modifyCategory}>
+              modify
+            </button>
+          </Modal>
+        </ModalBackground>
+      )}
     </ListContainer>
   );
 }
