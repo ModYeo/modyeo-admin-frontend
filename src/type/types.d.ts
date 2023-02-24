@@ -10,3 +10,13 @@ export interface ICategory {
   imagePath: string | null;
   name: string;
 }
+
+export interface IDetailedCategory {
+  categoryId: number;
+  categoryName: string;
+  useYn: "Y" | "N";
+  createdBy: null;
+  createdTime: string;
+  updatedBy: null;
+  updatedTime: string;
+}

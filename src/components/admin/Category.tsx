@@ -6,12 +6,14 @@ import {
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-import { ICategory } from "../../type/types";
+import { ICategory, IDetailedCategory } from "../../type/types";
 import Modal from "../commons/Modal";
 
 function Category() {
   const [categories, setCategories] = useState<Array<ICategory>>([]);
-  const [targetCategoryId, setTargetCategoryId] = useState(-1);
+  const [clickedCategory, setClickedCategory] =
+    useState<IDetailedCategory | null>(null);
+  const [clickedCategoryIndex, setClickedCategoryIndex] = useState(-1);
   const categoryInputRef = useRef<HTMLInputElement>(null);
   const categoryModifyInputRef = useRef<HTMLInputElement>(null);
   const handleOnCategoryFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -34,8 +36,7 @@ function Category() {
   const fetchedDetailedCategory = async (categoryId: number) => {
     const detailedCategoryInfo =
       await categoryAPIManager.fetchDetailedCategoryInfo(categoryId);
-    console.log(detailedCategoryInfo);
-    // TODO: show modal with detailed category info.
+    setClickedCategory(detailedCategoryInfo);
   };
   const deleteCategory = async (categoryId: number) => {
     const isDeleteConfirmed =
@@ -54,10 +55,22 @@ function Category() {
       }
     }
   };
-  const modifyCategory = () => {
+  const modifyCategory = async () => {
     const inputModifiedCategoryName = categoryModifyInputRef.current?.value;
     if (inputModifiedCategoryName) {
-      // TODO: Call category modify API.
+      const { id, name } = categories[clickedCategoryIndex];
+      const isCategoryModifySuccessful =
+        await categoryAPIManager.modifyCategory(id, name);
+      if (isCategoryModifySuccessful) {
+        setCategories((nowCategories) => {
+          const copiedCategories = [...nowCategories];
+          copiedCategories[clickedCategoryIndex].name =
+            inputModifiedCategoryName;
+          return copiedCategories;
+        });
+        setClickedCategoryIndex(-1);
+        // FIX: 404 error 발생.
+      }
       categoryModifyInputRef.current.value = "";
     }
   };
@@ -76,7 +89,7 @@ function Category() {
         <button type="submit">make a new category</button>
       </form>
       <br />
-      {categories.map((category) => (
+      {categories.map((category, index) => (
         <List key={category.id}>
           {category.name}
           <span>
@@ -88,7 +101,7 @@ function Category() {
             </button>
             <button
               type="button"
-              onClick={() => setTargetCategoryId(category.id)}
+              onClick={() => setClickedCategoryIndex(index)}
             >
               modify
             </button>
@@ -98,10 +111,10 @@ function Category() {
           </span>
         </List>
       ))}
-      {targetCategoryId !== -1 && (
-        <ModalBackground onClick={() => setTargetCategoryId(-1)}>
+      {clickedCategoryIndex !== -1 && (
+        <ModalBackground onClick={() => setClickedCategoryIndex(-1)}>
           <Modal width={350} height={200}>
-            <h5>{categories[targetCategoryId].name}</h5>
+            <h5>{categories[clickedCategoryIndex].name}</h5>
             <CategoryInput
               placeholder="new category name"
               ref={categoryModifyInputRef}
@@ -109,6 +122,21 @@ function Category() {
             <button type="button" onClick={modifyCategory}>
               modify
             </button>
+          </Modal>
+        </ModalBackground>
+      )}
+      {clickedCategory && (
+        <ModalBackground onClick={() => setClickedCategory(null)}>
+          <Modal width={400} height={300}>
+            <div>
+              <h5>category name {clickedCategory.categoryName}</h5>
+            </div>
+            <div>
+              <h5>created time {clickedCategory.createdTime}</h5>
+            </div>
+            <div>
+              <h5>updated time {clickedCategory.updatedTime}</h5>
+            </div>
           </Modal>
         </ModalBackground>
       )}
