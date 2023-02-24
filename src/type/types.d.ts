@@ -20,3 +20,15 @@ export interface IDetailedCategory {
   updatedBy: null;
   updatedTime: string;
 }
+
+export interface IColumCode {
+  code: string;
+  columnCodeId: number;
+  columnCodeName: string;
+  description: string;
+}
+
+export interface IDetailedColumnCode extends IColumCode {
+  createdTime: null;
+  email: null;
+}
