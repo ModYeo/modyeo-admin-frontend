@@ -40,6 +40,16 @@ function NavBar({
           >
             카테고리 생성
           </SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.advertisement)}
+          >
+            광고 관리
+          </SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.columnCode)}
+          >
+            컬럼 코드
+          </SignButton>
         </span>
         <span>
           <SignButton onClick={handleSignOut}>sign out</SignButton>

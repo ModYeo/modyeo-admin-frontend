@@ -58,7 +58,7 @@ export const List = styled.li`
   justify-content: space-between;
 `;
 
-export const CategoryInput = styled(SignInput)`
+export const CreateInput = styled(SignInput)`
   width: 50%;
 `;
 

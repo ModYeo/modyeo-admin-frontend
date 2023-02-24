@@ -1,7 +1,7 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
 import categoryAPIManager from "../../modules/categoryAPI";
 import {
-  CategoryInput,
+  CreateInput,
   List,
   ListContainer,
   ModalBackground,
@@ -85,7 +85,7 @@ function Category() {
       <h5>category list</h5>
       <br />
       <form onSubmit={handleOnCategoryFormSubmit}>
-        <CategoryInput placeholder="category name" ref={categoryInputRef} />
+        <CreateInput placeholder="category name" ref={categoryInputRef} />
         <button type="submit">make a new category</button>
       </form>
       <br />
@@ -115,7 +115,7 @@ function Category() {
         <ModalBackground onClick={() => setClickedCategoryIndex(-1)}>
           <Modal width={350} height={200}>
             <h5>{categories[clickedCategoryIndex].name}</h5>
-            <CategoryInput
+            <CreateInput
               placeholder="new category name"
               ref={categoryModifyInputRef}
             />

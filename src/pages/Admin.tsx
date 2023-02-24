@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import ColumnCode from "../components/admin/ColumnCode";
+import Advertisement from "../components/admin/Advertisement";
 import Announcement from "../components/admin/Announcement";
 import Category from "../components/admin/Category";
 import Report from "../components/admin/Report";
@@ -18,6 +20,12 @@ function showChosenTabMenu(chosenTabMenu: ChosenTabMenuEnum) {
   }
   if (chosenTabMenu === ChosenTabMenuEnum.category) {
     return <Category />;
+  }
+  if (chosenTabMenu === ChosenTabMenuEnum.advertisement) {
+    return <Advertisement />;
+  }
+  if (chosenTabMenu === ChosenTabMenuEnum.columnCode) {
+    return <ColumnCode />;
   }
   return <div>chose admin tab menu</div>;
 }
