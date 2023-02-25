@@ -13,6 +13,7 @@ function ColumnCode() {
   const [columnCodes, setColumnCodes] = useState<Array<IColumCode>>([]);
   const [clickedColumnCode, setClickedColumnCode] =
     useState<IDetailedColumnCode | null>(null);
+  const [clickedColumnIndex, setClickedColumnIndex] = useState(-1);
   const codeInputRef = useRef<HTMLInputElement>(null);
   const columnCodeNameInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
@@ -24,10 +25,10 @@ function ColumnCode() {
     const isColumnCodeDeleteSuccessful =
       await columnAPIManager.deleteColumnCode(columnCodeId);
     if (isColumnCodeDeleteSuccessful) {
-      const targetIndex = columnCodes.findIndex(
+      const targetColumnIndex = columnCodes.findIndex(
         (columnCode) => columnCode.columnCodeId === columnCodeId,
       );
-      columnCodes.splice(targetIndex, 1);
+      columnCodes.splice(targetColumnIndex, 1);
       setColumnCodes([...columnCodes]);
     }
   };
@@ -44,18 +45,50 @@ function ColumnCode() {
     const codeInputRefValue = codeInputRef.current?.value;
     const columnCodeNameInputRefValue = columnCodeNameInputRef.current?.value;
     const descriptionInputRefValue = descriptionInputRef.current?.value;
+    let isAPICallSuccessful = false;
     if (
       codeInputRefValue &&
       columnCodeNameInputRefValue &&
       descriptionInputRefValue
     ) {
-      const newColumnCode = await columnAPIManager.createNewColumnCode(
-        codeInputRefValue,
-        columnCodeNameInputRefValue,
-        descriptionInputRefValue,
-      );
-      // TODO: update column code list with setColumnCodes and new column code.
-      if (newColumnCode) {
+      if (clickedColumnIndex === -1) {
+        const newColumnCodeId = await columnAPIManager.createNewColumnCode(
+          codeInputRefValue,
+          columnCodeNameInputRefValue,
+          descriptionInputRefValue,
+        );
+        if (newColumnCodeId) {
+          const newColumnCode: IColumCode = {
+            columnCodeId: newColumnCodeId,
+            code: codeInputRefValue,
+            columnCodeName: columnCodeNameInputRefValue,
+            description: descriptionInputRefValue,
+          };
+          setColumnCodes([newColumnCode, ...columnCodes]);
+          isAPICallSuccessful = true;
+        }
+      } else {
+        const targetColumnCodeId = columnCodes[clickedColumnIndex].columnCodeId;
+        const modifiedColumnCodeId = await columnAPIManager.modifyColumnCode(
+          targetColumnCodeId,
+          codeInputRefValue,
+          columnCodeNameInputRefValue,
+          descriptionInputRefValue,
+        );
+        if (modifiedColumnCodeId) {
+          const modifiedColumnCode: IColumCode = {
+            columnCodeId: modifiedColumnCodeId,
+            code: codeInputRefValue,
+            columnCodeName: columnCodeNameInputRefValue,
+            description: descriptionInputRefValue,
+          };
+          columnCodes.splice(clickedColumnIndex, 1, modifiedColumnCode);
+          setColumnCodes([...columnCodes]);
+          setClickedColumnIndex(-1);
+          isAPICallSuccessful = true;
+        }
+      }
+      if (isAPICallSuccessful) {
         codeInputRef.current.value = "";
         columnCodeNameInputRef.current.value = "";
         descriptionInputRef.current.value = "";
@@ -73,16 +106,17 @@ function ColumnCode() {
       <h5>column codes list</h5>
       <br />
       <form onSubmit={handleOnColumnCodeFormSubmit}>
-        <CreateInput placeholder="code" ref={codeInputRef} />
+        <CreateInput placeholder="code" ref={codeInputRef} required />
         <CreateInput
           placeholder="column code name"
           ref={columnCodeNameInputRef}
+          required
         />
-        <CreateInput placeholder="desc" ref={descriptionInputRef} />
+        <CreateInput placeholder="desc" ref={descriptionInputRef} required />
         <button type="submit">make a new column code</button>
       </form>
       <br />
-      {columnCodes.map((columnCode) => {
+      {columnCodes.map((columnCode, index) => {
         return (
           <List key={columnCode.columnCodeId}>
             <div>
@@ -97,7 +131,12 @@ function ColumnCode() {
               >
                 about
               </button>
-              <button type="button">modify</button>
+              <button
+                type="button"
+                onClick={() => setClickedColumnIndex(index)}
+              >
+                modify
+              </button>
               <button
                 type="button"
                 onClick={() => deleteColumnCode(columnCode.columnCodeId)}
@@ -108,6 +147,33 @@ function ColumnCode() {
           </List>
         );
       })}
+      {clickedColumnIndex !== -1 && (
+        <ModalBackground onClick={() => setClickedColumnIndex(-1)}>
+          <Modal width={400} height={400}>
+            <form onSubmit={handleOnColumnCodeFormSubmit}>
+              <CreateInput
+                placeholder="code"
+                ref={codeInputRef}
+                defaultValue={columnCodes[clickedColumnIndex].code}
+                required
+              />
+              <CreateInput
+                placeholder="column code name"
+                ref={columnCodeNameInputRef}
+                defaultValue={columnCodes[clickedColumnIndex].columnCodeName}
+                required
+              />
+              <CreateInput
+                placeholder="desc"
+                ref={descriptionInputRef}
+                defaultValue={columnCodes[clickedColumnIndex].description}
+                required
+              />
+              <button type="submit">make a new column code</button>
+            </form>
+          </Modal>
+        </ModalBackground>
+      )}
       {clickedColumnCode && (
         <ModalBackground onClick={() => setClickedColumnCode(null)}>
           <Modal width={350} height={150}>
