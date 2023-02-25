@@ -16,6 +16,12 @@ interface IColumnAPIManager {
     code: string,
     columnCodeName: string,
     description: string,
+  ) => Promise<number | null>;
+  modifyColumnCode: (
+    columnCodeId: number,
+    code: string,
+    columnCodeName: string,
+    description: string,
   ) => Promise<unknown>;
 }
 
@@ -41,16 +47,14 @@ class ColumnAPIManager implements IColumnAPIManager {
     description: string,
   ) {
     try {
-      const { data } = await this.columnAxios.post<{ data: unknown }>(
-        routes.server.column,
-        {
-          code,
-          columnCodeName,
-          description,
-        },
-      );
-      // FIX: 500 error 고치기.
-      return data;
+      const {
+        data: { data: newColumnCodeId },
+      } = await this.columnAxios.post<{ data: number }>(routes.server.column, {
+        code,
+        columnCodeName,
+        description,
+      });
+      return newColumnCodeId;
     } catch (e) {
       return null;
     }
@@ -98,6 +102,27 @@ class ColumnAPIManager implements IColumnAPIManager {
     } catch (e) {
       // TODO: show error toast.
       return false;
+    }
+  }
+
+  async modifyColumnCode(
+    columnCodeId: number,
+    code: string,
+    columnCodeName: string,
+    description: string,
+  ) {
+    try {
+      const {
+        data: { data: modifiedColumnCodeId },
+      } = await this.columnAxios.patch<{ data: number }>(routes.server.column, {
+        columnCodeId,
+        code,
+        columnCodeName,
+        description,
+      });
+      return modifiedColumnCodeId;
+    } catch (e) {
+      return null;
     }
   }
 }
