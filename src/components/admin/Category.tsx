@@ -30,6 +30,7 @@ function Category() {
           name: inputNewCategoryName,
         };
         setCategories([newCategory, ...categories]);
+        categoryInputRef.current.value = "";
       }
     }
   };

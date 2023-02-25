@@ -9,6 +9,7 @@ const routes = {
     category: "/api/category",
     advertisement: "/api/advertisement",
     column: "/api/column-code",
+    report: "/api/report",
   },
 } as const;
 
