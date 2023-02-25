@@ -7,11 +7,11 @@ import authCookieManager, { AuthCookieManager } from "./authCookie";
 import StatusCodeCheckManager from "./statusCode";
 
 interface IColumnAPIManager {
-  fetchAllColumnCode: () => Promise<unknown>;
+  fetchAllColumnCode: () => Promise<Array<IColumCode> | null>;
   deleteColumnCode: (columnCodeId: number) => Promise<boolean>;
   fetchDetailedColumnCodeInfo: (
     columnCodeId: number,
-  ) => Promise<unknown | null>;
+  ) => Promise<IDetailedColumnCode | null>;
   createNewColumnCode: (
     code: string,
     columnCodeName: string,
@@ -22,7 +22,7 @@ interface IColumnAPIManager {
     code: string,
     columnCodeName: string,
     description: string,
-  ) => Promise<unknown>;
+  ) => Promise<number | null>;
 }
 
 class ColumnAPIManager implements IColumnAPIManager {
@@ -122,6 +122,7 @@ class ColumnAPIManager implements IColumnAPIManager {
       });
       return modifiedColumnCodeId;
     } catch (e) {
+      // TODO: show error toast.
       return null;
     }
   }
