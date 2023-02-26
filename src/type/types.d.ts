@@ -41,3 +41,13 @@ export interface IAdvertisement {
   urlLink: string;
   useYn: null;
 }
+
+export interface IDetailedAdvertisement extends IAdvertisement {
+  createdBy: number;
+  createdDate: Array<number>;
+  lastModifiedDate: Array<number>;
+  type: "ARTICLE";
+  updatedBy: number;
+  urlLink: string;
+  useYn: "Y";
+}

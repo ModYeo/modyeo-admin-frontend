@@ -6,4 +6,8 @@ export const toastSentences = {
   columnCode: {
     deleted: "컬럼 코드 정보를 삭제했습니다.",
   },
+  advertisement: {
+    urlLinkInvalid: "입력한 url 주소가 올바르지 않습니다.",
+    deleted: "광고를 삭제했습니다,",
+  },
 } as const;

@@ -169,7 +169,7 @@ function ColumnCode() {
                 defaultValue={columnCodes[clickedColumnIndex].description}
                 required
               />
-              <button type="submit">make a new column code</button>
+              <button type="submit">modify column code</button>
             </form>
           </Modal>
         </ModalBackground>
