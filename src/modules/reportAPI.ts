@@ -1,7 +1,13 @@
 import axios, { AxiosInstance } from "axios";
 import routes from "../constants/routes";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
-import { contains } from "./etc";
+
+function contains<T extends string>(
+  list: ReadonlyArray<T>,
+  value: string,
+): value is T {
+  return list.some((item) => item === value);
+}
 
 interface IReportAPIManager {
   reportType: ReadonlyArray<string>;
