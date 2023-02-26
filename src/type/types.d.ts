@@ -32,3 +32,12 @@ export interface IDetailedColumnCode extends IColumCode {
   createdTime: null;
   email: null;
 }
+
+export interface IAdvertisement {
+  advertisementId: number;
+  advertisementName: string;
+  imagePath: string;
+  type: null;
+  urlLink: string;
+  useYn: null;
+}
