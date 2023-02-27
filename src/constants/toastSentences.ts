@@ -10,4 +10,7 @@ export const toastSentences = {
     urlLinkInvalid: "입력한 url 주소가 올바르지 않습니다.",
     deleted: "광고를 삭제했습니다,",
   },
+  notice: {
+    deleted: "공지를 삭제했습니다,",
+  },
 } as const;

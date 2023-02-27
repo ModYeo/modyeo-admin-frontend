@@ -31,7 +31,7 @@ function NavBar({
             게시글 신고관리
           </SignButton>
           <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.announcement)}
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.notice)}
           >
             공지 관리
           </SignButton>

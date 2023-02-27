@@ -10,6 +10,7 @@ const routes = {
     advertisement: "/api/advertisement",
     column: "/api/column-code",
     report: "/api/report",
+    notice: "/api/notice",
   },
 } as const;
 
