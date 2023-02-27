@@ -23,6 +23,7 @@ function Advertisement() {
   const urlLinkInputRef = useRef<HTMLInputElement>(null);
   const handleOnAdFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    let isAPICallSuccessful = false;
     const advertisementNameInputValue =
       advertisementNameInputRef.current?.value;
     const urlLinkInputValue = urlLinkInputRef.current?.value;
@@ -47,6 +48,7 @@ function Advertisement() {
             type: null,
           };
           setAdvertisements([newAdvertisement, ...advertisements]);
+          isAPICallSuccessful = true;
         }
       } else {
         const modifiedAdvertisementId =
@@ -64,7 +66,12 @@ function Advertisement() {
             return [...nowAdvertisements];
           });
           setClickedAdvertisementIndex(-1);
+          isAPICallSuccessful = true;
         }
+      }
+      if (isAPICallSuccessful) {
+        advertisementNameInputRef.current.value = "";
+        urlLinkInputRef.current.value = "";
       }
     }
   };

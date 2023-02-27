@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
-import Announcement from "../components/admin/Announcement";
 import Category from "../components/admin/Category";
 import Report from "../components/admin/Report";
 import NavBar from "../components/commons/NavBar";
@@ -10,13 +9,14 @@ import routes from "../constants/routes";
 import authCookieManager from "../modules/authCookie";
 import signAPIManager from "../modules/signAPI";
 import { ChosenTabMenuEnum } from "../type/enums";
+import Notice from "../components/admin/Notice";
 
 function showChosenTabMenu(chosenTabMenu: ChosenTabMenuEnum) {
   if (chosenTabMenu === ChosenTabMenuEnum.report) {
     return <Report />;
   }
-  if (chosenTabMenu === ChosenTabMenuEnum.announcement) {
-    return <Announcement />;
+  if (chosenTabMenu === ChosenTabMenuEnum.notice) {
+    return <Notice />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.category) {
     return <Category />;

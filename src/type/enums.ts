@@ -1,7 +1,7 @@
 export enum ChosenTabMenuEnum {
   category = "category",
   report = "report",
-  announcement = "announcement",
+  notice = "notice",
   advertisement = "advertisement",
   columnCode = "columnCode",
 }

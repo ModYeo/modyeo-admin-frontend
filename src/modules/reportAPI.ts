@@ -42,10 +42,10 @@ class ReportAPIManager implements IReportAPIManager {
   async fetchReportsByType(selectedType: string) {
     try {
       if (contains(this.reportType, selectedType)) {
-        const { data } = await this.reportAxios<unknown>(
+        const { data: fetchedReport } = await this.reportAxios<unknown>(
           `${routes.server.report}/${selectedType}`,
         );
-        return data;
+        return fetchedReport;
         // FIX: this request gets 500 error.
       }
       throw new Error();

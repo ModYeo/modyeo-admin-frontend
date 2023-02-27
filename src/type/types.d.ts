@@ -51,3 +51,18 @@ export interface IDetailedAdvertisement extends IAdvertisement {
   urlLink: string;
   useYn: "Y";
 }
+
+export interface INotice {
+  content: string;
+  id: number;
+  imagePath: string;
+  title: string;
+}
+
+export interface IDetailedNotice extends INotice {
+  createdBy: number;
+  createdDate: Array<number>;
+  updatedBy: number;
+  updatedTime: Array<number>;
+  useYn: "Y" | "N";
+}
