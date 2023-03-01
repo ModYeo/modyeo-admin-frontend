@@ -23,7 +23,7 @@ class NoticeAPIManager implements INoticeAPIManager {
 
   private authCookieManager: AuthCookieManager;
 
-  private useYn = "N";
+  private useYn = "Y";
 
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.noticeAxios = axios.create();

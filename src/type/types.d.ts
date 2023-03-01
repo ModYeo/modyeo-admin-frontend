@@ -66,3 +66,13 @@ export interface IDetailedNotice extends INotice {
   updatedTime: Array<number>;
   useYn: "Y" | "N";
 }
+
+export interface ICollection {
+  collectionInfoId: number;
+  collectionInfoName: string;
+  description: string;
+  createdBy?: number;
+  createdTime?: string;
+  updatedBy?: number;
+  updatedTime?: string;
+}

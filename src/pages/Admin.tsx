@@ -10,6 +10,7 @@ import authCookieManager from "../modules/authCookie";
 import signAPIManager from "../modules/signAPI";
 import { ChosenTabMenuEnum } from "../type/enums";
 import Notice from "../components/admin/Notice";
+import Collection from "../components/admin/Collection";
 
 function showChosenTabMenu(chosenTabMenu: ChosenTabMenuEnum) {
   if (chosenTabMenu === ChosenTabMenuEnum.report) {
@@ -26,6 +27,9 @@ function showChosenTabMenu(chosenTabMenu: ChosenTabMenuEnum) {
   }
   if (chosenTabMenu === ChosenTabMenuEnum.columnCode) {
     return <ColumnCode />;
+  }
+  if (chosenTabMenu === ChosenTabMenuEnum.collection) {
+    return <Collection />;
   }
   return <div>chose admin tab menu</div>;
 }
