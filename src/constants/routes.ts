@@ -11,6 +11,7 @@ const routes = {
     column: "/api/column-code",
     report: "/api/report",
     notice: "/api/notice",
+    collection: "/api/collection-info",
   },
 } as const;
 

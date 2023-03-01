@@ -50,6 +50,11 @@ function NavBar({
           >
             컬럼 코드
           </SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.collection)}
+          >
+            컬렉션
+          </SignButton>
         </span>
         <span>
           <SignButton onClick={handleSignOut}>sign out</SignButton>

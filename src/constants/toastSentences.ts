@@ -13,4 +13,7 @@ export const toastSentences = {
   notice: {
     deleted: "공지를 삭제했습니다,",
   },
+  collection: {
+    deleted: "컬렉션을 삭제했습니다.",
+  },
 } as const;

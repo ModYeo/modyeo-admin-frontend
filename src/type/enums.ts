@@ -4,4 +4,5 @@ export enum ChosenTabMenuEnum {
   notice = "notice",
   advertisement = "advertisement",
   columnCode = "columnCode",
+  collection = "collection",
 }
