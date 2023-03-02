@@ -1,23 +1,14 @@
 import axios, { AxiosInstance } from "axios";
 import { toast } from "react-toastify";
-import routes from "../constants/routes";
 import { toastSentences } from "../constants/toastSentences";
-import { ICollection } from "../type/types";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
 import StatusCodeCheckManager from "./statusCode";
 
 interface ICollectionAPIManager {
-  fetchCollections: () => Promise<Array<ICollection> | null>;
-  makeNewCollection: (
-    collectionInfoName: string,
-    description: string,
-  ) => Promise<number | null>;
-  deleteCollection: (collectionInfoId: number) => Promise<boolean>;
-  modifyCollection: (
-    collectionInfoId: number,
-    collectionInfoName: string,
-    description: string,
-  ) => Promise<number | null>;
+  fetchCollections: <T>(path: string) => Promise<Array<T> | null>;
+  makeNewCollection: (path: string, obj: Object) => Promise<number | null>;
+  deleteCollection: (path: string, objectId: number) => Promise<boolean>;
+  modifyCollection: (path: string, obj: Object) => Promise<number | null>;
 }
 
 class CollectionAPIManager implements ICollectionAPIManager {
@@ -38,13 +29,11 @@ class CollectionAPIManager implements ICollectionAPIManager {
     this.authCookieManager = authCookieManagerParam;
   }
 
-  async fetchCollections() {
+  async fetchCollections<T>(path: string) {
     try {
       const {
         data: { data: fetchedCollections },
-      } = await this.collectionAxios.get<{ data: Array<ICollection> }>(
-        routes.server.collection,
-      );
+      } = await this.collectionAxios.get<{ data: Array<T> }>(path);
       return fetchedCollections.reverse();
     } catch (e) {
       // TODO: show error toast.
@@ -52,19 +41,14 @@ class CollectionAPIManager implements ICollectionAPIManager {
     }
   }
 
-  async makeNewCollection(collectionInfoName: string, description: string) {
+  async makeNewCollection(path: string, obj: Object) {
     try {
       const {
         data: { data: newCollectionId },
-      } = await this.collectionAxios.post<{ data: number }>(
-        routes.server.collection,
-        {
-          collectionInfoId: 0,
-          collectionInfoName,
-          description,
-          useYn: this.useYn,
-        },
-      );
+      } = await this.collectionAxios.post<{ data: number }>(path, {
+        ...obj,
+        useYn: this.useYn,
+      });
       return newCollectionId;
     } catch (e) {
       // TODO: show error toast.
@@ -72,10 +56,10 @@ class CollectionAPIManager implements ICollectionAPIManager {
     }
   }
 
-  async deleteCollection(collectionInfoId: number) {
+  async deleteCollection(path: string, collectionInfoId: number) {
     try {
       const { status } = await this.collectionAxios.delete(
-        `${routes.server.collection}/${collectionInfoId}`,
+        `${path}/${collectionInfoId}`,
       );
       if (StatusCodeCheckManager.checkIfIsRequestSucceeded(status)) {
         toast.info(toastSentences.collection.deleted);
@@ -88,23 +72,14 @@ class CollectionAPIManager implements ICollectionAPIManager {
     }
   }
 
-  async modifyCollection(
-    collectionInfoId: number,
-    collectionInfoName: string,
-    description: string,
-  ) {
+  async modifyCollection(path: string, obj: Object) {
     try {
       const {
         data: { data: modifiedCollectionId },
-      } = await this.collectionAxios.patch<{ data: number }>(
-        routes.server.collection,
-        {
-          collectionInfoId,
-          collectionInfoName,
-          description,
-          useYn: this.useYn,
-        },
-      );
+      } = await this.collectionAxios.patch<{ data: number }>(path, {
+        ...obj,
+        useYn: this.useYn,
+      });
       return modifiedCollectionId;
     } catch (e) {
       // TODO: show error toast.

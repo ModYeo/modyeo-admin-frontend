@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import routes from "../../constants/routes";
 import collectionAPIManager from "../../modules/collectionAPI";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import { ICollection } from "../../type/types";
@@ -19,8 +20,12 @@ function Collection() {
     if (nameInfoTextAreaValue && descTextAreaValue) {
       if (clickedCollectionIndex === -1) {
         const newCollectionId = await collectionAPIManager.makeNewCollection(
-          nameInfoTextAreaValue,
-          descTextAreaValue,
+          routes.server.collection,
+          {
+            collectionInfoId: 0,
+            collectionInfoName: nameInfoTextAreaValue,
+            description: descTextAreaValue,
+          },
         );
         if (newCollectionId) {
           const newCollection: ICollection = {
@@ -34,9 +39,13 @@ function Collection() {
       } else {
         const modifiedCollectionId =
           await collectionAPIManager.modifyCollection(
-            collections[clickedCollectionIndex].collectionInfoId,
-            collections[clickedCollectionIndex].collectionInfoName,
-            collections[clickedCollectionIndex].description,
+            routes.server.collection,
+            {
+              collectionInfoId:
+                collections[clickedCollectionIndex].collectionInfoId,
+              collectionInfoName: nameInfoTextAreaValue,
+              description: descTextAreaValue,
+            },
           );
         if (modifiedCollectionId) {
           const modifiedCollection: ICollection = {
@@ -61,6 +70,7 @@ function Collection() {
       window.confirm("컬렉션을 삭제하시겠습니까?");
     if (!confirmCollectionDelete) return;
     const isCollectionDeleted = await collectionAPIManager.deleteCollection(
+      routes.server.collection,
       collectionInfoId,
     );
     if (isCollectionDeleted) {
@@ -70,7 +80,10 @@ function Collection() {
   };
   useEffect(() => {
     (async () => {
-      const fetchedCollections = await collectionAPIManager.fetchCollections();
+      const fetchedCollections =
+        await collectionAPIManager.fetchCollections<ICollection>(
+          routes.server.collection,
+        );
       if (fetchedCollections) setCollections(fetchedCollections);
     })();
   }, []);
