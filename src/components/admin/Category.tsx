@@ -1,5 +1,6 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
-import categoryAPIManager from "../../modules/categoryAPI";
+import routes from "../../constants/routes";
+import apiManager from "../../modules/apiManager";
 import {
   CreateInput,
   List,
@@ -20,8 +21,11 @@ function Category() {
     e.preventDefault();
     const inputNewCategoryName = categoryInputRef.current?.value;
     if (inputNewCategoryName) {
-      const newCategoryId = await categoryAPIManager.makeNewCategory(
-        inputNewCategoryName,
+      const newCategoryId = await apiManager.postNewDataElem(
+        routes.server.category,
+        {
+          name: inputNewCategoryName,
+        },
       );
       if (newCategoryId) {
         const newCategory: ICategory = {
@@ -36,32 +40,38 @@ function Category() {
   };
   const fetchedDetailedCategory = async (categoryId: number) => {
     const detailedCategoryInfo =
-      await categoryAPIManager.fetchDetailedCategoryInfo(categoryId);
+      await apiManager.fetchDetailedData<IDetailedCategory>(
+        routes.server.category,
+        categoryId,
+      );
     setClickedCategory(detailedCategoryInfo);
   };
-  const deleteCategory = async (categoryId: number) => {
+  const deleteCategory = async (categoryId: number, index: number) => {
     const isDeleteConfirmed =
       window.confirm("정말 카테고리를 삭제하시겠습니까?");
     if (!isDeleteConfirmed) return;
-    const isCategoryDeleteSuccessful = await categoryAPIManager.deleteCategory(
+    const isCategoryDeleteSuccessful = await apiManager.deleteData(
+      routes.server.category,
       categoryId,
     );
     if (isCategoryDeleteSuccessful) {
-      const targetCategoryIndex = categories.findIndex(
-        (category) => category.id === categoryId,
-      );
-      if (targetCategoryIndex !== -1) {
-        categories.splice(targetCategoryIndex, 1);
-        setCategories([...categories]);
-      }
+      categories.splice(index, 1);
+      setCategories([...categories]);
     }
   };
   const modifyCategory = async () => {
     const inputModifiedCategoryName = categoryModifyInputRef.current?.value;
     if (inputModifiedCategoryName) {
       const { id, name } = categories[clickedCategoryIndex];
-      const isCategoryModifySuccessful =
-        await categoryAPIManager.modifyCategory(id, name);
+      const isCategoryModifySuccessful = await apiManager.modifyData(
+        routes.server.category,
+        {
+          categoryId: id,
+          name,
+          imagePath: "",
+        },
+      );
+      // FIX: 404 error 발생.
       if (isCategoryModifySuccessful) {
         setCategories((nowCategories) => {
           const copiedCategories = [...nowCategories];
@@ -70,14 +80,15 @@ function Category() {
           return copiedCategories;
         });
         setClickedCategoryIndex(-1);
-        // FIX: 404 error 발생.
       }
       categoryModifyInputRef.current.value = "";
     }
   };
   useEffect(() => {
     (async () => {
-      const fetchedCategories = await categoryAPIManager.fetchAllCategories();
+      const fetchedCategories = await apiManager.fetchData<ICategory>(
+        routes.server.category,
+      );
       if (fetchedCategories) setCategories(fetchedCategories);
     })();
   }, []);
@@ -106,7 +117,10 @@ function Category() {
             >
               modify
             </button>
-            <button type="button" onClick={() => deleteCategory(category.id)}>
+            <button
+              type="button"
+              onClick={() => deleteCategory(category.id, index)}
+            >
               delete
             </button>
           </span>

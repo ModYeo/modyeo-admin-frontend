@@ -16,4 +16,5 @@ export const toastSentences = {
   collection: {
     deleted: "컬렉션을 삭제했습니다.",
   },
+  deleted: "대상을 삭제했습니다.",
 } as const;
