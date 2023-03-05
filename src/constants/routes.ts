@@ -23,6 +23,7 @@ const routes = {
       index: "/api/inquiry",
       list: "/api/inquiry/list",
     },
+    answer: "/api/answer",
   },
 } as const;
 

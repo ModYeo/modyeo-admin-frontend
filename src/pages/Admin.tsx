@@ -36,7 +36,7 @@ function showChosenTabMenu(
     return <Collection />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.inquiry && pathParam) {
-    return <InquiryDetail inquiryNo={pathParam} />;
+    return <InquiryDetail inquiryId={pathParam} />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.inquiry) {
     return <Inquiry />;
@@ -47,7 +47,7 @@ function showChosenTabMenu(
 function Admin() {
   const { pathname } = useLocation();
   const lastIndexOfSlash = pathname.lastIndexOf("/");
-  const inquiryNo = Number(
+  const inquiryId = Number(
     pathname.slice(lastIndexOfSlash + 1, pathname.length),
   );
   const currentPath = pathname.slice(
@@ -61,7 +61,7 @@ function Admin() {
       <NavBar />
       {showChosenTabMenu(
         currentPath,
-        Number.isInteger(inquiryNo) ? inquiryNo : undefined,
+        Number.isInteger(inquiryId) ? inquiryId : undefined,
       )}
     </div>
   );
