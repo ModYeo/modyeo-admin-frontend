@@ -88,7 +88,7 @@ function Collection() {
   }, []);
   return (
     <ListContainer>
-      <h5>column codes list</h5>
+      <h5>collection list</h5>
       <br />
       <form onSubmit={handleOnCollectionFormSubmit}>
         <textarea placeholder="info name" ref={nameInfoTextAreaRef} required />

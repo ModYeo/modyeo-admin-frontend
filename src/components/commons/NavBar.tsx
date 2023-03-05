@@ -8,13 +8,8 @@ import {
   NavBarSection,
   SignButton,
 } from "../../styles/styles";
-import { ChosenTabMenuEnum } from "../../type/enums";
 
-function NavBar({
-  changeChosenTabMenu,
-}: {
-  changeChosenTabMenu: (tabMenu: ChosenTabMenuEnum) => void;
-}) {
+function NavBar() {
   const navigator = useNavigate();
   const handleSignOut = async () => {
     const isSignOutSuccessful = await signAPIManager.handleSignOut();
@@ -25,39 +20,25 @@ function NavBar({
     <NavBarContainer>
       <NavBarSection>
         <span>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.report)}
-          >
+          <SignButton onClick={() => navigator(routes.client.report)}>
             게시글 신고관리
           </SignButton>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.notice)}
-          >
+          <SignButton onClick={() => navigator(routes.client.notice)}>
             공지 관리
           </SignButton>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.category)}
-          >
+          <SignButton onClick={() => navigator(routes.client.category)}>
             카테고리 생성
           </SignButton>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.advertisement)}
-          >
+          <SignButton onClick={() => navigator(routes.client.advertisement)}>
             광고 관리
           </SignButton>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.columnCode)}
-          >
+          <SignButton onClick={() => navigator(routes.client.columnCode)}>
             컬럼 코드
           </SignButton>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.collection)}
-          >
+          <SignButton onClick={() => navigator(routes.client.collection)}>
             컬렉션
           </SignButton>
-          <SignButton
-            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.inquiry)}
-          >
+          <SignButton onClick={() => navigator(routes.client.inquiry)}>
             질의 관리
           </SignButton>
         </span>

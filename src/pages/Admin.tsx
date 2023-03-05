@@ -1,26 +1,22 @@
-import React, { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useLocation } from "react-router-dom";
+import NavBar from "../components/commons/NavBar";
 import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
 import Category from "../components/admin/Category";
 import Report from "../components/admin/Report";
-import NavBar from "../components/commons/NavBar";
-import routes from "../constants/routes";
-import authCookieManager from "../modules/authCookie";
-import signAPIManager from "../modules/signAPI";
 import { ChosenTabMenuEnum } from "../type/enums";
 import Notice from "../components/admin/Notice";
 import Collection from "../components/admin/Collection";
 import Inquiry from "../components/admin/Inquiry";
-import InquiryDetail from "../components/admin/InquiryDetail";
+import InquiryDetail from "./InquiryDetail";
+
+const MINIMUN_PATH_LENGTH_START = 7;
 
 function showChosenTabMenu(
   chosenTabMenu: ChosenTabMenuEnum,
   pathParam?: number,
 ) {
-  // console.log(chosenTabMenu);
-  // console.log(ChosenTabMenuEnum.inquiry);
-  // console.log(!Number.isNaN(pathParam));
   if (chosenTabMenu === ChosenTabMenuEnum.report) {
     return <Report />;
   }
@@ -39,8 +35,8 @@ function showChosenTabMenu(
   if (chosenTabMenu === ChosenTabMenuEnum.collection) {
     return <Collection />;
   }
-  if (chosenTabMenu === ChosenTabMenuEnum.inquiry && !Number.isNaN(pathParam)) {
-    return <InquiryDetail />;
+  if (chosenTabMenu === ChosenTabMenuEnum.inquiry && pathParam) {
+    return <InquiryDetail inquiryId={pathParam} />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.inquiry) {
     return <Inquiry />;
@@ -49,43 +45,24 @@ function showChosenTabMenu(
 }
 
 function Admin() {
-  const navigator = useNavigate();
   const { pathname } = useLocation();
   const lastIndexOfSlash = pathname.lastIndexOf("/");
-  const inquiryNo = Number(
+  const inquiryId = Number(
     pathname.slice(lastIndexOfSlash + 1, pathname.length),
   );
   const currentPath = pathname.slice(
-    7,
-    lastIndexOfSlash === -1 ? pathname.length : lastIndexOfSlash,
+    MINIMUN_PATH_LENGTH_START,
+    lastIndexOfSlash + 1 === MINIMUN_PATH_LENGTH_START
+      ? pathname.length
+      : lastIndexOfSlash,
   ) as ChosenTabMenuEnum;
-  // FIX: currentPath 올바른 값 내기.
-  console.log(lastIndexOfSlash);
-  console.log(inquiryNo);
-  const [chosenTabMenu, setChosenTabMenu] = useState(currentPath);
-  const changeChosenTabMenu = (tabMenu: ChosenTabMenuEnum) => {
-    setChosenTabMenu(tabMenu);
-  };
-  useEffect(() => {
-    const isAllTokensValid = signAPIManager.checkTokensValidation();
-    if (!isAllTokensValid) {
-      authCookieManager.deleteAccessAndRefreshToken();
-      navigator(routes.client.signin);
-    }
-  }, [navigator]);
-  useEffect(() => {
-    if (chosenTabMenu === ChosenTabMenuEnum.inquiry) {
-      navigator(
-        `${routes.client.admin}/${ChosenTabMenuEnum.inquiry}${
-          Number.isNaN(inquiryNo) ? "" : `/${inquiryNo}`
-        }`,
-      );
-    } else navigator(`${routes.client.admin}/${chosenTabMenu}`);
-  }, [chosenTabMenu, inquiryNo, navigator]);
   return (
     <div>
-      <NavBar changeChosenTabMenu={changeChosenTabMenu} />
-      {showChosenTabMenu(chosenTabMenu, inquiryNo)}
+      <NavBar />
+      {showChosenTabMenu(
+        currentPath,
+        Number.isInteger(inquiryId) ? inquiryId : undefined,
+      )}
     </div>
   );
 }

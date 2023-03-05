@@ -35,6 +35,7 @@ function Report() {
   return (
     <ListContainer>
       <h5>report type select</h5>
+      <br />
       <select defaultValue="-" onChange={handleReportTypeSelectOnChange}>
         <option>-</option>
         {reportType.map((type) => (
