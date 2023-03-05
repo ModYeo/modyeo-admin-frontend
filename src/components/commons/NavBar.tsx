@@ -55,6 +55,11 @@ function NavBar({
           >
             컬렉션
           </SignButton>
+          <SignButton
+            onClick={() => changeChosenTabMenu(ChosenTabMenuEnum.inquiry)}
+          >
+            질의 관리
+          </SignButton>
         </span>
         <span>
           <SignButton onClick={handleSignOut}>sign out</SignButton>

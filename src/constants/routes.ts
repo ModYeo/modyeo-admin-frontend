@@ -12,6 +12,10 @@ const routes = {
     report: "/api/report",
     notice: "/api/notice",
     collection: "/api/collection-info",
+    inquiry: {
+      index: "/api/inquiry",
+      list: "/api/inquiry/list",
+    },
   },
 } as const;
 

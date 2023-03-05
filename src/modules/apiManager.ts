@@ -1,8 +1,8 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
+import serverStatus from "../constants/serverStatus";
 import { toastSentences } from "../constants/toastSentences";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
-import StatusCodeCheckManager from "./statusCode";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
@@ -27,6 +27,22 @@ class APIManager implements IAPIManager {
         this.authCookieManager.getAccessTokenWithBearer();
       return configCopied;
     });
+    this.apiAxios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      (
+        error: AxiosError<{
+          error: { message: string };
+        }>,
+      ) => {
+        const errorMessage =
+          error.response?.data.error.message ||
+          toastSentences.noErrorMessageServerErorr;
+        toast.error(errorMessage);
+        return Promise.reject(error);
+      },
+    );
     this.authCookieManager = authCookieManagerParam;
   }
 
@@ -40,7 +56,6 @@ class APIManager implements IAPIManager {
       if ("content" in fetchedData) return fetchedData.content;
       return fetchedData.reverse();
     } catch (e) {
-      // TODO: show error toast.
       return null;
     }
   }
@@ -55,7 +70,6 @@ class APIManager implements IAPIManager {
       });
       return newElemId;
     } catch (e) {
-      // TODO: show error toast.
       return null;
     }
   }
@@ -63,13 +77,12 @@ class APIManager implements IAPIManager {
   async deleteData(path: string, targetDataId: number) {
     try {
       const { status } = await this.apiAxios.delete(`${path}/${targetDataId}`);
-      if (StatusCodeCheckManager.checkIfIsRequestSucceeded(status)) {
+      if (this.checkIfIsRequestSucceeded(status)) {
         toast.info(toastSentences.deleted);
         return true;
       }
       throw new Error();
     } catch (e) {
-      // TODO: show error toast.
       return false;
     }
   }
@@ -84,7 +97,6 @@ class APIManager implements IAPIManager {
       });
       return modifieElemId;
     } catch (e) {
-      // TODO: show error toast.
       return null;
     }
   }
@@ -96,9 +108,19 @@ class APIManager implements IAPIManager {
       } = await this.apiAxios.get<{ data: D }>(`${path}/${elemId}`);
       return fetchedDetailedData;
     } catch (e) {
-      // TODO: show error toast.
       return null;
     }
+  }
+
+  private checkIfIsRequestSucceeded(status: number): boolean {
+    if (
+      status === serverStatus.OK ||
+      status === serverStatus.CREATED ||
+      status === serverStatus.NO_CONTENT
+    ) {
+      return true;
+    }
+    return false;
   }
 }
 
