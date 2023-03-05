@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
-import advertisementAPIManager from "../../modules/advertisementAPI";
+import apiManager from "../../modules/apiManager";
 import {
   CreateInput,
   List,
@@ -10,6 +11,16 @@ import {
 } from "../../styles/styles";
 import { IAdvertisement, IDetailedAdvertisement } from "../../type/types";
 import Modal from "../commons/Modal";
+
+const AD_TYPE = "ARTICLE";
+
+const urlLinkRegex =
+  // eslint-disable-next-line no-useless-escape
+  /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+
+const checkUrlLinkValidation = (urlLink: string) => {
+  return urlLinkRegex.test(urlLink);
+};
 
 function Advertisement() {
   const [advertisements, setAdvertisements] = useState<Array<IAdvertisement>>(
@@ -28,16 +39,20 @@ function Advertisement() {
       advertisementNameInputRef.current?.value;
     const urlLinkInputValue = urlLinkInputRef.current?.value;
     if (advertisementNameInputValue && urlLinkInputValue) {
-      if (!advertisementAPIManager.checkUrlLinkValidation(urlLinkInputValue)) {
+      if (!checkUrlLinkValidation(urlLinkInputValue)) {
         toast.error(toastSentences.advertisement.urlLinkInvalid);
         return;
       }
       if (clickedAdvertisementIndex === -1) {
-        const advertisementId =
-          await advertisementAPIManager.makeNewAdvertisement(
-            advertisementNameInputValue,
-            urlLinkInputValue,
-          );
+        const advertisementId = await apiManager.postNewDataElem(
+          routes.server.advertisement,
+          {
+            advertisementName: advertisementNameInputValue,
+            advertisementType: AD_TYPE,
+            imagePath: "",
+            urlLink: urlLinkInputValue,
+          },
+        );
         if (advertisementId) {
           const newAdvertisement: IAdvertisement = {
             advertisementId,
@@ -51,12 +66,16 @@ function Advertisement() {
           isAPICallSuccessful = true;
         }
       } else {
-        const modifiedAdvertisementId =
-          await advertisementAPIManager.modifyAdvertisement(
-            advertisementNameInputValue,
-            urlLinkInputValue,
-            advertisements[clickedAdvertisementIndex].advertisementId,
-          );
+        const modifiedAdvertisementId = await apiManager.modifyData(
+          routes.server.advertisement,
+          {
+            id: advertisements[clickedAdvertisementIndex].advertisementId,
+            advertisementName: advertisementNameInputValue,
+            urlLink: urlLinkInputValue,
+            advertisementType: AD_TYPE,
+            imagePath: "",
+          },
+        );
         if (modifiedAdvertisementId) {
           setAdvertisements((nowAdvertisements) => {
             const targetAdvertisement =
@@ -82,8 +101,10 @@ function Advertisement() {
     const confirmAdvertisementDelete =
       window.confirm("정말 이 광고를 삭제하시겠습니까?");
     if (!confirmAdvertisementDelete) return;
-    const isDeleteSuccessful =
-      await advertisementAPIManager.deleteAdvertisement(advertisementId);
+    const isDeleteSuccessful = await apiManager.deleteData(
+      routes.server.advertisement,
+      advertisementId,
+    );
     if (isDeleteSuccessful) {
       advertisements.splice(index, 1);
       setAdvertisements([...advertisements]);
@@ -91,14 +112,18 @@ function Advertisement() {
   };
   const fetchDetailedAdvertisement = async (advertisementId: number) => {
     const detailedAdvertisementInfo =
-      await advertisementAPIManager.fetchDetailedAdvertisement(advertisementId);
+      await apiManager.fetchDetailedData<IDetailedAdvertisement>(
+        routes.server.advertisement,
+        advertisementId,
+      );
     if (detailedAdvertisementInfo)
       setClickedAdvertisement(detailedAdvertisementInfo);
   };
   useEffect(() => {
     (async () => {
-      const fetchedAdvertisements =
-        await advertisementAPIManager.fetchAllAdvertisement();
+      const fetchedAdvertisements = await apiManager.fetchData<IAdvertisement>(
+        routes.server.advertisement,
+      );
       if (fetchedAdvertisements) setAdvertisements(fetchedAdvertisements);
     })();
   }, []);

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import noticeAPIManager from "../../modules/noticeAPI";
+import routes from "../../constants/routes";
+import apiManager from "../../modules/apiManager";
 import {
   CreateInput,
   List,
@@ -26,9 +27,13 @@ function Notice() {
     const titleInputValue = titleInputRef.current?.value;
     if (contentInputValue && titleInputValue) {
       if (clickedNoticeIndex === -1) {
-        const newNoticeId = await noticeAPIManager.makeNewNotice(
-          contentInputValue,
-          titleInputValue,
+        const newNoticeId = await apiManager.postNewDataElem(
+          routes.server.notice,
+          {
+            content: contentInputValue,
+            imagePath: "",
+            title: titleInputValue,
+          },
         );
         if (newNoticeId) {
           const newNotice: INotice = {
@@ -41,10 +46,14 @@ function Notice() {
           isAPICallSuccessful = true;
         }
       } else {
-        const modifiedNoticeId = await noticeAPIManager.modifyNotice(
-          notices[clickedNoticeIndex].id,
-          contentInputValue,
-          titleInputValue,
+        const modifiedNoticeId = await apiManager.modifyData(
+          routes.server.notice,
+          {
+            id: notices[clickedNoticeIndex].id,
+            content: contentInputValue,
+            title: titleInputValue,
+            imagePath: "",
+          },
         );
         if (modifiedNoticeId) {
           const modifiedNotice: INotice = {
@@ -68,21 +77,28 @@ function Notice() {
   const deleteNotice = async (noticeId: number, index: number) => {
     const confirmNoticeDelete = window.confirm("공지를 삭제하시겠습니까?");
     if (!confirmNoticeDelete) return;
-    const idDeleteSuccessful = await noticeAPIManager.deleteNotice(noticeId);
+    const idDeleteSuccessful = await apiManager.deleteData(
+      routes.server.notice,
+      noticeId,
+    );
     if (idDeleteSuccessful) {
       notices.splice(index, 1);
       setNotices([...notices]);
     }
   };
   const fetchDetailedNoticeInfo = async (noticeId: number) => {
-    const fetchedDetailedNotice = await noticeAPIManager.fetchDetailedNotice(
-      noticeId,
-    );
+    const fetchedDetailedNotice =
+      await apiManager.fetchDetailedData<IDetailedNotice>(
+        routes.server.notice,
+        noticeId,
+      );
     if (fetchedDetailedNotice) setClickedNotice(fetchedDetailedNotice);
   };
   useEffect(() => {
     (async () => {
-      const fetchedNotices = await noticeAPIManager.fetchAllNotices();
+      const fetchedNotices = await apiManager.fetchData<INotice>(
+        routes.server.notice,
+      );
       if (fetchedNotices) setNotices(fetchedNotices);
     })();
   }, []);

@@ -1,3 +1,5 @@
+import { AuthorityEnum, InquiryStatusEnum } from "./enums";
+
 export interface IAuth {
   accessToken: string;
   accessTokenExpiresIn: number;
@@ -75,4 +77,13 @@ export interface ICollection {
   createdTime?: string;
   updatedBy?: number;
   updatedTime?: string;
+}
+
+export interface IInquiry {
+  authority: AuthorityEnum;
+  createdBy: number;
+  createdTime: string;
+  inquiryId: number;
+  status: InquiryStatusEnum;
+  title: string;
 }

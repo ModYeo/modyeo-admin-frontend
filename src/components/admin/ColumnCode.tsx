@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import columnAPIManager from "../../modules/columnAPI";
+import routes from "../../constants/routes";
+import apiManager from "../../modules/apiManager";
 import {
   CreateInput,
   List,
@@ -22,8 +23,10 @@ function ColumnCode() {
       "정말 해당 칼럼을 삭제하시겠습니끼?",
     );
     if (!confirmColumnDelete) return;
-    const isColumnCodeDeleteSuccessful =
-      await columnAPIManager.deleteColumnCode(columnCodeId);
+    const isColumnCodeDeleteSuccessful = await apiManager.deleteData(
+      routes.server.column,
+      columnCodeId,
+    );
     if (isColumnCodeDeleteSuccessful) {
       const targetColumnIndex = columnCodes.findIndex(
         (columnCode) => columnCode.columnCodeId === columnCodeId,
@@ -34,7 +37,10 @@ function ColumnCode() {
   };
   const fetchDetailedColumnInfo = async (columnCodeId: number) => {
     const fetchedDetailedColumnCode =
-      await columnAPIManager.fetchDetailedColumnCodeInfo(columnCodeId);
+      await apiManager.fetchDetailedData<IDetailedColumnCode>(
+        routes.server.column,
+        columnCodeId,
+      );
     if (fetchedDetailedColumnCode)
       setClickedColumnCode(fetchedDetailedColumnCode);
   };
@@ -52,10 +58,13 @@ function ColumnCode() {
       descriptionInputRefValue
     ) {
       if (clickedColumnIndex === -1) {
-        const newColumnCodeId = await columnAPIManager.createNewColumnCode(
-          codeInputRefValue,
-          columnCodeNameInputRefValue,
-          descriptionInputRefValue,
+        const newColumnCodeId = await apiManager.postNewDataElem(
+          routes.server.column,
+          {
+            code: codeInputRefValue,
+            columnCodeName: columnCodeNameInputRefValue,
+            description: descriptionInputRefValue,
+          },
         );
         if (newColumnCodeId) {
           const newColumnCode: IColumCode = {
@@ -69,11 +78,14 @@ function ColumnCode() {
         }
       } else {
         const targetColumnCodeId = columnCodes[clickedColumnIndex].columnCodeId;
-        const modifiedColumnCodeId = await columnAPIManager.modifyColumnCode(
-          targetColumnCodeId,
-          codeInputRefValue,
-          columnCodeNameInputRefValue,
-          descriptionInputRefValue,
+        const modifiedColumnCodeId = await apiManager.modifyData(
+          routes.server.column,
+          {
+            columnCodeId: targetColumnCodeId,
+            code: codeInputRefValue,
+            columnCodeName: columnCodeNameInputRefValue,
+            description: descriptionInputRefValue,
+          },
         );
         if (modifiedColumnCodeId) {
           const modifiedColumnCode: IColumCode = {
@@ -97,7 +109,9 @@ function ColumnCode() {
   };
   useEffect(() => {
     (async () => {
-      const fetchedColumnCodes = await columnAPIManager.fetchAllColumnCode();
+      const fetchedColumnCodes = await apiManager.fetchData<IColumCode>(
+        routes.server.column,
+      );
       if (fetchedColumnCodes) setColumnCodes(fetchedColumnCodes);
     })();
   }, []);
