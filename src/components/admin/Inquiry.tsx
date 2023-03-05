@@ -20,6 +20,8 @@ function Inquiry() {
   }, []);
   return (
     <ListContainer>
+      <h5>관리자 질문</h5>
+      <br />
       {inquiries.map((inquiry) => (
         <List key={inquiry.inquiryId}>
           <div>

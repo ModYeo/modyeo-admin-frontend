@@ -2,6 +2,13 @@ const routes = {
   client: {
     signin: "/",
     admin: "/admin",
+    report: "/admin/report",
+    notice: "/admin/notice",
+    category: "/admin/category",
+    advertisement: "/admin/advertisement",
+    columnCode: "/admin/columnCode",
+    collection: "/admin/collection",
+    inquiry: "/admin/inquiry",
   },
   server: {
     signin: "/api/auth/login",

@@ -6,6 +6,7 @@ export enum ChosenTabMenuEnum {
   columnCode = "columnCode",
   collection = "collection",
   inquiry = "inquiry",
+  inquiryDetailed = "inquiryDetailed",
 }
 
 export enum AuthorityEnum {
