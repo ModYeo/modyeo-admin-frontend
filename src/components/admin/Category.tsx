@@ -16,7 +16,6 @@ function Category() {
     useState<IDetailedCategory | null>(null);
   const [clickedCategoryIndex, setClickedCategoryIndex] = useState(-1);
   const categoryInputRef = useRef<HTMLInputElement>(null);
-  const categoryModifyInputRef = useRef<HTMLInputElement>(null);
   const handleOnCategoryFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const inputNewCategoryName = categoryInputRef.current?.value;
@@ -60,19 +59,18 @@ function Category() {
     }
   };
   const modifyCategory = async () => {
-    const inputModifiedCategoryName = categoryModifyInputRef.current?.value;
+    const inputModifiedCategoryName = categoryInputRef.current?.value;
     if (inputModifiedCategoryName) {
-      const { id, name } = categories[clickedCategoryIndex];
-      const isCategoryModifySuccessful = await apiManager.modifyData(
+      const { id } = categories[clickedCategoryIndex];
+      const modifiedCategoryId = await apiManager.modifyData(
         routes.server.category,
         {
           categoryId: id,
-          name,
+          name: inputModifiedCategoryName,
           imagePath: "",
         },
       );
-      // FIX: 404 error 발생.
-      if (isCategoryModifySuccessful) {
+      if (modifiedCategoryId) {
         setCategories((nowCategories) => {
           const copiedCategories = [...nowCategories];
           copiedCategories[clickedCategoryIndex].name =
@@ -80,8 +78,8 @@ function Category() {
           return copiedCategories;
         });
         setClickedCategoryIndex(-1);
+        categoryInputRef.current.value = "";
       }
-      categoryModifyInputRef.current.value = "";
     }
   };
   useEffect(() => {
@@ -132,7 +130,7 @@ function Category() {
             <h5>{categories[clickedCategoryIndex].name}</h5>
             <CreateInput
               placeholder="new category name"
-              ref={categoryModifyInputRef}
+              ref={categoryInputRef}
             />
             <button type="button" onClick={modifyCategory}>
               modify
