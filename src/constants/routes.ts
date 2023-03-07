@@ -16,7 +16,7 @@ const routes = {
     category: "/api/category",
     advertisement: "/api/advertisement",
     column: "/api/column-code",
-    report: "/api/report",
+    report: "/api/report/type",
     notice: "/api/notice",
     collection: "/api/collection-info",
     inquiry: {
@@ -24,6 +24,7 @@ const routes = {
       list: "/api/inquiry/list",
     },
     answer: "/api/answer",
+    reissueAccessToken: "api/auth/reissue",
   },
 } as const;
 

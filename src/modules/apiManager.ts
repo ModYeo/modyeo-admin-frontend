@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
+import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
 import { toastSentences } from "../constants/toastSentences";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
@@ -19,6 +20,8 @@ class APIManager implements IAPIManager {
 
   private useYn = "Y";
 
+  private invalidTokenServerStatus = 401;
+
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.apiAxios = axios.create();
     this.apiAxios.interceptors.request.use((config) => {
@@ -31,19 +34,34 @@ class APIManager implements IAPIManager {
       (response) => {
         return response;
       },
-      (
+      async (
         error: AxiosError<{
           error: { message: string };
         }>,
       ) => {
-        const errorMessage =
-          error.response?.data.error.message ||
-          toastSentences.noErrorMessageServerErorr;
-        toast.error(errorMessage);
+        const errorStatus = error.response?.status;
+        if (errorStatus === this.invalidTokenServerStatus) {
+          await this.reissueAccessToken();
+        } else {
+          const errorMessage =
+            error.response?.data.error.message ||
+            toastSentences.noErrorMessageServerErorr;
+          toast.error(errorMessage);
+        }
         return Promise.reject(error);
       },
     );
     this.authCookieManager = authCookieManagerParam;
+  }
+
+  private async reissueAccessToken() {
+    const [accessToken, refreshToken] =
+      this.authCookieManager.getAccessAndRefreshTokenFromCookie();
+    const a = await axios.post(routes.server.reissueAccessToken, {
+      accessToken,
+      refreshToken,
+    });
+    console.log(a);
   }
 
   async fetchData<T>(path: string, typeParam?: string) {

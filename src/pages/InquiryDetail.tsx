@@ -73,7 +73,6 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
           routes.server.inquiry.index,
           inquiryId,
         );
-      console.log(fetchedDetailedInquiry);
       if (fetchedDetailedInquiry) setInquiry(fetchedDetailedInquiry);
     })();
   }, [inquiryId]);
@@ -88,6 +87,7 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
           {inquiry.answerList.map((answer, index) => (
             <div key={answer.answerId}>
               <p>answer - {answer.content}</p>
+              <p>답변 시간 - {answer.createdTime}</p>
               <button
                 type="button"
                 onClick={() => setTargetInquiryIndex(index)}
