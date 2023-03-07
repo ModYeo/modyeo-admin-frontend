@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
@@ -47,7 +47,10 @@ class SignAPIManager implements ISignAPIManager {
         );
         return true;
       } catch (e) {
-        toast.error(toastSentences.signInFailed);
+        const { response } = e as AxiosError<{ error: { message: string } }>;
+        toast.error(
+          response?.data.error.message || toastSentences.signInFailed,
+        );
       }
     }
     return false;

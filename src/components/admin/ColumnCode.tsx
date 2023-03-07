@@ -18,7 +18,7 @@ function ColumnCode() {
   const codeInputRef = useRef<HTMLInputElement>(null);
   const columnCodeNameInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
-  const deleteColumnCode = async (columnCodeId: number) => {
+  const deleteColumnCode = async (columnCodeId: number, index: number) => {
     const confirmColumnDelete = window.confirm(
       "정말 해당 칼럼을 삭제하시겠습니끼?",
     );
@@ -28,10 +28,7 @@ function ColumnCode() {
       columnCodeId,
     );
     if (isColumnCodeDeleteSuccessful) {
-      const targetColumnIndex = columnCodes.findIndex(
-        (columnCode) => columnCode.columnCodeId === columnCodeId,
-      );
-      columnCodes.splice(targetColumnIndex, 1);
+      columnCodes.splice(index, 1);
       setColumnCodes([...columnCodes]);
     }
   };
@@ -153,7 +150,7 @@ function ColumnCode() {
               </button>
               <button
                 type="button"
-                onClick={() => deleteColumnCode(columnCode.columnCodeId)}
+                onClick={() => deleteColumnCode(columnCode.columnCodeId, index)}
               >
                 delete
               </button>
