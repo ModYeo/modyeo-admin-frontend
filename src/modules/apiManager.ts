@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
 import { toastSentences } from "../constants/toastSentences";
+import { IAuth } from "../type/types";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
 
 interface IAPIManager {
@@ -41,7 +42,13 @@ class APIManager implements IAPIManager {
       ) => {
         const errorStatus = error.response?.status;
         if (errorStatus === this.invalidTokenServerStatus) {
-          await this.reissueAccessToken();
+          const isTokenReissueSuccessful = await this.reissueAccessToken();
+          if (isTokenReissueSuccessful) {
+            // TODO: resend previous request.
+            return Promise.resolve();
+          }
+          // TODO: throw a error.
+          this.authCookieManager.deleteAccessAndRefreshToken();
         } else {
           const errorMessage =
             error.response?.data.error.message ||
@@ -55,13 +62,26 @@ class APIManager implements IAPIManager {
   }
 
   private async reissueAccessToken() {
-    const [accessToken, refreshToken] =
+    const [expiredAccessToken, refreshToken] =
       this.authCookieManager.getAccessAndRefreshTokenFromCookie();
-    const a = await axios.post(routes.server.reissueAccessToken, {
-      accessToken,
-      refreshToken,
-    });
-    console.log(a);
+    try {
+      const {
+        data: {
+          data: { accessToken, accessTokenExpiresIn },
+        },
+      } = await axios.post<{ data: IAuth }>(routes.server.reissueAccessToken, {
+        accessToken: expiredAccessToken,
+        refreshToken,
+      });
+      this.authCookieManager.saveAccessAndRefreshTokenAsCookie(
+        accessToken,
+        refreshToken,
+        accessTokenExpiresIn,
+      );
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   async fetchData<T>(path: string, typeParam?: string) {
