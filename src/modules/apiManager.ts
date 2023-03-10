@@ -40,12 +40,27 @@ class APIManager implements IAPIManager {
           error: { message: string };
         }>,
       ) => {
+        console.log(error);
         const errorStatus = error.response?.status;
         if (errorStatus === this.invalidTokenServerStatus) {
           const isTokenReissueSuccessful = await this.reissueAccessToken();
           if (isTokenReissueSuccessful) {
             // TODO: resend previous request.
-            return Promise.resolve();
+            /*
+            const requestData = error.config
+              ? (JSON.parse(error.config.data as string) as object)
+              : null;
+            const method = error.config?.method;
+            const url = error.config?.url;
+            if (method && url) {
+              const requestedData = (await this.callPreviousRequest(
+                method,
+                url,
+                requestData,
+              )) as unknown;
+              return Promise.resolve(requestedData);
+            }
+            */
           }
           // TODO: throw a error.
           this.authCookieManager.deleteAccessAndRefreshToken();
@@ -60,6 +75,20 @@ class APIManager implements IAPIManager {
     );
     this.authCookieManager = authCookieManagerParam;
   }
+
+  /*
+  private callPreviousRequest = async (
+    method: string,
+    url: string,
+    requestData: object | null,
+  ) => {
+    try {
+      if (method === "get") {
+        
+      }
+    } catch (e) {}
+  };
+  */
 
   private async reissueAccessToken() {
     const [expiredAccessToken, refreshToken] =
@@ -91,7 +120,7 @@ class APIManager implements IAPIManager {
       } = await this.apiAxios.get<{
         data: Array<T> | { content: Array<T> };
       }>(`${path}/${typeParam || ""}`);
-      if ("content" in fetchedData) return fetchedData.content;
+      if ("content" in fetchedData) return fetchedData.content.reverse();
       return fetchedData.reverse();
     } catch (e) {
       return null;

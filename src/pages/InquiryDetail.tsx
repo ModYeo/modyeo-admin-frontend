@@ -1,9 +1,11 @@
+import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/commons/Modal";
 import routes from "../constants/routes";
 import apiManager from "../modules/apiManager";
 import { ModalBackground } from "../styles/styles";
+import { AuthorityEnum } from "../type/enums";
 import { IAnswer, IDetailedInquiry } from "../type/types";
 
 function InquiryDetail({ inquiryId }: { inquiryId: number }) {
@@ -19,7 +21,6 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
     if (contentTextAreaValue) {
       let isAPICallSuccessful = false;
       if (targetInquiryIndex === -1) {
-        // FIX: 응답 데이터가 문의 Id가 아닌 답변 id가 되어야 함.
         const answerId = await apiManager.postNewDataElem(
           routes.server.answer,
           {
@@ -27,9 +28,17 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
             inquiryId,
           },
         );
-        if (answerId) {
-          console.log(answerId);
-          // TODO: UI update.
+        if (answerId && inquiry) {
+          const newAdminAnswer: IAnswer = {
+            answerId,
+            authority: AuthorityEnum.ROLE_ADMIN,
+            content: contentTextAreaValue,
+            inquiryId,
+            createdBy: 1,
+            createdTime: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+          };
+          inquiry?.answerList.push(newAdminAnswer);
+          setInquiry({ ...inquiry });
           isAPICallSuccessful = true;
         }
       } else {

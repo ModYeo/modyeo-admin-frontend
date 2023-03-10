@@ -22,9 +22,11 @@ function SignIn() {
     }
   };
   useEffect(() => {
-    const isAllTokensValid = signAPIManager.checkTokensValidation();
-    if (isAllTokensValid) navigator(routes.client.admin);
-    else authCookieManager.deleteAccessAndRefreshToken();
+    (async () => {
+      const isAllTokensValid = await signAPIManager.checkTokensValidation();
+      if (isAllTokensValid) navigator(routes.client.admin);
+      else authCookieManager.deleteAccessAndRefreshToken();
+    })();
   }, [navigator]);
   return (
     <Container>

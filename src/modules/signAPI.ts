@@ -9,7 +9,7 @@ import authCookieManager, { AuthCookieManager } from "./authCookie";
 interface ISignAPIManager {
   handleSignIn: (id: string, password: string) => Promise<boolean | null>;
   handleSignOut: () => Promise<boolean>;
-  checkTokensValidation: () => boolean;
+  checkTokensValidation: () => Promise<boolean>;
 }
 
 class SignAPIManager implements ISignAPIManager {
@@ -77,13 +77,36 @@ class SignAPIManager implements ISignAPIManager {
     return false;
   }
 
-  checkTokensValidation() {
-    // TODO: send request to server to check tokens validation. Then, remove temporal logic below.
+  async checkTokensValidation() {
     const [accessToken, refreshToken] =
       this.authCookieManager.getAccessAndRefreshTokenFromCookie();
     if (!accessToken || !refreshToken) return false;
-    return true;
+    const isTokensValid = await this.callTokensValidationRequest(
+      accessToken,
+      refreshToken,
+    );
+    if (isTokensValid) return true;
+    return false;
   }
+
+  private callTokensValidationRequest = async (
+    accessToken: string,
+    refreshToken: string,
+  ) => {
+    try {
+      const { status } = await this.signInAxios.post(
+        routes.server.checkTokensValidation,
+        {
+          accessToken,
+          refreshToken,
+        },
+      );
+      if (status < serverStatus.OK) return true;
+      throw new Error();
+    } catch (e) {
+      return false;
+    }
+  };
 
   private encodeIdAndPassword(id: string, password: string) {
     return `Basic ${btoa(`${id}:${password}`)}`;

@@ -25,6 +25,7 @@ const routes = {
     },
     answer: "/api/answer",
     reissueAccessToken: "api/auth/reissue",
+    checkTokensValidation: "api/auth/token/valid",
   },
 } as const;
 
