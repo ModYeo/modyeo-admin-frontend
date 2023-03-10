@@ -51,7 +51,7 @@ export interface IDetailedAdvertisement extends IAdvertisement {
   type: "ARTICLE";
   updatedBy: number;
   urlLink: string;
-  useYn: "Y";
+  useYn: "Y" | "N";
 }
 
 export interface INotice {
