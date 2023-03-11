@@ -22,11 +22,11 @@ export class AuthCookieManager implements IAuthCookieManager {
   saveAccessAndRefreshTokenAsCookie(
     accessToken: string,
     refreshToken: string,
-    accessTokenExpiresIn: number,
+    // accessTokenExpiresIn: number,
   ) {
     this.cookies.set(tokenName.accessToken, accessToken, {
       path: "/",
-      expires: new Date(accessTokenExpiresIn),
+      // expires: new Date(accessTokenExpiresIn),
     });
     this.cookies.set(tokenName.refreshToken, refreshToken, {
       path: "/",

@@ -14,17 +14,33 @@ interface IAPIManager {
   fetchDetailedData: <D>(path: string, elemId: number) => Promise<D | null>;
 }
 
+enum HttpMethodEnum {
+  get = "get",
+  post = "post",
+  patch = "patch",
+  delete = "delete",
+}
+
+const isObject = (value: unknown) => {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+};
+
 class APIManager implements IAPIManager {
-  private apiAxios: AxiosInstance;
+  private apiAxios: AxiosInstance = axios.create();
+
+  private reRequestAxios: AxiosInstance = axios.create();
 
   private authCookieManager: AuthCookieManager;
 
   private useYn = "Y";
 
-  private invalidTokenServerStatus = 401;
-
   constructor(authCookieManagerParam: AuthCookieManager) {
-    this.apiAxios = axios.create();
+    this.authCookieManager = authCookieManagerParam;
+    this.setupApiAxios();
+    this.setupRerequestAxios();
+  }
+
+  private setupApiAxios() {
     this.apiAxios.interceptors.request.use((config) => {
       const configCopied = { ...config };
       configCopied.headers.Authorization =
@@ -40,55 +56,111 @@ class APIManager implements IAPIManager {
           error: { message: string };
         }>,
       ) => {
-        console.log(error);
         const errorStatus = error.response?.status;
-        if (errorStatus === this.invalidTokenServerStatus) {
+        if (errorStatus === serverStatus.UNAUTHORIZED) {
           const isTokenReissueSuccessful = await this.reissueAccessToken();
+          // TODO: 위에 reissueAccessToken 함수 작동 여부 추가 확인.
           if (isTokenReissueSuccessful) {
-            // TODO: resend previous request.
-            /*
             const requestData = error.config
               ? (JSON.parse(error.config.data as string) as object)
               : null;
-            const method = error.config?.method;
+            const method = error.config?.method as HttpMethodEnum;
             const url = error.config?.url;
             if (method && url) {
-              const requestedData = (await this.callPreviousRequest(
-                method,
-                url,
-                requestData,
-              )) as unknown;
-              return Promise.resolve(requestedData);
+              try {
+                const reRequestedData = await this.callPreviousRequestAPI(
+                  method,
+                  url,
+                  requestData,
+                );
+                return reRequestedData;
+              } catch (reRequestError) {
+                return Promise.reject(reRequestError);
+              }
             }
-            */
-          }
-          // TODO: throw a error.
-          this.authCookieManager.deleteAccessAndRefreshToken();
+          } else this.authCookieManager.deleteAccessAndRefreshToken();
         } else {
-          const errorMessage =
-            error.response?.data.error.message ||
-            toastSentences.noErrorMessageServerErorr;
-          toast.error(errorMessage);
+          this.showErrorMessageToast(error.response?.data.error.message);
         }
         return Promise.reject(error);
       },
     );
-    this.authCookieManager = authCookieManagerParam;
   }
 
-  /*
-  private callPreviousRequest = async (
-    method: string,
+  private setupRerequestAxios() {
+    this.reRequestAxios.interceptors.request.use((config) => {
+      const configCopied = { ...config };
+      configCopied.headers.Accept = "application/json, text/plain, */*";
+      configCopied.headers.Authorization =
+        this.authCookieManager.getAccessTokenWithBearer();
+      return configCopied;
+    });
+    this.reRequestAxios.interceptors.response.use(
+      (response) => {
+        return response;
+      },
+      async (
+        error: AxiosError<{
+          error: { message: string };
+        }>,
+      ) => {
+        this.showErrorMessageToast(error.response?.data.error.message);
+        return Promise.reject(error);
+      },
+    );
+  }
+
+  private callPreviousRequestAPI = async (
+    method: HttpMethodEnum,
     url: string,
-    requestData: object | null,
+    reRequestedData?: object | null,
   ) => {
     try {
-      if (method === "get") {
-        
+      if (method === HttpMethodEnum.get) {
+        const {
+          data: { data: fetchedData },
+        } = await this.reRequestAxios.get<{
+          data: unknown | { content: Array<unknown> };
+        }>(url);
+        if (isObject(fetchedData)) {
+          const copiedFetchedData = fetchedData as
+            | object
+            | { content: Array<unknown> };
+          if ("content" in copiedFetchedData)
+            return copiedFetchedData.content.reverse();
+        }
+        return fetchedData;
       }
-    } catch (e) {}
+      if (method === HttpMethodEnum.post) {
+        const {
+          data: { data: newElemId },
+        } = await this.reRequestAxios.post<{ data: number }>(
+          url,
+          reRequestedData,
+        );
+        return newElemId;
+      }
+      if (method === HttpMethodEnum.patch) {
+        const {
+          data: { data: modifieElemId },
+        } = await this.reRequestAxios.patch<{ data: number }>(
+          url,
+          reRequestedData,
+        );
+        return modifieElemId;
+      }
+      if (method === HttpMethodEnum.delete) {
+        const { status } = await this.reRequestAxios.delete(url);
+        if (this.checkIfIsRequestSucceeded(status)) {
+          toast.info(toastSentences.deleted);
+          return true;
+        }
+      }
+    } catch (e) {
+      throw e as Error;
+    }
+    return null;
   };
-  */
 
   private async reissueAccessToken() {
     const [expiredAccessToken, refreshToken] =
@@ -96,7 +168,8 @@ class APIManager implements IAPIManager {
     try {
       const {
         data: {
-          data: { accessToken, accessTokenExpiresIn },
+          data: { accessToken },
+          // data: { accessToken, accessTokenExpiresIn },
         },
       } = await axios.post<{ data: IAuth }>(routes.server.reissueAccessToken, {
         accessToken: expiredAccessToken,
@@ -105,7 +178,7 @@ class APIManager implements IAPIManager {
       this.authCookieManager.saveAccessAndRefreshTokenAsCookie(
         accessToken,
         refreshToken,
-        accessTokenExpiresIn,
+        // accessTokenExpiresIn,
       );
       return true;
     } catch (e) {
@@ -189,6 +262,10 @@ class APIManager implements IAPIManager {
     }
     return false;
   }
+
+  private showErrorMessageToast = (errorMessage?: string) => {
+    toast.error(errorMessage || toastSentences.noErrorMessageServerErorr);
+  };
 }
 
 const apiManager = new APIManager(authCookieManager);

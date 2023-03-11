@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import routes from "../../constants/routes";
-import collectionAPIManager from "../../modules/apiManager";
+import apiManager from "../../modules/apiManager";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import { ICollection } from "../../type/types";
 import Modal from "../commons/Modal";
@@ -19,7 +19,7 @@ function Collection() {
     let isAPICallSuccessful = false;
     if (nameInfoTextAreaValue && descTextAreaValue) {
       if (clickedCollectionIndex === -1) {
-        const newCollectionId = await collectionAPIManager.postNewDataElem(
+        const newCollectionId = await apiManager.postNewDataElem(
           routes.server.collection,
           {
             collectionInfoId: 0,
@@ -37,7 +37,7 @@ function Collection() {
           isAPICallSuccessful = true;
         }
       } else {
-        const modifiedCollectionId = await collectionAPIManager.modifyData(
+        const modifiedCollectionId = await apiManager.modifyData(
           routes.server.collection,
           {
             collectionInfoId:
@@ -68,7 +68,7 @@ function Collection() {
     const confirmCollectionDelete =
       window.confirm("컬렉션을 삭제하시겠습니까?");
     if (!confirmCollectionDelete) return;
-    const isCollectionDeleted = await collectionAPIManager.deleteData(
+    const isCollectionDeleted = await apiManager.deleteData(
       routes.server.collection,
       collectionInfoId,
     );
@@ -79,10 +79,9 @@ function Collection() {
   };
   useEffect(() => {
     (async () => {
-      const fetchedCollections =
-        await collectionAPIManager.fetchData<ICollection>(
-          routes.server.collection,
-        );
+      const fetchedCollections = await apiManager.fetchData<ICollection>(
+        routes.server.collection,
+      );
       if (fetchedCollections) setCollections(fetchedCollections);
     })();
   }, []);
