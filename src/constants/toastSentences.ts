@@ -5,5 +5,5 @@ export const toastSentences = {
     urlLinkInvalid: "입력한 url 주소가 올바르지 않습니다.",
   },
   deleted: "대상을 삭제했습니다.",
-  noErrorMessageServerErorr: "서버에 문제가 있습니다. 잠시 후에 시도해주세요.",
+  noErrorMessageFromServer: "서버에 문제가 있습니다. 잠시 후에 시도해주세요.",
 } as const;

@@ -264,7 +264,7 @@ class APIManager implements IAPIManager {
   }
 
   private showErrorMessageToast = (errorMessage?: string) => {
-    toast.error(errorMessage || toastSentences.noErrorMessageServerErorr);
+    toast.error(errorMessage || toastSentences.noErrorMessageFromServer);
   };
 }
 
