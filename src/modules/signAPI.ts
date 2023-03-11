@@ -28,7 +28,8 @@ class SignAPIManager implements ISignAPIManager {
         const encodedAuth = this.encodeIdAndPassword(id, password);
         const {
           data: {
-            data: { accessToken, refreshToken, accessTokenExpiresIn },
+            data: { accessToken, refreshToken },
+            // data: { accessToken, refreshToken, accessTokenExpiresIn },
           },
         } = await this.signInAxios.post<{ data: IAuth }>(
           routes.server.signin,
@@ -43,7 +44,7 @@ class SignAPIManager implements ISignAPIManager {
         this.authCookieManager.saveAccessAndRefreshTokenAsCookie(
           accessToken,
           refreshToken,
-          accessTokenExpiresIn,
+          // accessTokenExpiresIn,
         );
         return true;
       } catch (e) {
@@ -101,7 +102,7 @@ class SignAPIManager implements ISignAPIManager {
           refreshToken,
         },
       );
-      if (status < serverStatus.OK) return true;
+      if (status === serverStatus.OK) return true;
       throw new Error();
     } catch (e) {
       return false;

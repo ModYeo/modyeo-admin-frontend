@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import NOT_EXISTS from "../../constants/notExists";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import {
@@ -12,7 +13,7 @@ import Modal from "../commons/Modal";
 
 function Notice() {
   const [notices, setNotices] = useState<Array<INotice>>([]);
-  const [clickedNoticeIndex, setClickedNoticeIndex] = useState(-1);
+  const [clickedNoticeIndex, setClickedNoticeIndex] = useState(NOT_EXISTS);
   const [clickedNotice, setClickedNotice] = useState<IDetailedNotice | null>(
     null,
   );
@@ -26,7 +27,7 @@ function Notice() {
     const contentInputValue = contentInputRef.current?.value;
     const titleInputValue = titleInputRef.current?.value;
     if (contentInputValue && titleInputValue) {
-      if (clickedNoticeIndex === -1) {
+      if (clickedNoticeIndex === NOT_EXISTS) {
         const newNoticeId = await apiManager.postNewDataElem(
           routes.server.notice,
           {
@@ -64,7 +65,7 @@ function Notice() {
           };
           notices.splice(clickedNoticeIndex, 1, modifiedNotice);
           setNotices([...notices]);
-          setClickedNoticeIndex(-1);
+          setClickedNoticeIndex(NOT_EXISTS);
           isAPICallSuccessful = true;
         }
       }
@@ -150,8 +151,8 @@ function Notice() {
           </Modal>
         </ModalBackground>
       )}
-      {clickedNoticeIndex !== -1 && (
-        <ModalBackground onClick={() => setClickedNoticeIndex(-1)}>
+      {clickedNoticeIndex !== NOT_EXISTS && (
+        <ModalBackground onClick={() => setClickedNoticeIndex(NOT_EXISTS)}>
           <Modal width={400} height={200}>
             <form onSubmit={handleOnNoticeFormSubmit}>
               <CreateInput

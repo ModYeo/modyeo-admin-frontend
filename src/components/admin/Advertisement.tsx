@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
+import NOT_EXISTS from "../../constants/notExists";
 import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
 import apiManager from "../../modules/apiManager";
@@ -29,7 +30,7 @@ function Advertisement() {
   const [clickedAdvertisement, setClickedAdvertisement] =
     useState<IDetailedAdvertisement | null>(null);
   const [clickedAdvertisementIndex, setClickedAdvertisementIndex] =
-    useState(-1);
+    useState(NOT_EXISTS);
   const advertisementNameInputRef = useRef<HTMLInputElement>(null);
   const urlLinkInputRef = useRef<HTMLInputElement>(null);
   const handleOnAdFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -43,7 +44,7 @@ function Advertisement() {
         toast.error(toastSentences.advertisement.urlLinkInvalid);
         return;
       }
-      if (clickedAdvertisementIndex === -1) {
+      if (clickedAdvertisementIndex === NOT_EXISTS) {
         const advertisementId = await apiManager.postNewDataElem(
           routes.server.advertisement,
           {
@@ -84,7 +85,7 @@ function Advertisement() {
             targetAdvertisement.urlLink = urlLinkInputValue;
             return [...nowAdvertisements];
           });
-          setClickedAdvertisementIndex(-1);
+          setClickedAdvertisementIndex(NOT_EXISTS);
           isAPICallSuccessful = true;
         }
       }
@@ -186,8 +187,10 @@ function Advertisement() {
           </Modal>
         </ModalBackground>
       )}
-      {clickedAdvertisementIndex !== -1 && (
-        <ModalBackground onClick={() => setClickedAdvertisementIndex(-1)}>
+      {clickedAdvertisementIndex !== NOT_EXISTS && (
+        <ModalBackground
+          onClick={() => setClickedAdvertisementIndex(NOT_EXISTS)}
+        >
           <Modal width={600} height={200}>
             <form onSubmit={handleOnAdFormSubmit}>
               <CreateInput

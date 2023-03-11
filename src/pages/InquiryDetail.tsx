@@ -2,6 +2,7 @@ import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/commons/Modal";
+import NOT_EXISTS from "../constants/notExists";
 import routes from "../constants/routes";
 import apiManager from "../modules/apiManager";
 import { ModalBackground } from "../styles/styles";
@@ -11,7 +12,7 @@ import { IAnswer, IDetailedInquiry } from "../type/types";
 function InquiryDetail({ inquiryId }: { inquiryId: number }) {
   const navigator = useNavigate();
   const [inquiry, setInquiry] = useState<IDetailedInquiry | null>(null);
-  const [targetInquiryIndex, setTargetInquiryIndex] = useState(-1);
+  const [targetInquiryIndex, setTargetInquiryIndex] = useState(NOT_EXISTS);
   const contentTextAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleOnAnswerFormSubmit = async (
     e: React.FormEvent<HTMLFormElement>,
@@ -20,7 +21,7 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
     const contentTextAreaValue = contentTextAreaRef.current?.value;
     if (contentTextAreaValue) {
       let isAPICallSuccessful = false;
-      if (targetInquiryIndex === -1) {
+      if (targetInquiryIndex === NOT_EXISTS) {
         const answerId = await apiManager.postNewDataElem(
           routes.server.answer,
           {
@@ -56,7 +57,7 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
           };
           inquiry?.answerList.splice(targetInquiryIndex, 1, modifiedAnswer);
           setInquiry({ ...inquiry });
-          setTargetInquiryIndex(-1);
+          setTargetInquiryIndex(NOT_EXISTS);
           isAPICallSuccessful = true;
         }
       }
@@ -123,8 +124,8 @@ function InquiryDetail({ inquiryId }: { inquiryId: number }) {
       <button type="button" onClick={() => navigator(routes.client.inquiry)}>
         back
       </button>
-      {targetInquiryIndex !== -1 && (
-        <ModalBackground onClick={() => setTargetInquiryIndex(-1)}>
+      {targetInquiryIndex !== NOT_EXISTS && (
+        <ModalBackground onClick={() => setTargetInquiryIndex(NOT_EXISTS)}>
           <Modal width={500} height={200}>
             <form onSubmit={handleOnAnswerFormSubmit}>
               <textarea

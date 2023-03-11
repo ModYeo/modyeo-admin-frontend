@@ -1,13 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
+import NOT_EXISTS from "../../constants/notExists";
 import routes from "../../constants/routes";
-import collectionAPIManager from "../../modules/apiManager";
+import apiManager from "../../modules/apiManager";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import { ICollection } from "../../type/types";
 import Modal from "../commons/Modal";
 
 function Collection() {
   const [collections, setCollections] = useState<Array<ICollection>>([]);
-  const [clickedCollectionIndex, setClickedCollectionIndex] = useState(-1);
+  const [clickedCollectionIndex, setClickedCollectionIndex] =
+    useState(NOT_EXISTS);
   const nameInfoTextAreaRef = useRef<HTMLTextAreaElement>(null);
   const descTextAreaRef = useRef<HTMLTextAreaElement>(null);
   const handleOnCollectionFormSubmit = async (
@@ -18,8 +20,8 @@ function Collection() {
     const descTextAreaValue = descTextAreaRef.current?.value;
     let isAPICallSuccessful = false;
     if (nameInfoTextAreaValue && descTextAreaValue) {
-      if (clickedCollectionIndex === -1) {
-        const newCollectionId = await collectionAPIManager.postNewDataElem(
+      if (clickedCollectionIndex === NOT_EXISTS) {
+        const newCollectionId = await apiManager.postNewDataElem(
           routes.server.collection,
           {
             collectionInfoId: 0,
@@ -37,7 +39,7 @@ function Collection() {
           isAPICallSuccessful = true;
         }
       } else {
-        const modifiedCollectionId = await collectionAPIManager.modifyData(
+        const modifiedCollectionId = await apiManager.modifyData(
           routes.server.collection,
           {
             collectionInfoId:
@@ -54,7 +56,7 @@ function Collection() {
           };
           collections.splice(clickedCollectionIndex, 1, modifiedCollection);
           setCollections([...collections]);
-          setClickedCollectionIndex(-1);
+          setClickedCollectionIndex(NOT_EXISTS);
           isAPICallSuccessful = true;
         }
       }
@@ -68,7 +70,7 @@ function Collection() {
     const confirmCollectionDelete =
       window.confirm("컬렉션을 삭제하시겠습니까?");
     if (!confirmCollectionDelete) return;
-    const isCollectionDeleted = await collectionAPIManager.deleteData(
+    const isCollectionDeleted = await apiManager.deleteData(
       routes.server.collection,
       collectionInfoId,
     );
@@ -79,10 +81,9 @@ function Collection() {
   };
   useEffect(() => {
     (async () => {
-      const fetchedCollections =
-        await collectionAPIManager.fetchData<ICollection>(
-          routes.server.collection,
-        );
+      const fetchedCollections = await apiManager.fetchData<ICollection>(
+        routes.server.collection,
+      );
       if (fetchedCollections) setCollections(fetchedCollections);
     })();
   }, []);
@@ -121,8 +122,8 @@ function Collection() {
           </span>
         </List>
       ))}
-      {clickedCollectionIndex !== -1 && (
-        <ModalBackground onClick={() => setClickedCollectionIndex(-1)}>
+      {clickedCollectionIndex !== NOT_EXISTS && (
+        <ModalBackground onClick={() => setClickedCollectionIndex(NOT_EXISTS)}>
           <Modal width={500} height={500}>
             <form onSubmit={handleOnCollectionFormSubmit}>
               <textarea
