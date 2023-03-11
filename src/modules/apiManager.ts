@@ -21,6 +21,8 @@ enum HttpMethodEnum {
   delete = "delete",
 }
 
+type BodyDataType = { [key: string]: unknown };
+
 const isObject = (value: unknown) => {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 };
@@ -40,11 +42,24 @@ class APIManager implements IAPIManager {
     this.setupRerequestAxios();
   }
 
+  private includesXSS = (bodyData: BodyDataType): boolean => {
+    return Object.keys(bodyData).some((key) => {
+      const value = bodyData[key];
+      return (
+        typeof value === "string" &&
+        value.includes("<script>") &&
+        value.includes("</script>")
+      );
+    });
+  };
+
   private setupApiAxios() {
     this.apiAxios.interceptors.request.use((config) => {
       const configCopied = { ...config };
       configCopied.headers.Authorization =
         this.authCookieManager.getAccessTokenWithBearer();
+      const bodyData = config.data as BodyDataType | undefined;
+      if (bodyData && this.includesXSS(bodyData)) throw new Error();
       return configCopied;
     });
     this.apiAxios.interceptors.response.use(
