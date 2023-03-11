@@ -1,4 +1,5 @@
 import React, { FormEvent, useEffect, useRef, useState } from "react";
+import NOT_EXISTS from "../../constants/notExists";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import {
@@ -14,7 +15,7 @@ function Category() {
   const [categories, setCategories] = useState<Array<ICategory>>([]);
   const [clickedCategory, setClickedCategory] =
     useState<IDetailedCategory | null>(null);
-  const [clickedCategoryIndex, setClickedCategoryIndex] = useState(-1);
+  const [clickedCategoryIndex, setClickedCategoryIndex] = useState(NOT_EXISTS);
   const categoryInputRef = useRef<HTMLInputElement>(null);
   const handleOnCategoryFormSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -77,7 +78,7 @@ function Category() {
             inputModifiedCategoryName;
           return copiedCategories;
         });
-        setClickedCategoryIndex(-1);
+        setClickedCategoryIndex(NOT_EXISTS);
         categoryInputRef.current.value = "";
       }
     }
@@ -124,8 +125,8 @@ function Category() {
           </span>
         </List>
       ))}
-      {clickedCategoryIndex !== -1 && (
-        <ModalBackground onClick={() => setClickedCategoryIndex(-1)}>
+      {clickedCategoryIndex !== NOT_EXISTS && (
+        <ModalBackground onClick={() => setClickedCategoryIndex(NOT_EXISTS)}>
           <Modal width={350} height={200}>
             <h5>{categories[clickedCategoryIndex].name}</h5>
             <CreateInput

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import NOT_EXISTS from "../../constants/notExists";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import {
@@ -14,7 +15,7 @@ function ColumnCode() {
   const [columnCodes, setColumnCodes] = useState<Array<IColumCode>>([]);
   const [clickedColumnCode, setClickedColumnCode] =
     useState<IDetailedColumnCode | null>(null);
-  const [clickedColumnIndex, setClickedColumnIndex] = useState(-1);
+  const [clickedColumnIndex, setClickedColumnIndex] = useState(NOT_EXISTS);
   const codeInputRef = useRef<HTMLInputElement>(null);
   const columnCodeNameInputRef = useRef<HTMLInputElement>(null);
   const descriptionInputRef = useRef<HTMLInputElement>(null);
@@ -54,7 +55,7 @@ function ColumnCode() {
       columnCodeNameInputRefValue &&
       descriptionInputRefValue
     ) {
-      if (clickedColumnIndex === -1) {
+      if (clickedColumnIndex === NOT_EXISTS) {
         const newColumnCodeId = await apiManager.postNewDataElem(
           routes.server.column,
           {
@@ -93,7 +94,7 @@ function ColumnCode() {
           };
           columnCodes.splice(clickedColumnIndex, 1, modifiedColumnCode);
           setColumnCodes([...columnCodes]);
-          setClickedColumnIndex(-1);
+          setClickedColumnIndex(NOT_EXISTS);
           isAPICallSuccessful = true;
         }
       }
@@ -158,8 +159,8 @@ function ColumnCode() {
           </List>
         );
       })}
-      {clickedColumnIndex !== -1 && (
-        <ModalBackground onClick={() => setClickedColumnIndex(-1)}>
+      {clickedColumnIndex !== NOT_EXISTS && (
+        <ModalBackground onClick={() => setClickedColumnIndex(NOT_EXISTS)}>
           <Modal width={400} height={400}>
             <form onSubmit={handleOnColumnCodeFormSubmit}>
               <CreateInput
