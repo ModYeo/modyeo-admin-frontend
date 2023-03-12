@@ -17,3 +17,9 @@ export enum AuthorityEnum {
 export enum InquiryStatusEnum {
   FREQUENT = "FREQUENT",
 }
+
+export enum ReportStatusEnum {
+  CFRM = "CFRM",
+  CPNN = "CPNN",
+  RCPT = "RCPT",
+}

@@ -1,5 +1,5 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/commons/NavBar";
 import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
@@ -10,6 +10,8 @@ import Notice from "../components/admin/Notice";
 import Collection from "../components/admin/Collection";
 import Inquiry from "../components/admin/Inquiry";
 import InquiryDetail from "./InquiryDetail";
+import authCookieManager from "../modules/authCookie";
+import routes from "../constants/routes";
 
 const MINIMUN_PATH_LENGTH_START = 7;
 
@@ -45,6 +47,7 @@ function showChosenTabMenu(
 }
 
 function Admin() {
+  const navigator = useNavigate();
   const { pathname } = useLocation();
   const lastIndexOfSlash = pathname.lastIndexOf("/");
   const inquiryId = Number(
@@ -56,6 +59,11 @@ function Admin() {
       ? pathname.length
       : lastIndexOfSlash,
   ) as ChosenTabMenuEnum;
+  useEffect(() => {
+    const [accessToken, refreshToken] =
+      authCookieManager.getAccessAndRefreshTokenFromCookie();
+    if (!accessToken || !refreshToken) navigator(routes.client.signin);
+  }, [navigator]);
   return (
     <div>
       <NavBar />
