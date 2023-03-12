@@ -59,7 +59,8 @@ class APIManager implements IAPIManager {
       configCopied.headers.Authorization =
         this.authCookieManager.getAccessTokenWithBearer();
       const bodyData = config.data as BodyDataType | undefined;
-      if (bodyData && this.includesXSS(bodyData)) throw new Error();
+      if (bodyData && this.includesXSS(bodyData))
+        throw new AxiosError(toastSentences.includeXSS);
       return configCopied;
     });
     this.apiAxios.interceptors.response.use(
@@ -95,7 +96,9 @@ class APIManager implements IAPIManager {
             }
           } else this.authCookieManager.deleteAccessAndRefreshToken();
         } else {
-          this.showErrorMessageToast(error.response?.data.error.message);
+          this.showErrorMessageToast(
+            error.message || error.response?.data.error.message,
+          );
         }
         return Promise.reject(error);
       },
@@ -119,7 +122,9 @@ class APIManager implements IAPIManager {
           error: { message: string };
         }>,
       ) => {
-        this.showErrorMessageToast(error.response?.data.error.message);
+        this.showErrorMessageToast(
+          error.message || error.response?.data.error.message,
+        );
         return Promise.reject(error);
       },
     );
