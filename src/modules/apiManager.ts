@@ -28,7 +28,7 @@ const isObject = (value: unknown) => {
 };
 
 class APIManager implements IAPIManager {
-  private apiAxios: AxiosInstance = axios.create();
+  public apiAxios: AxiosInstance = axios.create();
 
   private reRequestAxios: AxiosInstance = axios.create();
 
@@ -75,7 +75,6 @@ class APIManager implements IAPIManager {
         const errorStatus = error.response?.status;
         if (errorStatus === serverStatus.UNAUTHORIZED) {
           const isTokenReissueSuccessful = await this.reissueAccessToken();
-          // TODO: 위에 reissueAccessToken 함수 작동 여부 추가 확인.
           if (isTokenReissueSuccessful) {
             const requestData = error.config
               ? (JSON.parse(error.config.data as string) as object)
@@ -177,7 +176,7 @@ class APIManager implements IAPIManager {
         }
       }
     } catch (e) {
-      throw e as Error;
+      throw e as AxiosError;
     }
     return null;
   };
@@ -202,6 +201,7 @@ class APIManager implements IAPIManager {
       );
       return true;
     } catch (e) {
+      console.log(e);
       return false;
     }
   }

@@ -1,4 +1,5 @@
-import { AuthorityEnum, InquiryStatusEnum } from "./enums";
+import { reportType } from "../constants/reportTypes";
+import { AuthorityEnum, InquiryStatusEnum, ReportStatusEnum } from "./enums";
 
 export interface IAuth {
   accessToken: string;
@@ -104,4 +105,24 @@ export interface IDetailedInquiry {
   createdTime: string;
   id: number;
   title: number;
+}
+
+type ReportTypeType = (typeof reportType)[number];
+
+export interface IReport {
+  contents: string;
+  id: number;
+  reportReason: "SPAM" | string;
+  reportStatus: ReportStatusEnum;
+  reportType: ReportTypeType;
+  targetId: number;
+  title: string;
+}
+
+export interface IDetailedReport extends IReport {
+  createdBy: number;
+  createdTime: Array<number>;
+  reportType: ReportTypeType;
+  updatedBy: number;
+  updatedTime: Array<number>;
 }

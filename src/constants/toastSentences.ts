@@ -7,4 +7,7 @@ export const toastSentences = {
   deleted: "대상을 삭제했습니다.",
   noErrorMessageFromServer: "서버에 문제가 있습니다. 잠시 후에 시도해주세요.",
   includeXSS: "입력할 수 없는 요소를 포함하고 있습니다.",
+  report: {
+    modified: "신고 항목의 상태를 변경했습니다.",
+  },
 } as const;
