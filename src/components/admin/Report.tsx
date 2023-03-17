@@ -37,19 +37,16 @@ function Report() {
     newStatus: ReportStatusEnum,
     reportId: number,
   ) => {
-    const {
-      data: { data: modifiedReportId },
-    } = await apiManager.apiAxios.patch<{ data: { data: number } }>(
+    const modifiedReportId = await apiManager.modifyData(
       `${routes.server.report.index}/${reportId}/${newStatus}`,
     );
     if (modifiedReportId) toast.info(toastSentences.report.modified);
   };
   const fetchDetailedReport = async (reportId: number) => {
-    const {
-      data: { data: fetchedDetailedReport },
-    } = await apiManager.apiAxios.get<{ data: IDetailedReport }>(
-      `${routes.server.report.index}/${reportId}`,
-    );
+    const fetchedDetailedReport =
+      await apiManager.fetchDetailedData<IDetailedReport>(
+        `${routes.server.report.index}/${reportId}`,
+      );
     if (fetchedDetailedReport) setClickedReport(fetchedDetailedReport);
   };
   return (
@@ -97,10 +94,12 @@ function Report() {
           {clickedReport && (
             <ModalBackground onClick={() => setClickedReport(null)}>
               <Modal width={300} height={450}>
-                <div>{clickedReport.title}</div>
-                <div>report type - {clickedReport.reportType}</div>
-                <div>created by - {clickedReport.createdBy}</div>
-                <div>updated by - {clickedReport.updatedBy}</div>
+                <div>
+                  <div>{clickedReport.title}</div>
+                  <div>report type - {clickedReport.reportType}</div>
+                  <div>created by - {clickedReport.createdBy}</div>
+                  <div>updated by - {clickedReport.updatedBy}</div>
+                </div>
               </Modal>
             </ModalBackground>
           )}

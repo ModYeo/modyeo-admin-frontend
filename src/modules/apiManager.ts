@@ -10,8 +10,8 @@ interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
   postNewDataElem: (path: string, obj: Object) => Promise<number | null>;
   deleteData: (path: string, objectId: number) => Promise<boolean>;
-  modifyData: (path: string, obj: Object) => Promise<number | null>;
-  fetchDetailedData: <D>(path: string, elemId: number) => Promise<D | null>;
+  modifyData: (path: string, obj?: Object) => Promise<number | null>;
+  fetchDetailedData: <D>(path: string, elemId?: number) => Promise<D | null>;
 }
 
 enum HttpMethodEnum {
@@ -201,7 +201,6 @@ class APIManager implements IAPIManager {
       );
       return true;
     } catch (e) {
-      console.log(e);
       return false;
     }
   }
@@ -247,7 +246,7 @@ class APIManager implements IAPIManager {
     }
   }
 
-  async modifyData(path: string, obj: Object) {
+  async modifyData(path: string, obj?: Object) {
     try {
       const {
         data: { data: modifieElemId },
@@ -261,11 +260,11 @@ class APIManager implements IAPIManager {
     }
   }
 
-  async fetchDetailedData<D>(path: string, elemId: number) {
+  async fetchDetailedData<D>(path: string, elemId?: number) {
     try {
       const {
         data: { data: fetchedDetailedData },
-      } = await this.apiAxios.get<{ data: D }>(`${path}/${elemId}`);
+      } = await this.apiAxios.get<{ data: D }>(`${path}/${elemId || ""}`);
       return fetchedDetailedData;
     } catch (e) {
       return null;
