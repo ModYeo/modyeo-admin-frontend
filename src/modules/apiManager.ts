@@ -23,10 +23,6 @@ enum HttpMethodEnum {
 
 type BodyDataType = { [key: string]: unknown };
 
-const isObject = (value: unknown) => {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-};
-
 class APIManager implements IAPIManager {
   public apiAxios: AxiosInstance = axios.create();
 
@@ -76,14 +72,14 @@ class APIManager implements IAPIManager {
         if (errorStatus === serverStatus.UNAUTHORIZED) {
           const isTokenReissueSuccessful = await this.reissueAccessToken();
           if (isTokenReissueSuccessful) {
-            const requestData = error.config
+            const requestData = error.config?.data
               ? (JSON.parse(error.config.data as string) as object)
-              : null;
+              : undefined;
             const method = error.config?.method as HttpMethodEnum;
             const url = error.config?.url;
             if (method && url) {
               try {
-                const reRequestedData = await this.callPreviousRequestAPI(
+                const reRequestedData = await this.callPreviousAPIRequest(
                   method,
                   url,
                   requestData,
@@ -129,56 +125,38 @@ class APIManager implements IAPIManager {
     );
   }
 
-  private callPreviousRequestAPI = async (
+  private callPreviousAPIRequest = async (
     method: HttpMethodEnum,
     url: string,
     reRequestedData?: object | null,
   ) => {
     try {
       if (method === HttpMethodEnum.get) {
-        const {
-          data: { data: fetchedData },
-        } = await this.reRequestAxios.get<{
+        const reRequestFetchedResult = await this.reRequestAxios.get<{
           data: unknown | { content: Array<unknown> };
         }>(url);
-        if (isObject(fetchedData)) {
-          const copiedFetchedData = fetchedData as
-            | object
-            | { content: Array<unknown> };
-          if ("content" in copiedFetchedData)
-            return copiedFetchedData.content.reverse();
-        }
-        return fetchedData;
+        return reRequestFetchedResult;
       }
       if (method === HttpMethodEnum.post) {
-        const {
-          data: { data: newElemId },
-        } = await this.reRequestAxios.post<{ data: number }>(
-          url,
-          reRequestedData,
-        );
-        return newElemId;
+        const reRequestedPostResult = await this.reRequestAxios.post<{
+          data: number;
+        }>(url, reRequestedData);
+        return reRequestedPostResult;
       }
       if (method === HttpMethodEnum.patch) {
-        const {
-          data: { data: modifieElemId },
-        } = await this.reRequestAxios.patch<{ data: number }>(
-          url,
-          reRequestedData,
-        );
-        return modifieElemId;
+        const reRquestedPatchResult = await this.reRequestAxios.patch<{
+          data: number;
+        }>(url, reRequestedData);
+        return reRquestedPatchResult;
       }
       if (method === HttpMethodEnum.delete) {
-        const { status } = await this.reRequestAxios.delete(url);
-        if (this.checkIfIsRequestSucceeded(status)) {
-          toast.info(toastSentences.deleted);
-          return true;
-        }
+        const reRequestedDeleteResult = await this.reRequestAxios.delete(url);
+        return reRequestedDeleteResult;
       }
     } catch (e) {
       throw e as AxiosError;
     }
-    return null;
+    throw new AxiosError();
   };
 
   private async reissueAccessToken() {
@@ -187,8 +165,12 @@ class APIManager implements IAPIManager {
     try {
       const {
         data: {
-          data: { accessToken },
-          // data: { accessToken, accessTokenExpiresIn },
+          data: { accessToken, refreshToken: reissuedRefreshToken },
+          // data: {
+          //   accessToken,
+          //   accessTokenExpiresIn,
+          //   refreshToken: reissuedRefreshToken,
+          // },
         },
       } = await axios.post<{ data: IAuth }>(routes.server.reissueAccessToken, {
         accessToken: expiredAccessToken,
@@ -196,7 +178,7 @@ class APIManager implements IAPIManager {
       });
       this.authCookieManager.saveAccessAndRefreshTokenAsCookie(
         accessToken,
-        refreshToken,
+        reissuedRefreshToken,
         // accessTokenExpiresIn,
       );
       return true;
