@@ -66,7 +66,10 @@ class SignAPIManager implements ISignAPIManager {
           accessToken,
           refreshToken,
         });
-        if (status === serverStatus.OK) {
+        if (
+          status === serverStatus.OK ||
+          status === serverStatus.UNAUTHORIZED
+        ) {
           this.authCookieManager.deleteAccessAndRefreshToken();
           return true;
         }

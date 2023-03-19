@@ -27,11 +27,15 @@ export class AuthCookieManager implements IAuthCookieManager {
     this.cookies.set(tokenName.accessToken, accessToken, {
       path: "/",
       httpOnly: false,
+      sameSite: "strict",
+      secure: true,
       // expires: new Date(accessTokenExpiresIn),
     });
     this.cookies.set(tokenName.refreshToken, refreshToken, {
       path: "/",
       httpOnly: false,
+      sameSite: "strict",
+      secure: true,
     });
   }
 
