@@ -3,6 +3,7 @@ import { toast } from "react-toastify";
 import NOT_EXISTS from "../../constants/notExists";
 import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
+import useAdvertisements from "../../hooks/admin/useAdvertisements";
 import apiManager from "../../modules/apiManager";
 import {
   CreateInput,
@@ -24,6 +25,8 @@ const checkUrlLinkValidation = (urlLink: string) => {
 };
 
 function Advertisement() {
+  const { fetchAdvertisements } = useAdvertisements();
+
   const [advertisements, setAdvertisements] = useState<Array<IAdvertisement>>(
     [],
   );
@@ -112,22 +115,20 @@ function Advertisement() {
     }
   };
   const fetchDetailedAdvertisement = async (advertisementId: number) => {
-    const detailedAdvertisementInfo =
+    const fetchedDetailedAdvertisement =
       await apiManager.fetchDetailedData<IDetailedAdvertisement>(
         routes.server.advertisement,
         advertisementId,
       );
-    if (detailedAdvertisementInfo)
-      setClickedAdvertisement(detailedAdvertisementInfo);
+    if (fetchedDetailedAdvertisement)
+      setClickedAdvertisement(fetchedDetailedAdvertisement);
   };
   useEffect(() => {
     (async () => {
-      const fetchedAdvertisements = await apiManager.fetchData<IAdvertisement>(
-        routes.server.advertisement,
-      );
+      const fetchedAdvertisements = await fetchAdvertisements();
       if (fetchedAdvertisements) setAdvertisements(fetchedAdvertisements);
     })();
-  }, []);
+  }, [fetchAdvertisements]);
   return (
     <ListContainer>
       <h5>advertisement list</h5>
