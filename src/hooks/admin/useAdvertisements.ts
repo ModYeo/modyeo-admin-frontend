@@ -23,10 +23,7 @@ interface UseAdvertisements {
   toBeModifiedAdvertisementIndex: number;
   advertisementNameInputRef: React.RefObject<HTMLInputElement>;
   urlLinkInputRef: React.RefObject<HTMLInputElement>;
-  initializeAdvertisementsList: (
-    advertisementsList: Array<IAdvertisement>,
-  ) => void;
-  fetchAdvertisements: () => Promise<IAdvertisement[] | null>;
+  fetchAdvertisements: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -36,8 +33,7 @@ interface UseAdvertisements {
   ) => Promise<void>;
   fetchDetailedAdvertisement: (advertisementId: number) => Promise<void>;
   hideDetailedAdvertisementModal: () => void;
-  showAdvertisementModificationModal: (targetIndex: number) => void;
-  hideAdvertisementModificationModal: () => void;
+  toggleAdvertisementModificationModal: (targetIndex?: number) => void;
   modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
@@ -67,8 +63,9 @@ const useAdvertisements = (): UseAdvertisements => {
     const fetchedAdvertisements = await apiManager.fetchData<IAdvertisement>(
       routes.server.advertisement,
     );
-    return fetchedAdvertisements;
-  }, []);
+    if (fetchedAdvertisements)
+      initializeAdvertisementsList(fetchedAdvertisements);
+  }, [initializeAdvertisementsList]);
 
   const addNewAdvertisementInList = useCallback(
     (newAdvertisement: IAdvertisement) => {
@@ -80,14 +77,19 @@ const useAdvertisements = (): UseAdvertisements => {
     [],
   );
 
-  const initializeInputValues = useCallback(() => {
-    const advertisementNameInputValue =
-      advertisementNameInputRef.current?.value;
-    const urlLinkInputValue = urlLinkInputRef.current?.value;
+  const extractInputValuesFromElementsRef = useCallback(() => {
+    return [
+      advertisementNameInputRef.current?.value,
+      urlLinkInputRef.current?.value,
+    ];
+  }, []);
 
-    if (advertisementNameInputValue && urlLinkInputValue) {
-      advertisementNameInputRef.current.value = "";
-      urlLinkInputRef.current.value = "";
+  const initializeInputValues = useCallback(() => {
+    const advertisementNameCurrent = advertisementNameInputRef.current;
+    const urlLinkCurrent = urlLinkInputRef.current;
+    if (advertisementNameCurrent && urlLinkCurrent) {
+      advertisementNameCurrent.value = "";
+      urlLinkCurrent.value = "";
     }
   }, []);
 
@@ -95,9 +97,8 @@ const useAdvertisements = (): UseAdvertisements => {
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const advertisementNameInputValue =
-        advertisementNameInputRef.current?.value;
-      const urlLinkInputValue = urlLinkInputRef.current?.value;
+      const [advertisementNameInputValue, urlLinkInputValue] =
+        extractInputValuesFromElementsRef();
 
       if (advertisementNameInputValue && urlLinkInputValue) {
         if (!checkUrlLinkValidation(urlLinkInputValue)) {
@@ -126,7 +127,11 @@ const useAdvertisements = (): UseAdvertisements => {
         }
       }
     },
-    [addNewAdvertisementInList, initializeInputValues],
+    [
+      addNewAdvertisementInList,
+      initializeInputValues,
+      extractInputValuesFromElementsRef,
+    ],
   );
 
   const removeAdvertisementInList = useCallback(
@@ -171,46 +176,44 @@ const useAdvertisements = (): UseAdvertisements => {
     setDetailedAdvertisement(null);
   };
 
-  const showAdvertisementModificationModal = useCallback(
-    (targetIndex: number) => {
+  const toggleAdvertisementModificationModal = (targetIndex?: number) => {
+    if (targetIndex !== undefined)
       setToBeModifiedAdvertisementIndex(targetIndex);
-    },
-    [],
-  );
-
-  const hideAdvertisementModificationModal = () => {
-    setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
+    else setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
   };
 
-  const modifyTargetAdvertisementInList = (
-    modifiedAdvertisementName: string,
-    modifiedUrlLink: string,
-  ) => {
-    setAdvertisements((advertisementsList) => {
-      const targetAdvertisement =
-        advertisementsList[toBeModifiedAdvertisementIndex];
-      targetAdvertisement.advertisementName = modifiedAdvertisementName;
-      targetAdvertisement.urlLink = modifiedUrlLink;
-      return [...advertisementsList];
-    });
+  const updateTargetAdvertisement = () => {
+    const [advertisementNameInputValue, urlLinkInputValue] =
+      extractInputValuesFromElementsRef();
+
+    if (advertisementNameInputValue && urlLinkInputValue) {
+      setAdvertisements((advertisementsList) => {
+        const targetAdvertisement =
+          advertisementsList[toBeModifiedAdvertisementIndex];
+        targetAdvertisement.advertisementName = advertisementNameInputValue;
+        targetAdvertisement.urlLink = urlLinkInputValue;
+        return [...advertisementsList];
+      });
+    }
   };
 
   const modifyAdvertisement = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const advertisementNameInputValue =
-      advertisementNameInputRef.current?.value;
-    const urlLinkInputValue = urlLinkInputRef.current?.value;
+    const [advertisementNameInputValue, urlLinkInputValue] =
+      extractInputValuesFromElementsRef();
 
     if (advertisementNameInputValue && urlLinkInputValue) {
       if (!checkUrlLinkValidation(urlLinkInputValue)) {
         toast.error(toastSentences.advertisement.urlLinkInvalid);
         return;
       }
+      const { advertisementId } =
+        advertisements[toBeModifiedAdvertisementIndex];
       const modifiedAdvertisementId = await apiManager.modifyData(
         routes.server.advertisement,
         {
-          id: advertisements[toBeModifiedAdvertisementIndex].advertisementId,
+          id: advertisementId,
           advertisementName: advertisementNameInputValue,
           urlLink: urlLinkInputValue,
           advertisementType: AD_TYPE,
@@ -219,11 +222,8 @@ const useAdvertisements = (): UseAdvertisements => {
       );
       if (modifiedAdvertisementId) {
         initializeInputValues();
-        modifyTargetAdvertisementInList(
-          advertisementNameInputValue,
-          urlLinkInputValue,
-        );
-        setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
+        updateTargetAdvertisement();
+        toggleAdvertisementModificationModal();
       }
     }
   };
@@ -234,14 +234,12 @@ const useAdvertisements = (): UseAdvertisements => {
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
-    initializeAdvertisementsList,
     fetchAdvertisements,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,
     hideDetailedAdvertisementModal,
-    showAdvertisementModificationModal,
-    hideAdvertisementModificationModal,
+    toggleAdvertisementModificationModal,
     modifyAdvertisement,
   };
 };

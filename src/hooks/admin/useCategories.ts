@@ -1,0 +1,192 @@
+import React, { useCallback, useRef, useState } from "react";
+import { ICategory, IDetailedCategory } from "../../type/types";
+import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import apiManager from "../../modules/apiManager";
+import routes from "../../constants/routes";
+
+interface UseCategories {
+  categories: Array<ICategory>;
+  detailedCategory: IDetailedCategory | null;
+  toBeModifiedCategoryIndex: number;
+  categoryInputRef: React.RefObject<HTMLInputElement>;
+  fetchCategories: () => Promise<void>;
+  registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  fetchDetailedCategory: (categoryId: number) => Promise<void>;
+  hideDetailedCategoryModal: () => void;
+  toggleCategoryModificationModal: (targetCategoryIndex?: number) => void;
+  deleteCategory: (
+    categoryId: number,
+    targetCategoryIndex: number,
+  ) => Promise<void>;
+  modifyCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+}
+
+const useCategories = (): UseCategories => {
+  const [categories, setCategories] = useState<Array<ICategory>>([]);
+
+  const [detailedCategory, setDetailedCategory] =
+    useState<IDetailedCategory | null>(null);
+
+  const [toBeModifiedCategoryIndex, setToBeModifiedCategoryIndex] = useState(
+    NOTHING_BEING_MODIFIED,
+  );
+
+  const categoryInputRef = useRef<HTMLInputElement>(null);
+
+  const initializeCategoriesList = useCallback(
+    (categoriesList: Array<ICategory>) => {
+      setCategories(categoriesList);
+    },
+    [],
+  );
+
+  const fetchCategories = useCallback(async () => {
+    const fetchedCategories = await apiManager.fetchData<ICategory>(
+      routes.server.category,
+    );
+    if (fetchedCategories) initializeCategoriesList(fetchedCategories);
+  }, [initializeCategoriesList]);
+
+  const addNewCategoryInList = useCallback((newCategory: ICategory) => {
+    setCategories((categoriesList) => {
+      return [newCategory, ...categoriesList];
+    });
+  }, []);
+
+  const extractInputValuesFromElementsRef = useCallback(() => {
+    return [categoryInputRef.current?.value];
+  }, []);
+
+  const initializeInputValues = useCallback(() => {
+    const categoryNameCurrent = categoryInputRef.current;
+    if (categoryNameCurrent) categoryNameCurrent.value = "";
+  }, []);
+
+  const registerNewCategory = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const [inputNewCategoryName] = extractInputValuesFromElementsRef();
+
+      if (inputNewCategoryName) {
+        const newCategoryId = await apiManager.postNewDataElem(
+          routes.server.category,
+          {
+            name: inputNewCategoryName,
+          },
+        );
+        if (newCategoryId) {
+          addNewCategoryInList({
+            id: newCategoryId,
+            imagePath: "/",
+            name: inputNewCategoryName,
+          });
+          initializeInputValues();
+        }
+      }
+    },
+    [
+      addNewCategoryInList,
+      initializeInputValues,
+      extractInputValuesFromElementsRef,
+    ],
+  );
+
+  const fetchDetailedCategory = useCallback(async (categoryId: number) => {
+    const fetchedDetailedCategory =
+      await apiManager.fetchDetailedData<IDetailedCategory>(
+        routes.server.category,
+        categoryId,
+      );
+    if (fetchedDetailedCategory) setDetailedCategory(fetchedDetailedCategory);
+  }, []);
+
+  const hideDetailedCategoryModal = useCallback(() => {
+    setDetailedCategory(null);
+  }, []);
+
+  const toggleCategoryModificationModal = useCallback(
+    (targetCategoryIndex?: number) => {
+      if (targetCategoryIndex !== undefined)
+        setToBeModifiedCategoryIndex(targetCategoryIndex);
+      else setToBeModifiedCategoryIndex(NOTHING_BEING_MODIFIED);
+    },
+    [setToBeModifiedCategoryIndex],
+  );
+
+  const removeTargetCategoryInList = useCallback(
+    (targetCategoryIndex: number) => {
+      setCategories((categoriesList) => {
+        categoriesList.splice(targetCategoryIndex, 1);
+        return [...categoriesList];
+      });
+    },
+    [setCategories],
+  );
+
+  const deleteCategory = useCallback(
+    async (categoryId: number, targetCategoryIndex: number) => {
+      const isDeleteConfirmed =
+        window.confirm("정말 카테고리를 삭제하시겠습니까?");
+      if (!isDeleteConfirmed) return;
+      const isCategoryDeleteSuccessful = await apiManager.deleteData(
+        routes.server.category,
+        categoryId,
+      );
+      if (isCategoryDeleteSuccessful)
+        removeTargetCategoryInList(targetCategoryIndex);
+    },
+    [removeTargetCategoryInList],
+  );
+
+  const updateTargetCategory = () => {
+    const [inputNewCategoryName] = extractInputValuesFromElementsRef();
+
+    if (inputNewCategoryName) {
+      setCategories((nowCategories) => {
+        const copiedCategories = [...nowCategories];
+        copiedCategories[toBeModifiedCategoryIndex].name = inputNewCategoryName;
+        return copiedCategories;
+      });
+    }
+  };
+
+  const modifyCategory = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const [inputNewCategoryName] = extractInputValuesFromElementsRef();
+
+    if (inputNewCategoryName) {
+      const { id } = categories[toBeModifiedCategoryIndex];
+      const modifiedCategoryId = await apiManager.modifyData(
+        routes.server.category,
+        {
+          categoryId: id,
+          name: inputNewCategoryName,
+          imagePath: "",
+        },
+      );
+      if (modifiedCategoryId) {
+        initializeInputValues();
+        updateTargetCategory();
+        toggleCategoryModificationModal();
+      }
+    }
+  };
+
+  return {
+    categories,
+    detailedCategory,
+    toBeModifiedCategoryIndex,
+    categoryInputRef,
+    fetchCategories,
+    registerNewCategory,
+    fetchDetailedCategory,
+    hideDetailedCategoryModal,
+    toggleCategoryModificationModal,
+    deleteCategory,
+    modifyCategory,
+  };
+};
+
+export default useCategories;

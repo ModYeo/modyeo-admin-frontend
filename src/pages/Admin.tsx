@@ -3,15 +3,15 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/commons/NavBar";
 import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
-import Category from "../components/admin/Category";
+import Categories from "../components/admin/Categories";
 import Report from "../components/admin/Report";
-import { ChosenTabMenuEnum } from "../type/enums";
 import Notice from "../components/admin/Notice";
 import Collection from "../components/admin/Collection";
 import Inquiry from "../components/admin/Inquiry";
 import InquiryDetail from "./InquiryDetail";
 import authCookieManager from "../modules/authCookie";
 import routes from "../constants/routes";
+import { ChosenTabMenuEnum } from "../type/enums";
 
 const MINIMUN_PATH_LENGTH_START = 7;
 
@@ -26,7 +26,7 @@ function showChosenTabMenu(
     return <Notice />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.category) {
-    return <Category />;
+    return <Categories />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.advertisement) {
     return <Advertisement />;
