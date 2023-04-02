@@ -1,0 +1,3 @@
+const NOTHING_BEING_MODIFIED = -1;
+
+export default NOTHING_BEING_MODIFIED;

@@ -194,8 +194,8 @@ class APIManager implements IAPIManager {
       } = await this.apiAxios.get<{
         data: Array<T> | { content: Array<T> };
       }>(`${path}/${typeParam || ""}`);
-      if ("content" in fetchedData) return fetchedData.content.reverse();
-      return fetchedData.reverse();
+      if ("content" in fetchedData) return fetchedData.content;
+      return fetchedData;
     } catch (e) {
       return null;
     }
