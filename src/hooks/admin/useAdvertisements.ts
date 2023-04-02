@@ -32,7 +32,7 @@ interface UseAdvertisements {
   ) => Promise<void>;
   deleteAdvertisement: (
     advertisementId: number,
-    index: number,
+    targetAdvertisementIndex: number,
   ) => Promise<void>;
   fetchDetailedAdvertisement: (advertisementId: number) => Promise<void>;
   hideDetailedAdvertisementModal: () => void;
@@ -129,22 +129,30 @@ const useAdvertisements = (): UseAdvertisements => {
     [addNewAdvertisementInList, initializeInputValues],
   );
 
-  const deleteAdvertisement = async (
-    advertisementId: number,
-    index: number,
-  ) => {
-    const confirmAdvertisementDelete =
-      window.confirm("정말 이 광고를 삭제하시겠습니까?");
-    if (!confirmAdvertisementDelete) return;
-    const isDeleteSuccessful = await apiManager.deleteData(
-      routes.server.advertisement,
-      advertisementId,
-    );
-    if (isDeleteSuccessful) {
-      advertisements.splice(index, 1);
-      setAdvertisements([...advertisements]);
-    }
-  };
+  const removeAdvertisementInList = useCallback(
+    (targetAdvertisementIndex: number) => {
+      setAdvertisements((advertisementsList) => {
+        advertisementsList.splice(targetAdvertisementIndex, 1);
+        return [...advertisementsList];
+      });
+    },
+    [setAdvertisements],
+  );
+
+  const deleteAdvertisement = useCallback(
+    async (advertisementId: number, targetAdvertisementIndex: number) => {
+      const confirmAdvertisementDelete =
+        window.confirm("정말 이 광고를 삭제하시겠습니까?");
+      if (!confirmAdvertisementDelete) return;
+      const isDeleteSuccessful = await apiManager.deleteData(
+        routes.server.advertisement,
+        advertisementId,
+      );
+      if (isDeleteSuccessful)
+        removeAdvertisementInList(targetAdvertisementIndex);
+    },
+    [removeAdvertisementInList],
+  );
 
   const fetchDetailedAdvertisement = useCallback(
     async (advertisementId: number) => {
@@ -174,6 +182,19 @@ const useAdvertisements = (): UseAdvertisements => {
     setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
   };
 
+  const modifyTargetAdvertisementInList = (
+    modifiedAdvertisementName: string,
+    modifiedUrlLink: string,
+  ) => {
+    setAdvertisements((advertisementsList) => {
+      const targetAdvertisement =
+        advertisementsList[toBeModifiedAdvertisementIndex];
+      targetAdvertisement.advertisementName = modifiedAdvertisementName;
+      targetAdvertisement.urlLink = modifiedUrlLink;
+      return [...advertisementsList];
+    });
+  };
+
   const modifyAdvertisement = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -198,13 +219,10 @@ const useAdvertisements = (): UseAdvertisements => {
       );
       if (modifiedAdvertisementId) {
         initializeInputValues();
-        setAdvertisements((advertisementsList) => {
-          const targetAdvertisement =
-            advertisementsList[toBeModifiedAdvertisementIndex];
-          targetAdvertisement.advertisementName = advertisementNameInputValue;
-          targetAdvertisement.urlLink = urlLinkInputValue;
-          return [...advertisementsList];
-        });
+        modifyTargetAdvertisementInList(
+          advertisementNameInputValue,
+          urlLinkInputValue,
+        );
         setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
       }
     }

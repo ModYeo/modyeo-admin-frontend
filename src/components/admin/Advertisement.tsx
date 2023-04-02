@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
+import Modal from "../commons/Modal";
+import useAdvertisements from "../../hooks/admin/useAdvertisements";
 import {
   CreateInput,
   List,
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-// eslint-disable-next-line import/no-named-as-default
-import useAdvertisements from "../../hooks/admin/useAdvertisements";
-import Modal from "../commons/Modal";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 function Advertisement() {
