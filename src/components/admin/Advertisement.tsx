@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
+import useAdvertisement from "../../hooks/components/useAdvertisement";
 import Modal from "../commons/Modal";
-import useAdvertisements from "../../hooks/admin/useAdvertisements";
 import {
   CreateInput,
   List,
@@ -23,7 +23,7 @@ function Advertisement() {
     hideDetailedAdvertisementModal,
     toggleAdvertisementModificationModal,
     modifyAdvertisement,
-  } = useAdvertisements();
+  } = useAdvertisement();
 
   useEffect(() => {
     fetchAdvertisements();

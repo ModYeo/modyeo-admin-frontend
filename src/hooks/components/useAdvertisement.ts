@@ -1,11 +1,11 @@
 import React, { useCallback, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
-import { IAdvertisement, IDetailedAdvertisement } from "../../type/types";
+import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { IAdvertisement, IDetailedAdvertisement } from "../../type/types";
 
 const AD_TYPE = "ARTICLE";
 
@@ -17,7 +17,7 @@ const checkUrlLinkValidation = (urlLink: string) => {
   return urlLinkRegex.test(urlLink);
 };
 
-interface UseAdvertisements {
+interface UseAdvertisement {
   advertisements: Array<IAdvertisement>;
   detailedAdvertisement: IDetailedAdvertisement | null;
   toBeModifiedAdvertisementIndex: number;
@@ -37,7 +37,7 @@ interface UseAdvertisements {
   modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
-const useAdvertisements = (): UseAdvertisements => {
+const useAdvertisement = (): UseAdvertisement => {
   const [advertisements, setAdvertisements] = useState<Array<IAdvertisement>>(
     [],
   );
@@ -67,16 +67,6 @@ const useAdvertisements = (): UseAdvertisements => {
       initializeAdvertisementsList(fetchedAdvertisements);
   }, [initializeAdvertisementsList]);
 
-  const addNewAdvertisementInList = useCallback(
-    (newAdvertisement: IAdvertisement) => {
-      setAdvertisements((advertisementsList) => [
-        newAdvertisement,
-        ...advertisementsList,
-      ]);
-    },
-    [],
-  );
-
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
       advertisementNameInputRef.current?.value,
@@ -92,6 +82,16 @@ const useAdvertisements = (): UseAdvertisements => {
       urlLinkCurrent.value = "";
     }
   }, []);
+
+  const addNewAdvertisementInList = useCallback(
+    (newAdvertisement: IAdvertisement) => {
+      setAdvertisements((advertisementsList) => [
+        newAdvertisement,
+        ...advertisementsList,
+      ]);
+    },
+    [],
+  );
 
   const registerNewAdvertisement = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -128,9 +128,9 @@ const useAdvertisements = (): UseAdvertisements => {
       }
     },
     [
+      extractInputValuesFromElementsRef,
       addNewAdvertisementInList,
       initializeInputValues,
-      extractInputValuesFromElementsRef,
     ],
   );
 
@@ -172,15 +172,18 @@ const useAdvertisements = (): UseAdvertisements => {
     [],
   );
 
-  const hideDetailedAdvertisementModal = () => {
+  const hideDetailedAdvertisementModal = useCallback(() => {
     setDetailedAdvertisement(null);
-  };
+  }, []);
 
-  const toggleAdvertisementModificationModal = (targetIndex?: number) => {
-    if (targetIndex !== undefined)
-      setToBeModifiedAdvertisementIndex(targetIndex);
-    else setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
-  };
+  const toggleAdvertisementModificationModal = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined)
+        setToBeModifiedAdvertisementIndex(targetIndex);
+      else setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
+    },
+    [],
+  );
 
   const updateTargetAdvertisement = () => {
     const [advertisementNameInputValue, urlLinkInputValue] =
@@ -221,9 +224,9 @@ const useAdvertisements = (): UseAdvertisements => {
         },
       );
       if (modifiedAdvertisementId) {
-        initializeInputValues();
         updateTargetAdvertisement();
         toggleAdvertisementModificationModal();
+        initializeInputValues();
       }
     }
   };
@@ -244,4 +247,4 @@ const useAdvertisements = (): UseAdvertisements => {
   };
 };
 
-export default useAdvertisements;
+export default useAdvertisement;

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NavBar from "../components/commons/NavBar";
 import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
-import Categories from "../components/admin/Categories";
+import Category from "../components/admin/Category";
 import Report from "../components/admin/Report";
 import Notice from "../components/admin/Notice";
 import Collection from "../components/admin/Collection";
@@ -26,7 +26,7 @@ function showChosenTabMenu(
     return <Notice />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.category) {
-    return <Categories />;
+    return <Category />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.advertisement) {
     return <Advertisement />;

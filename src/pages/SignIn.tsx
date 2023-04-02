@@ -1,36 +1,19 @@
-import React, { useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import signAPIManager from "../modules/signAPI";
-import routes from "../constants/routes";
+import React, { useEffect } from "react";
+import useSingnIn from "../hooks/pages/useSignIn";
+
 import { Container, SignButton, SignForm, SignInput } from "../styles/styles";
-import authCookieManager from "../modules/authCookie";
 
 function SignIn() {
-  const navigator = useNavigate();
-  const idInputRef = useRef<HTMLInputElement>(null);
-  const pwInputRef = useRef<HTMLInputElement>(null);
-  const handleSignInSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const idCurrent = idInputRef.current;
-    const pwCurrent = pwInputRef.current;
-    if (idCurrent && pwCurrent) {
-      const isSignInSuccessful = await signAPIManager.handleSignIn(
-        idCurrent.value,
-        pwCurrent.value,
-      );
-      if (isSignInSuccessful) navigator(routes.client.admin);
-    }
-  };
+  const { idInputRef, pwInputRef, checkTokensValidation, signinAdminService } =
+    useSingnIn();
+
   useEffect(() => {
-    (async () => {
-      const isAllTokensValid = await signAPIManager.checkTokensValidation();
-      if (isAllTokensValid) navigator(routes.client.admin);
-      else authCookieManager.deleteAccessAndRefreshToken();
-    })();
-  }, [navigator]);
+    checkTokensValidation();
+  }, [checkTokensValidation]);
+
   return (
     <Container>
-      <SignForm onSubmit={handleSignInSubmit}>
+      <SignForm onSubmit={signinAdminService}>
         <h5>MODYEO ADMIN SERVICE</h5>
         <div>
           <SignInput placeholder="ID" ref={idInputRef} required />

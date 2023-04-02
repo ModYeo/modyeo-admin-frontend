@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
+import useCategory from "../../hooks/components/useCategory";
+import Modal from "../commons/Modal";
 import {
   CreateInput,
   List,
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-import Modal from "../commons/Modal";
-import useCategories from "../../hooks/admin/useCategories";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 function Category() {
@@ -22,7 +22,7 @@ function Category() {
     toggleCategoryModificationModal,
     deleteCategory,
     modifyCategory,
-  } = useCategories();
+  } = useCategory();
 
   useEffect(() => {
     fetchCategories();

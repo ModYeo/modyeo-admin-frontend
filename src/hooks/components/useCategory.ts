@@ -1,27 +1,28 @@
 import React, { useCallback, useRef, useState } from "react";
-import { ICategory, IDetailedCategory } from "../../type/types";
-import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
+import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { ICategory, IDetailedCategory } from "../../type/types";
 
-interface UseCategories {
+interface UseCategory {
   categories: Array<ICategory>;
   detailedCategory: IDetailedCategory | null;
   toBeModifiedCategoryIndex: number;
   categoryInputRef: React.RefObject<HTMLInputElement>;
   fetchCategories: () => Promise<void>;
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
-  fetchDetailedCategory: (categoryId: number) => Promise<void>;
-  hideDetailedCategoryModal: () => void;
-  toggleCategoryModificationModal: (targetCategoryIndex?: number) => void;
   deleteCategory: (
     categoryId: number,
     targetCategoryIndex: number,
   ) => Promise<void>;
+  fetchDetailedCategory: (categoryId: number) => Promise<void>;
+  hideDetailedCategoryModal: () => void;
+  toggleCategoryModificationModal: (targetCategoryIndex?: number) => void;
   modifyCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
-const useCategories = (): UseCategories => {
+const useCategory = (): UseCategory => {
   const [categories, setCategories] = useState<Array<ICategory>>([]);
 
   const [detailedCategory, setDetailedCategory] =
@@ -44,7 +45,8 @@ const useCategories = (): UseCategories => {
     const fetchedCategories = await apiManager.fetchData<ICategory>(
       routes.server.category,
     );
-    if (fetchedCategories) initializeCategoriesList(fetchedCategories);
+    if (fetchedCategories)
+      initializeCategoriesList(fetchedCategories.reverse());
   }, [initializeCategoriesList]);
 
   const addNewCategoryInList = useCallback((newCategory: ICategory) => {
@@ -167,9 +169,9 @@ const useCategories = (): UseCategories => {
         },
       );
       if (modifiedCategoryId) {
-        initializeInputValues();
         updateTargetCategory();
         toggleCategoryModificationModal();
+        initializeInputValues();
       }
     }
   };
@@ -189,4 +191,4 @@ const useCategories = (): UseCategories => {
   };
 };
 
-export default useCategories;
+export default useCategory;
