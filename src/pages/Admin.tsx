@@ -5,13 +5,13 @@ import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
 import Category from "../components/admin/Category";
 import Report from "../components/admin/Report";
-import { ChosenTabMenuEnum } from "../type/enums";
 import Notice from "../components/admin/Notice";
 import Collection from "../components/admin/Collection";
 import Inquiry from "../components/admin/Inquiry";
 import InquiryDetail from "./InquiryDetail";
 import authCookieManager from "../modules/authCookie";
 import routes from "../constants/routes";
+import { ChosenTabMenuEnum } from "../type/enums";
 
 const MINIMUN_PATH_LENGTH_START = 7;
 

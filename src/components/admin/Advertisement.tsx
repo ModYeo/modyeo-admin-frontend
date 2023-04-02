@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
+import useAdvertisement from "../../hooks/components/useAdvertisement";
 import Modal from "../commons/Modal";
-import useAdvertisements from "../../hooks/admin/useAdvertisements";
 import {
   CreateInput,
   List,
@@ -16,24 +16,18 @@ function Advertisement() {
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
-    initializeAdvertisementsList,
     fetchAdvertisements,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,
     hideDetailedAdvertisementModal,
-    showAdvertisementModificationModal,
-    hideAdvertisementModificationModal,
+    toggleAdvertisementModificationModal,
     modifyAdvertisement,
-  } = useAdvertisements();
+  } = useAdvertisement();
 
   useEffect(() => {
-    (async () => {
-      const fetchedAdvertisements = await fetchAdvertisements();
-      if (fetchedAdvertisements)
-        initializeAdvertisementsList(fetchedAdvertisements);
-    })();
-  }, [fetchAdvertisements, initializeAdvertisementsList]);
+    fetchAdvertisements();
+  }, [fetchAdvertisements]);
 
   const isAdvertisementBeingModified =
     toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
@@ -69,7 +63,7 @@ function Advertisement() {
             </button>
             <button
               type="button"
-              onClick={() => showAdvertisementModificationModal(index)}
+              onClick={() => toggleAdvertisementModificationModal(index)}
             >
               modify
             </button>
@@ -98,7 +92,7 @@ function Advertisement() {
         </ModalBackground>
       )}
       {isAdvertisementBeingModified && (
-        <ModalBackground onClick={hideAdvertisementModificationModal}>
+        <ModalBackground onClick={() => toggleAdvertisementModificationModal()}>
           <Modal width={600} height={200}>
             <form onSubmit={modifyAdvertisement}>
               <CreateInput

@@ -1,11 +1,11 @@
 import React, { useCallback, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
-import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
-import { IAdvertisement, IDetailedAdvertisement } from "../../type/types";
+import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { IAdvertisement, IDetailedAdvertisement } from "../../type/types";
 
 const AD_TYPE = "ARTICLE";
 
@@ -17,16 +17,13 @@ const checkUrlLinkValidation = (urlLink: string) => {
   return urlLinkRegex.test(urlLink);
 };
 
-interface UseAdvertisements {
+interface UseAdvertisement {
   advertisements: Array<IAdvertisement>;
   detailedAdvertisement: IDetailedAdvertisement | null;
   toBeModifiedAdvertisementIndex: number;
   advertisementNameInputRef: React.RefObject<HTMLInputElement>;
   urlLinkInputRef: React.RefObject<HTMLInputElement>;
-  initializeAdvertisementsList: (
-    advertisementsList: Array<IAdvertisement>,
-  ) => void;
-  fetchAdvertisements: () => Promise<IAdvertisement[] | null>;
+  fetchAdvertisements: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -36,12 +33,11 @@ interface UseAdvertisements {
   ) => Promise<void>;
   fetchDetailedAdvertisement: (advertisementId: number) => Promise<void>;
   hideDetailedAdvertisementModal: () => void;
-  showAdvertisementModificationModal: (targetIndex: number) => void;
-  hideAdvertisementModificationModal: () => void;
+  toggleAdvertisementModificationModal: (targetIndex?: number) => void;
   modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
-const useAdvertisements = (): UseAdvertisements => {
+const useAdvertisement = (): UseAdvertisement => {
   const [advertisements, setAdvertisements] = useState<Array<IAdvertisement>>(
     [],
   );
@@ -67,7 +63,24 @@ const useAdvertisements = (): UseAdvertisements => {
     const fetchedAdvertisements = await apiManager.fetchData<IAdvertisement>(
       routes.server.advertisement,
     );
-    return fetchedAdvertisements;
+    if (fetchedAdvertisements)
+      initializeAdvertisementsList(fetchedAdvertisements);
+  }, [initializeAdvertisementsList]);
+
+  const extractInputValuesFromElementsRef = useCallback(() => {
+    return [
+      advertisementNameInputRef.current?.value,
+      urlLinkInputRef.current?.value,
+    ];
+  }, []);
+
+  const initializeInputValues = useCallback(() => {
+    const advertisementNameCurrent = advertisementNameInputRef.current;
+    const urlLinkCurrent = urlLinkInputRef.current;
+    if (advertisementNameCurrent && urlLinkCurrent) {
+      advertisementNameCurrent.value = "";
+      urlLinkCurrent.value = "";
+    }
   }, []);
 
   const addNewAdvertisementInList = useCallback(
@@ -80,24 +93,12 @@ const useAdvertisements = (): UseAdvertisements => {
     [],
   );
 
-  const initializeInputValues = useCallback(() => {
-    const advertisementNameInputValue =
-      advertisementNameInputRef.current?.value;
-    const urlLinkInputValue = urlLinkInputRef.current?.value;
-
-    if (advertisementNameInputValue && urlLinkInputValue) {
-      advertisementNameInputRef.current.value = "";
-      urlLinkInputRef.current.value = "";
-    }
-  }, []);
-
   const registerNewAdvertisement = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const advertisementNameInputValue =
-        advertisementNameInputRef.current?.value;
-      const urlLinkInputValue = urlLinkInputRef.current?.value;
+      const [advertisementNameInputValue, urlLinkInputValue] =
+        extractInputValuesFromElementsRef();
 
       if (advertisementNameInputValue && urlLinkInputValue) {
         if (!checkUrlLinkValidation(urlLinkInputValue)) {
@@ -126,7 +127,11 @@ const useAdvertisements = (): UseAdvertisements => {
         }
       }
     },
-    [addNewAdvertisementInList, initializeInputValues],
+    [
+      extractInputValuesFromElementsRef,
+      addNewAdvertisementInList,
+      initializeInputValues,
+    ],
   );
 
   const removeAdvertisementInList = useCallback(
@@ -167,50 +172,51 @@ const useAdvertisements = (): UseAdvertisements => {
     [],
   );
 
-  const hideDetailedAdvertisementModal = () => {
+  const hideDetailedAdvertisementModal = useCallback(() => {
     setDetailedAdvertisement(null);
-  };
+  }, []);
 
-  const showAdvertisementModificationModal = useCallback(
-    (targetIndex: number) => {
-      setToBeModifiedAdvertisementIndex(targetIndex);
+  const toggleAdvertisementModificationModal = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined)
+        setToBeModifiedAdvertisementIndex(targetIndex);
+      else setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
     },
     [],
   );
 
-  const hideAdvertisementModificationModal = () => {
-    setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
-  };
+  const updateTargetAdvertisement = () => {
+    const [advertisementNameInputValue, urlLinkInputValue] =
+      extractInputValuesFromElementsRef();
 
-  const modifyTargetAdvertisementInList = (
-    modifiedAdvertisementName: string,
-    modifiedUrlLink: string,
-  ) => {
-    setAdvertisements((advertisementsList) => {
-      const targetAdvertisement =
-        advertisementsList[toBeModifiedAdvertisementIndex];
-      targetAdvertisement.advertisementName = modifiedAdvertisementName;
-      targetAdvertisement.urlLink = modifiedUrlLink;
-      return [...advertisementsList];
-    });
+    if (advertisementNameInputValue && urlLinkInputValue) {
+      setAdvertisements((advertisementsList) => {
+        const targetAdvertisement =
+          advertisementsList[toBeModifiedAdvertisementIndex];
+        targetAdvertisement.advertisementName = advertisementNameInputValue;
+        targetAdvertisement.urlLink = urlLinkInputValue;
+        return [...advertisementsList];
+      });
+    }
   };
 
   const modifyAdvertisement = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const advertisementNameInputValue =
-      advertisementNameInputRef.current?.value;
-    const urlLinkInputValue = urlLinkInputRef.current?.value;
+    const [advertisementNameInputValue, urlLinkInputValue] =
+      extractInputValuesFromElementsRef();
 
     if (advertisementNameInputValue && urlLinkInputValue) {
       if (!checkUrlLinkValidation(urlLinkInputValue)) {
         toast.error(toastSentences.advertisement.urlLinkInvalid);
         return;
       }
+      const { advertisementId } =
+        advertisements[toBeModifiedAdvertisementIndex];
       const modifiedAdvertisementId = await apiManager.modifyData(
         routes.server.advertisement,
         {
-          id: advertisements[toBeModifiedAdvertisementIndex].advertisementId,
+          id: advertisementId,
           advertisementName: advertisementNameInputValue,
           urlLink: urlLinkInputValue,
           advertisementType: AD_TYPE,
@@ -218,12 +224,9 @@ const useAdvertisements = (): UseAdvertisements => {
         },
       );
       if (modifiedAdvertisementId) {
+        updateTargetAdvertisement();
+        toggleAdvertisementModificationModal();
         initializeInputValues();
-        modifyTargetAdvertisementInList(
-          advertisementNameInputValue,
-          urlLinkInputValue,
-        );
-        setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
       }
     }
   };
@@ -234,16 +237,14 @@ const useAdvertisements = (): UseAdvertisements => {
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
-    initializeAdvertisementsList,
     fetchAdvertisements,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,
     hideDetailedAdvertisementModal,
-    showAdvertisementModificationModal,
-    hideAdvertisementModificationModal,
+    toggleAdvertisementModificationModal,
     modifyAdvertisement,
   };
 };
 
-export default useAdvertisements;
+export default useAdvertisement;

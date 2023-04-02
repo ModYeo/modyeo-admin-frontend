@@ -11,7 +11,7 @@ interface IAPIManager {
   postNewDataElem: (path: string, obj: Object) => Promise<number | null>;
   deleteData: (path: string, objectId: number) => Promise<boolean>;
   modifyData: (path: string, obj?: Object) => Promise<number | null>;
-  fetchDetailedData: <D>(path: string, elemId?: number) => Promise<D | null>;
+  fetchDetailedData: <T>(path: string, elemId?: number) => Promise<T | null>;
 }
 
 enum HttpMethodEnum {
@@ -242,11 +242,11 @@ class APIManager implements IAPIManager {
     }
   }
 
-  async fetchDetailedData<D>(path: string, elemId?: number) {
+  async fetchDetailedData<T>(path: string, elemId?: number) {
     try {
       const {
         data: { data: fetchedDetailedData },
-      } = await this.apiAxios.get<{ data: D }>(`${path}/${elemId || ""}`);
+      } = await this.apiAxios.get<{ data: T }>(`${path}/${elemId || ""}`);
       return fetchedDetailedData;
     } catch (e) {
       return null;
