@@ -7,7 +7,6 @@ import {
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 function Advertisement() {
   const {
@@ -16,6 +15,7 @@ function Advertisement() {
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
+    isAdvertisementBeingModified,
     fetchAdvertisements,
     registerNewAdvertisement,
     deleteAdvertisement,
@@ -28,9 +28,6 @@ function Advertisement() {
   useEffect(() => {
     fetchAdvertisements();
   }, [fetchAdvertisements]);
-
-  const isAdvertisementBeingModified =
-    toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
 
   return (
     <ListContainer>

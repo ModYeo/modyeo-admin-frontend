@@ -23,6 +23,7 @@ interface UseAdvertisement {
   toBeModifiedAdvertisementIndex: number;
   advertisementNameInputRef: React.RefObject<HTMLInputElement>;
   urlLinkInputRef: React.RefObject<HTMLInputElement>;
+  isAdvertisementBeingModified: boolean;
   fetchAdvertisements: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
@@ -231,12 +232,16 @@ const useAdvertisement = (): UseAdvertisement => {
     }
   };
 
+  const isAdvertisementBeingModified =
+    toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
+
   return {
     advertisements,
     detailedAdvertisement,
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
+    isAdvertisementBeingModified,
     fetchAdvertisements,
     registerNewAdvertisement,
     deleteAdvertisement,

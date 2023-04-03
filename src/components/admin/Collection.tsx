@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import useCollection from "../../hooks/components/useCollection";
 import Modal from "../commons/Modal";
-import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 function Collection() {
   const {
@@ -10,6 +9,7 @@ function Collection() {
     toBeModifiedCollectionIndex,
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
+    isCollectionBeingModified,
     fetchCollections,
     registerNewCollection,
     deleteCollection,
@@ -20,9 +20,6 @@ function Collection() {
   useEffect(() => {
     fetchCollections();
   }, [fetchCollections]);
-
-  const isCollectionBeingModified =
-    toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
 
   return (
     <ListContainer>

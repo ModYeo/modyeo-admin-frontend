@@ -10,6 +10,7 @@ interface UseCategory {
   detailedCategory: IDetailedCategory | null;
   toBeModifiedCategoryIndex: number;
   categoryInputRef: React.RefObject<HTMLInputElement>;
+  isCategoryBeingModified: boolean;
   fetchCategories: () => Promise<void>;
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCategory: (
@@ -176,11 +177,15 @@ const useCategory = (): UseCategory => {
     }
   };
 
+  const isCategoryBeingModified =
+    toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
+
   return {
     categories,
     detailedCategory,
     toBeModifiedCategoryIndex,
     categoryInputRef,
+    isCategoryBeingModified,
     fetchCategories,
     registerNewCategory,
     fetchDetailedCategory,
