@@ -9,6 +9,7 @@ interface UseCollection {
   toBeModifiedCollectionIndex: number;
   collectionInfoNameTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   collectionDescTextAreaRef: React.RefObject<HTMLTextAreaElement>;
+  isCollectionBeingModified: boolean;
   fetchCollections: () => Promise<void>;
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
@@ -169,11 +170,15 @@ const useCollection = (): UseCollection => {
     }
   };
 
+  const isCollectionBeingModified =
+    toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
+
   return {
     collections,
     toBeModifiedCollectionIndex,
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
+    isCollectionBeingModified,
     fetchCollections,
     registerNewCollection,
     deleteCollection,

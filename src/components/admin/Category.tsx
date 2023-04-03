@@ -7,7 +7,6 @@ import {
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 function Category() {
   const {
@@ -15,6 +14,7 @@ function Category() {
     detailedCategory,
     toBeModifiedCategoryIndex,
     categoryInputRef,
+    isCategoryBeingModified,
     fetchCategories,
     registerNewCategory,
     fetchDetailedCategory,
@@ -27,9 +27,6 @@ function Category() {
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
-
-  const isCategoryBeingModified =
-    toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
 
   return (
     <ListContainer>
