@@ -154,7 +154,8 @@ const useCollection = (): UseCollection => {
     const { collectionInfoId } = collections[toBeModifiedCollectionIndex];
 
     if (infoNameTextAreaValue && descTextAreaValue) {
-      const modifiedCollectionId = await apiManager.modifyData(
+      const modifiedCollectionId = await apiManager.modifyData<{}>(
+        // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
         routes.server.collection,
         {
           collectionInfoId,

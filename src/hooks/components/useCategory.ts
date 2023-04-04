@@ -89,9 +89,9 @@ const useCategory = (): UseCategory => {
       }
     },
     [
+      extractInputValuesFromElementsRef,
       addNewCategoryInList,
       initializeInputValues,
-      extractInputValuesFromElementsRef,
     ],
   );
 
@@ -161,7 +161,8 @@ const useCategory = (): UseCategory => {
 
     if (inputNewCategoryName) {
       const { id } = categories[toBeModifiedCategoryIndex];
-      const modifiedCategoryId = await apiManager.modifyData(
+      const modifiedCategoryId = await apiManager.modifyData<{}>(
+        // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
         routes.server.category,
         {
           categoryId: id,

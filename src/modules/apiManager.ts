@@ -8,9 +8,15 @@ import authCookieManager, { AuthCookieManager } from "./authCookie";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
-  postNewDataElem: (path: string, obj: Object) => Promise<number | null>;
+  postNewDataElem: <T extends object>(
+    path: string,
+    obj: T,
+  ) => Promise<number | null>;
   deleteData: (path: string, objectId: number) => Promise<boolean>;
-  modifyData: (path: string, obj?: Object) => Promise<number | null>;
+  modifyData: <T extends object>(
+    path: string,
+    obj?: T,
+  ) => Promise<number | null>;
   fetchDetailedData: <T>(path: string, elemId?: number) => Promise<T | null>;
 }
 
@@ -201,7 +207,7 @@ class APIManager implements IAPIManager {
     }
   }
 
-  async postNewDataElem(path: string, obj: Object) {
+  async postNewDataElem<T extends object>(path: string, obj: T) {
     try {
       const {
         data: { data: newElemId },
@@ -228,7 +234,7 @@ class APIManager implements IAPIManager {
     }
   }
 
-  async modifyData(path: string, obj?: Object) {
+  async modifyData<T extends object>(path: string, obj?: T) {
     try {
       const {
         data: { data: modifieElemId },
