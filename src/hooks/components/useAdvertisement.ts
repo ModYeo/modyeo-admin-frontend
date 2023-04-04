@@ -214,7 +214,8 @@ const useAdvertisement = (): UseAdvertisement => {
       }
       const { advertisementId } =
         advertisements[toBeModifiedAdvertisementIndex];
-      const modifiedAdvertisementId = await apiManager.modifyData(
+      const modifiedAdvertisementId = await apiManager.modifyData<{}>(
+        // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
         routes.server.advertisement,
         {
           id: advertisementId,
