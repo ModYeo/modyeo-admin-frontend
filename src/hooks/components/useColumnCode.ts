@@ -1,8 +1,21 @@
 import { useCallback, useRef, useState } from "react";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
-import { IColumCode, IDetailedColumnCode } from "../../type/types";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+
+interface IColumCode {
+  code: string;
+  columnCodeId: number;
+  columnCodeName: string;
+  description: string;
+}
+
+interface INewColumnCode extends Omit<IColumCode, "columnCodeId"> {}
+
+interface IDetailedColumnCode extends IColumCode {
+  createdTime: null;
+  email: null;
+}
 
 interface UseColumnCode {
   columnCodes: IColumCode[];
@@ -84,15 +97,15 @@ const useColumnCode = (): UseColumnCode => {
         extractInputValuesFromElementsRef();
 
       if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
-        const newColumnCodeId = await apiManager.postNewDataElem<{}>(
-          // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
-          routes.server.column,
-          {
-            code: codeInputValue,
-            columnCodeName: columnNameInputValue,
-            description: codeDescriptionInputValue,
-          },
-        );
+        const newColumnCodeId =
+          await apiManager.postNewDataElem<INewColumnCode>(
+            routes.server.column,
+            {
+              code: codeInputValue,
+              columnCodeName: columnNameInputValue,
+              description: codeDescriptionInputValue,
+            },
+          );
         if (newColumnCodeId) {
           addNewColumnCodeInList({
             columnCodeId: newColumnCodeId,
