@@ -3,7 +3,26 @@ import React, { useCallback, useRef, useState } from "react";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { ICategory, IDetailedCategory } from "../../type/types";
+
+interface ICategory {
+  id: number;
+  imagePath: string | null;
+  name: string;
+}
+
+interface IModifiedCategory extends Omit<ICategory, "id"> {
+  categoryId: number;
+}
+
+interface IDetailedCategory {
+  categoryId: number;
+  categoryName: string;
+  useYn: "Y" | "N";
+  createdBy: null;
+  createdTime: string;
+  updatedBy: null;
+  updatedTime: string;
+}
 
 interface UseCategory {
   categories: Array<ICategory>;
@@ -72,12 +91,11 @@ const useCategory = (): UseCategory => {
       const [inputNewCategoryName] = extractInputValuesFromElementsRef();
 
       if (inputNewCategoryName) {
-        const newCategoryId = await apiManager.postNewDataElem(
-          routes.server.category,
-          {
-            name: inputNewCategoryName,
-          },
-        );
+        const newCategoryId = await apiManager.postNewDataElem<{
+          name: string;
+        }>(routes.server.category, {
+          name: inputNewCategoryName,
+        });
         if (newCategoryId) {
           addNewCategoryInList({
             id: newCategoryId,
@@ -161,8 +179,7 @@ const useCategory = (): UseCategory => {
 
     if (inputNewCategoryName) {
       const { id } = categories[toBeModifiedCategoryIndex];
-      const modifiedCategoryId = await apiManager.modifyData<{}>(
-        // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
+      const modifiedCategoryId = await apiManager.modifyData<IModifiedCategory>(
         routes.server.category,
         {
           categoryId: id,

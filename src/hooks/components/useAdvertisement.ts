@@ -5,7 +5,6 @@ import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { IAdvertisement, IDetailedAdvertisement } from "../../type/types";
 
 const AD_TYPE = "ARTICLE";
 
@@ -16,6 +15,32 @@ const urlLinkRegex =
 const checkUrlLinkValidation = (urlLink: string) => {
   return urlLinkRegex.test(urlLink);
 };
+
+interface IAdvertisement {
+  advertisementId: number;
+  advertisementName: string;
+  imagePath: string;
+  type: unknown;
+  urlLink: string;
+  useYn: unknown;
+}
+
+interface IDetailedAdvertisement extends IAdvertisement {
+  createdBy: number;
+  createdDate: Array<number>;
+  lastModifiedDate: Array<number>;
+  type: "ARTICLE";
+  updatedBy: number;
+  useYn: "Y" | "N";
+}
+
+interface IModifiedAdvertisement
+  extends Omit<IAdvertisement, "advertisementId" | "type" | "useYn"> {
+  id: number;
+  advertisementType: "ARTICLE";
+}
+
+interface INewAdvertisement extends Omit<IModifiedAdvertisement, "id"> {}
 
 interface UseAdvertisement {
   advertisements: Array<IAdvertisement>;
@@ -106,15 +131,16 @@ const useAdvertisement = (): UseAdvertisement => {
           toast.error(toastSentences.advertisement.urlLinkInvalid);
           return;
         }
-        const advertisementId = await apiManager.postNewDataElem(
-          routes.server.advertisement,
-          {
-            advertisementName: advertisementNameInputValue,
-            advertisementType: AD_TYPE,
-            imagePath: "",
-            urlLink: urlLinkInputValue,
-          },
-        );
+        const advertisementId =
+          await apiManager.postNewDataElem<INewAdvertisement>(
+            routes.server.advertisement,
+            {
+              advertisementName: advertisementNameInputValue,
+              advertisementType: AD_TYPE,
+              imagePath: "",
+              urlLink: urlLinkInputValue,
+            },
+          );
         if (advertisementId) {
           initializeInputValues();
           addNewAdvertisementInList({
@@ -214,17 +240,17 @@ const useAdvertisement = (): UseAdvertisement => {
       }
       const { advertisementId } =
         advertisements[toBeModifiedAdvertisementIndex];
-      const modifiedAdvertisementId = await apiManager.modifyData<{}>(
-        // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
-        routes.server.advertisement,
-        {
-          id: advertisementId,
-          advertisementName: advertisementNameInputValue,
-          urlLink: urlLinkInputValue,
-          advertisementType: AD_TYPE,
-          imagePath: "",
-        },
-      );
+      const modifiedAdvertisementId =
+        await apiManager.modifyData<IModifiedAdvertisement>(
+          routes.server.advertisement,
+          {
+            id: advertisementId,
+            advertisementName: advertisementNameInputValue,
+            urlLink: urlLinkInputValue,
+            advertisementType: AD_TYPE,
+            imagePath: "",
+          },
+        );
       if (modifiedAdvertisementId) {
         updateTargetAdvertisement();
         toggleAdvertisementModificationModal();

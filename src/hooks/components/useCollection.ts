@@ -1,8 +1,17 @@
 import { useCallback, useRef, useState } from "react";
-import { ICollection } from "../../type/types";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+
+interface ICollection {
+  collectionInfoId: number;
+  collectionInfoName: string;
+  description: string;
+  createdBy?: number;
+  createdTime?: string;
+  updatedBy?: number;
+  updatedTime?: string;
+}
 
 interface UseCollection {
   collections: Array<ICollection>;
@@ -73,7 +82,7 @@ const useCollection = (): UseCollection => {
         extractInputValuesFromElementsRef();
 
       if (infoNameTextAreaValue && descTextAreaValue) {
-        const newCollectionId = await apiManager.postNewDataElem(
+        const newCollectionId = await apiManager.postNewDataElem<ICollection>(
           routes.server.collection,
           {
             collectionInfoId: 0,
@@ -154,8 +163,7 @@ const useCollection = (): UseCollection => {
     const { collectionInfoId } = collections[toBeModifiedCollectionIndex];
 
     if (infoNameTextAreaValue && descTextAreaValue) {
-      const modifiedCollectionId = await apiManager.modifyData<{}>(
-        // TODO: 추후에 제네릭에 알맞은 타입 넣어주기.
+      const modifiedCollectionId = await apiManager.modifyData<ICollection>(
         routes.server.collection,
         {
           collectionInfoId,
