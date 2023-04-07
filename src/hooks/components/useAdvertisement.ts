@@ -142,7 +142,6 @@ const useAdvertisement = (): UseAdvertisement => {
             },
           );
         if (advertisementId) {
-          initializeInputValues();
           addNewAdvertisementInList({
             advertisementId,
             advertisementName: advertisementNameInputValue,
@@ -151,6 +150,7 @@ const useAdvertisement = (): UseAdvertisement => {
             useYn: null,
             type: null,
           });
+          initializeInputValues();
         }
       }
     },
