@@ -79,12 +79,12 @@ const useNotice = (): UseNotice => {
     setNotices((noticesList) => [newNotice, ...noticesList]);
   }, []);
 
-  const sendPostNoticeRequest = useCallback(async (newNotice: INewNotice) => {
-    return apiManager.postNewDataElem<INewNotice>(
-      routes.server.notice,
-      newNotice,
-    );
-  }, []);
+  const sendPostNoticeRequest = useCallback(
+    async <T extends object>(newNotice: T) => {
+      return apiManager.postNewDataElem<T>(routes.server.notice, newNotice);
+    },
+    [],
+  );
 
   const registerNewAdvertisement = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
@@ -99,7 +99,7 @@ const useNotice = (): UseNotice => {
           title: titleInputValue,
           imagePath: "",
         };
-        const newNoticeId = await sendPostNoticeRequest(newNotice);
+        const newNoticeId = await sendPostNoticeRequest<INewNotice>(newNotice);
         if (newNoticeId) {
           addNewNoticeInList({ ...newNotice, id: newNoticeId });
           initializeInputValues();
@@ -159,9 +159,12 @@ const useNotice = (): UseNotice => {
     [],
   );
 
-  const sendNoticePatchRequest = useCallback((modifiedNotice: INotice) => {
-    return apiManager.modifyData<INotice>(routes.server.notice, modifiedNotice);
-  }, []);
+  const sendNoticePatchRequest = useCallback(
+    <T extends object>(modifiedNotice: T) => {
+      return apiManager.modifyData<T>(routes.server.notice, modifiedNotice);
+    },
+    [],
+  );
 
   const updateNoticesList = (modifiedNotice: INotice) => {
     setNotices((noticesList) => {
@@ -194,7 +197,9 @@ const useNotice = (): UseNotice => {
         content: contentInputValue,
         imagePath: "",
       };
-      const modifiedNoticeId = await sendNoticePatchRequest(modifiedNotice);
+      const modifiedNoticeId = await sendNoticePatchRequest<INotice>(
+        modifiedNotice,
+      );
       if (targetNoticeId === modifiedNoticeId) {
         updateNoticesList(modifiedNotice);
         toggleNoticeModificationModal();

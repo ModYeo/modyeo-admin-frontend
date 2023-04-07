@@ -31,7 +31,7 @@ interface UseColumnCode {
     columnCodeId: number,
     targetColumnCodeIndex: number,
   ) => Promise<void>;
-  fetchDetailedColumnCode: (columnCodeId: number) => Promise<void>;
+  initializeDetailedColumnCode: (columnCodeId: number) => Promise<void>;
   hideDetailedColumnCodeModal: () => void;
   toggleColumnCodeModificationModal: (targetColumnCodeIndex?: number) => void;
   modifyColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -85,11 +85,8 @@ const useColumnCode = (): UseColumnCode => {
   }, []);
 
   const sendPostColumnCodeRequest = useCallback(
-    (newColumnCode: INewColumnCode) => {
-      return apiManager.postNewDataElem<INewColumnCode>(
-        routes.server.notice,
-        newColumnCode,
-      );
+    <T extends object>(newColumnCode: T) => {
+      return apiManager.postNewDataElem<T>(routes.server.notice, newColumnCode);
     },
     [],
   );
@@ -107,7 +104,9 @@ const useColumnCode = (): UseColumnCode => {
           columnCodeName: columnNameInputValue,
           description: codeDescriptionInputValue,
         };
-        const newColumnCodeId = await sendPostColumnCodeRequest(newColumnCode);
+        const newColumnCodeId = await sendPostColumnCodeRequest<INewColumnCode>(
+          newColumnCode,
+        );
         if (newColumnCodeId) {
           addNewColumnCodeInList({
             ...newColumnCode,
@@ -154,17 +153,22 @@ const useColumnCode = (): UseColumnCode => {
       removeColumnCodeInList(targetColumnCodeIndex);
   };
 
-  const fetchDetailedColumnCode = useCallback(
+  const fetchDetailedColumnCode = useCallback((columnCodeId: number) => {
+    return apiManager.fetchDetailedData<IDetailedColumnCode>(
+      routes.server.column,
+      columnCodeId,
+    );
+  }, []);
+
+  const initializeDetailedColumnCode = useCallback(
     async (columnCodeId: number) => {
-      const fetchedDetailedColumnCode =
-        await apiManager.fetchDetailedData<IDetailedColumnCode>(
-          routes.server.column,
-          columnCodeId,
-        );
+      const fetchedDetailedColumnCode = await fetchDetailedColumnCode(
+        columnCodeId,
+      );
       if (fetchedDetailedColumnCode)
         setDetailedColumnCode(fetchedDetailedColumnCode);
     },
-    [setDetailedColumnCode],
+    [fetchDetailedColumnCode, setDetailedColumnCode],
   );
 
   const hideDetailedColumnCodeModal = useCallback(() => {
@@ -172,11 +176,8 @@ const useColumnCode = (): UseColumnCode => {
   }, []);
 
   const sendColumnCodePatchRequest = useCallback(
-    (modifiedColumnCode: IColumCode) => {
-      return apiManager.modifyData<IColumCode>(
-        routes.server.column,
-        modifiedColumnCode,
-      );
+    <T extends object>(modifiedColumnCode: T) => {
+      return apiManager.modifyData<T>(routes.server.column, modifiedColumnCode);
     },
     [],
   );
@@ -216,7 +217,7 @@ const useColumnCode = (): UseColumnCode => {
         columnCodeName: columnNameInputValue,
         description: codeDescriptionInputValue,
       };
-      const modifiedColumnCodeId = await sendColumnCodePatchRequest(
+      const modifiedColumnCodeId = await sendColumnCodePatchRequest<IColumCode>(
         modifiedColumnCode,
       );
       if (columnCodeId === modifiedColumnCodeId) {
@@ -241,7 +242,7 @@ const useColumnCode = (): UseColumnCode => {
     initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
-    fetchDetailedColumnCode,
+    initializeDetailedColumnCode,
     hideDetailedColumnCodeModal,
     toggleColumnCodeModificationModal,
     modifyColumnCode,
