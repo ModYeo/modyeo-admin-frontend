@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import useCollection from "../../hooks/components/useCollection";
 import Modal from "../commons/Modal";
+import { List, ListContainer, ModalBackground } from "../../styles/styles";
 
 function Collection() {
   const {
