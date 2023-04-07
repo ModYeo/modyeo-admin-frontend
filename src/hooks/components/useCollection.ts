@@ -68,6 +68,16 @@ const useCollection = (): UseCollection => {
     setCollections((collectionsList) => [newCollection, ...collectionsList]);
   }, []);
 
+  const sendPostCollectionRequest = useCallback(
+    <T extends object>(newCollection: T) => {
+      return apiManager.postNewDataElem<T>(
+        routes.server.collection,
+        newCollection,
+      );
+    },
+    [],
+  );
+
   const registerNewCollection = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -76,29 +86,36 @@ const useCollection = (): UseCollection => {
         extractInputValuesFromElementsRef();
 
       if (infoNameTextAreaValue && descTextAreaValue) {
-        const newCollectionId = await apiManager.postNewDataElem<ICollection>(
-          routes.server.collection,
-          {
-            collectionInfoId: 0,
-            collectionInfoName: infoNameTextAreaValue,
-            description: descTextAreaValue,
-          },
+        const newCollection: ICollection = {
+          collectionInfoId: 0,
+          collectionInfoName: infoNameTextAreaValue,
+          description: descTextAreaValue,
+        };
+        const newCollectionId = await sendPostCollectionRequest<ICollection>(
+          newCollection,
         );
         if (newCollectionId) {
           initializeInputValues();
           addNewCategoryInList({
+            ...newCollection,
             collectionInfoId: newCollectionId,
-            collectionInfoName: infoNameTextAreaValue,
-            description: descTextAreaValue,
           });
         }
       }
     },
     [
       extractInputValuesFromElementsRef,
+      sendPostCollectionRequest,
       initializeInputValues,
       addNewCategoryInList,
     ],
+  );
+
+  const sendDeleteCollectionRequest = useCallback(
+    (collectionInfoId: number) => {
+      return apiManager.deleteData(routes.server.collection, collectionInfoId);
+    },
+    [],
   );
 
   const removeCollectionInList = useCallback(
@@ -116,13 +133,12 @@ const useCollection = (): UseCollection => {
       const confirmCollectionDelete =
         window.confirm("컬렉션을 삭제하시겠습니까?");
       if (!confirmCollectionDelete) return;
-      const isCollectionDeleted = await apiManager.deleteData(
-        routes.server.collection,
+      const isCollectionDeleted = await sendDeleteCollectionRequest(
         collectionInfoId,
       );
       if (isCollectionDeleted) removeCollectionInList(targetCollectionIndex);
     },
-    [removeCollectionInList],
+    [sendDeleteCollectionRequest, removeCollectionInList],
   );
 
   const toggleCollectionModificationModal = useCallback(
@@ -134,18 +150,25 @@ const useCollection = (): UseCollection => {
     [],
   );
 
-  const updateTargetCollection = () => {
-    const [infoNameTextAreaValue, descTextAreaValue] =
-      extractInputValuesFromElementsRef();
+  const sendPatchCollectionRequest = useCallback(
+    <T extends object>(modifiedCollection: T) => {
+      return apiManager.modifyData<T>(
+        routes.server.collection,
+        modifiedCollection,
+      );
+    },
+    [],
+  );
 
-    if (infoNameTextAreaValue && descTextAreaValue) {
-      setCollections((collectionsList) => {
-        const targetCollection = collectionsList[toBeModifiedCollectionIndex];
-        targetCollection.collectionInfoName = infoNameTextAreaValue;
-        targetCollection.description = descTextAreaValue;
-        return [...collectionsList];
-      });
-    }
+  const updateTargetCollection = (modifiedCollection: ICollection) => {
+    setCollections((collectionsList) => {
+      collectionsList.splice(
+        toBeModifiedCollectionIndex,
+        1,
+        modifiedCollection,
+      );
+      return [...collectionsList];
+    });
   };
 
   const modifyCollection = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -157,16 +180,16 @@ const useCollection = (): UseCollection => {
     const { collectionInfoId } = collections[toBeModifiedCollectionIndex];
 
     if (infoNameTextAreaValue && descTextAreaValue) {
-      const modifiedCollectionId = await apiManager.modifyData<ICollection>(
-        routes.server.collection,
-        {
-          collectionInfoId,
-          collectionInfoName: infoNameTextAreaValue,
-          description: descTextAreaValue,
-        },
+      const modifiedCollection = {
+        collectionInfoId,
+        collectionInfoName: infoNameTextAreaValue,
+        description: descTextAreaValue,
+      };
+      const modifiedCollectionId = await sendPatchCollectionRequest(
+        modifiedCollection,
       );
-      if (modifiedCollectionId) {
-        updateTargetCollection();
+      if (collectionInfoId === modifiedCollectionId) {
+        updateTargetCollection(modifiedCollection);
         toggleCollectionModificationModal();
         initializeInputValues();
       }

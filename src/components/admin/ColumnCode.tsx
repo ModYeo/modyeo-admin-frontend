@@ -20,7 +20,7 @@ function ColumnCode() {
     initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
-    fetchDetailedColumnCode,
+    initializeDetailedColumnCode,
     hideDetailedColumnCodeModal,
     toggleColumnCodeModificationModal,
     modifyColumnCode,
@@ -60,7 +60,9 @@ function ColumnCode() {
             <div>
               <button
                 type="button"
-                onClick={() => fetchDetailedColumnCode(columnCode.columnCodeId)}
+                onClick={() =>
+                  initializeDetailedColumnCode(columnCode.columnCodeId)
+                }
               >
                 about
               </button>
