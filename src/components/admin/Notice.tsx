@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import useNotice from "../../hooks/components/useNotice";
+import Modal from "../commons/Modal";
 import {
   CreateInput,
   List,
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-import Modal from "../commons/Modal";
 
 function Notice() {
   const {

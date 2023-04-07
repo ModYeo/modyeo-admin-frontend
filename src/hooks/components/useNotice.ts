@@ -20,7 +20,25 @@ interface IDetailedNotice extends INotice {
   useYn: "Y" | "N";
 }
 
-const useNotice = () => {
+interface UseNotice {
+  notices: Array<INotice>;
+  detailedNotice: IDetailedNotice | null;
+  toBeModifiedNoticeIndex: number;
+  contentInputRef: React.RefObject<HTMLInputElement>;
+  titleInputRef: React.RefObject<HTMLInputElement>;
+  IS_NOTICE_BEING_MODIFIED: boolean;
+  initializaNoticesList: () => Promise<void>;
+  registerNewAdvertisement: (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => Promise<void>;
+  deleteNotice: (noticeId: number, targetNoticeIndex: number) => Promise<void>;
+  initializeDetailedNotice: (noticeId: number) => Promise<void>;
+  hideDetailedNoticeModal: () => void;
+  toggleNoticeModificationModal: (targetNoticeIndex?: number) => void;
+  modifyNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+}
+
+const useNotice = (): UseNotice => {
   const [notices, setNotices] = useState<Array<INotice>>([]);
 
   const [detailedNotice, setDetailedNotice] = useState<IDetailedNotice | null>(
@@ -141,9 +159,9 @@ const useNotice = () => {
     [],
   );
 
-  const sendNoticePatchRequest = (modifiedNotice: INotice) => {
+  const sendNoticePatchRequest = useCallback((modifiedNotice: INotice) => {
     return apiManager.modifyData<INotice>(routes.server.notice, modifiedNotice);
-  };
+  }, []);
 
   const updateNoticesList = (modifiedNotice: INotice) => {
     setNotices((noticesList) => {
@@ -179,7 +197,7 @@ const useNotice = () => {
       const modifiedNoticeId = await sendNoticePatchRequest(modifiedNotice);
       if (targetNoticeId === modifiedNoticeId) {
         updateNoticesList(modifiedNotice);
-        setToBoModifiedNoticeIndex(NOTHING_BEING_MODIFIED);
+        toggleNoticeModificationModal();
         initializeInputValues();
       }
     }

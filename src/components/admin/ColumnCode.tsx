@@ -7,7 +7,6 @@ import {
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
-import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 function ColumnCode() {
   const {
@@ -17,7 +16,7 @@ function ColumnCode() {
     codeInputRef,
     columnNameInputRef,
     codeDescriptionInputRef,
-    isColumnCodeBeingModified,
+    IS_COLUMNCODE_BEING_MODIFIED,
     initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
@@ -81,12 +80,8 @@ function ColumnCode() {
           </List>
         );
       })}
-      {isColumnCodeBeingModified && (
-        <ModalBackground
-          onClick={() =>
-            toggleColumnCodeModificationModal(NOTHING_BEING_MODIFIED)
-          }
-        >
+      {IS_COLUMNCODE_BEING_MODIFIED && (
+        <ModalBackground onClick={() => toggleColumnCodeModificationModal()}>
           <Modal width={400} height={400}>
             <form onSubmit={modifyColumnCode}>
               <CreateInput
