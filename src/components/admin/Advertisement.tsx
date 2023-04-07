@@ -16,7 +16,7 @@ function Advertisement() {
     advertisementNameInputRef,
     urlLinkInputRef,
     isAdvertisementBeingModified,
-    fetchAdvertisements,
+    initializeAdvertisementsList,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,
@@ -26,8 +26,8 @@ function Advertisement() {
   } = useAdvertisement();
 
   useEffect(() => {
-    fetchAdvertisements();
-  }, [fetchAdvertisements]);
+    initializeAdvertisementsList();
+  }, [initializeAdvertisementsList]);
 
   return (
     <ListContainer>

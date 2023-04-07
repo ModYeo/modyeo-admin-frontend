@@ -39,7 +39,7 @@ interface UseAdvertisement {
   advertisementNameInputRef: React.RefObject<HTMLInputElement>;
   urlLinkInputRef: React.RefObject<HTMLInputElement>;
   isAdvertisementBeingModified: boolean;
-  fetchAdvertisements: () => Promise<void>;
+  initializeAdvertisementsList: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -78,20 +78,14 @@ const useAdvertisement = (): UseAdvertisement => {
 
   const urlLinkInputRef = useRef<HTMLInputElement>(null);
 
-  const initializeAdvertisementsList = useCallback(
-    (advertisementsList: Array<IAdvertisement>) => {
-      setAdvertisements(advertisementsList);
-    },
-    [],
-  );
+  const fetchAdvertisements = useCallback(() => {
+    return apiManager.fetchData<IAdvertisement>(routes.server.advertisement);
+  }, []);
 
-  const fetchAdvertisements = useCallback(async () => {
-    const fetchedAdvertisements = await apiManager.fetchData<IAdvertisement>(
-      routes.server.advertisement,
-    );
-    if (fetchedAdvertisements)
-      initializeAdvertisementsList(fetchedAdvertisements);
-  }, [initializeAdvertisementsList]);
+  const initializeAdvertisementsList = useCallback(async () => {
+    const fetchedAdvertisements = await fetchAdvertisements();
+    if (fetchedAdvertisements) setAdvertisements(fetchedAdvertisements);
+  }, [fetchAdvertisements]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
@@ -269,7 +263,7 @@ const useAdvertisement = (): UseAdvertisement => {
     advertisementNameInputRef,
     urlLinkInputRef,
     isAdvertisementBeingModified,
-    fetchAdvertisements,
+    initializeAdvertisementsList,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,

@@ -25,7 +25,7 @@ interface UseColumnCode {
   columnNameInputRef: React.RefObject<HTMLInputElement>;
   codeDescriptionInputRef: React.RefObject<HTMLInputElement>;
   isColumnCodeBeingModified: boolean;
-  fetchColumnCodes: () => Promise<void>;
+  initializeAdvertisementsList: () => Promise<void>;
   registerNewColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteColumnCode: (
     columnCodeId: number,
@@ -52,19 +52,14 @@ const useColumnCode = (): UseColumnCode => {
 
   const codeDescriptionInputRef = useRef<HTMLInputElement>(null);
 
-  const initializeAdvertisementsList = useCallback(
-    (collectionsList: Array<IColumCode>) => {
-      setColumnCodes(collectionsList);
-    },
-    [],
-  );
-
   const fetchColumnCodes = useCallback(async () => {
-    const fetchedColumnCodes = await apiManager.fetchData<IColumCode>(
-      routes.server.column,
-    );
-    if (fetchedColumnCodes) initializeAdvertisementsList(fetchedColumnCodes);
-  }, [initializeAdvertisementsList]);
+    return apiManager.fetchData<IColumCode>(routes.server.column);
+  }, []);
+
+  const initializeAdvertisementsList = useCallback(async () => {
+    const fetchedColumnCodes = await fetchColumnCodes();
+    if (fetchedColumnCodes) setColumnCodes(fetchedColumnCodes);
+  }, [fetchColumnCodes]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
@@ -228,7 +223,7 @@ const useColumnCode = (): UseColumnCode => {
     columnNameInputRef,
     codeDescriptionInputRef,
     isColumnCodeBeingModified,
-    fetchColumnCodes,
+    initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
     fetchDetailedColumnCode,

@@ -18,7 +18,7 @@ function ColumnCode() {
     columnNameInputRef,
     codeDescriptionInputRef,
     isColumnCodeBeingModified,
-    fetchColumnCodes,
+    initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
     fetchDetailedColumnCode,
@@ -28,8 +28,8 @@ function ColumnCode() {
   } = useColumnCode();
 
   useEffect(() => {
-    fetchColumnCodes();
-  }, [fetchColumnCodes]);
+    initializeAdvertisementsList();
+  }, [initializeAdvertisementsList]);
 
   return (
     <ListContainer>

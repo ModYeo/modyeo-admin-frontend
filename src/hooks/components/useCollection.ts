@@ -19,7 +19,7 @@ interface UseCollection {
   collectionInfoNameTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   collectionDescTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   isCollectionBeingModified: boolean;
-  fetchCollections: () => Promise<void>;
+  initializeAdvertisementsList: () => Promise<void>;
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
     collectionInfoId: number,
@@ -39,20 +39,14 @@ const useCollection = (): UseCollection => {
 
   const collectionDescTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
-  const initializeAdvertisementsList = useCallback(
-    (collectionsList: Array<ICollection>) => {
-      setCollections(collectionsList);
-    },
-    [],
-  );
+  const fetchCollections = useCallback(() => {
+    return apiManager.fetchData<ICollection>(routes.server.collection);
+  }, []);
 
-  const fetchCollections = useCallback(async () => {
-    const fetchedCollections = await apiManager.fetchData<ICollection>(
-      routes.server.collection,
-    );
-    if (fetchedCollections)
-      initializeAdvertisementsList(fetchedCollections.reverse());
-  }, [initializeAdvertisementsList]);
+  const initializeAdvertisementsList = useCallback(async () => {
+    const fetchedCollections = await fetchCollections();
+    if (fetchedCollections) setCollections(fetchedCollections.reverse());
+  }, [fetchCollections]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
@@ -188,7 +182,7 @@ const useCollection = (): UseCollection => {
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
     isCollectionBeingModified,
-    fetchCollections,
+    initializeAdvertisementsList,
     registerNewCollection,
     deleteCollection,
     toggleCollectionModificationModal,

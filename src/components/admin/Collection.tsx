@@ -10,7 +10,7 @@ function Collection() {
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
     isCollectionBeingModified,
-    fetchCollections,
+    initializeAdvertisementsList,
     registerNewCollection,
     deleteCollection,
     toggleCollectionModificationModal,
@@ -18,8 +18,8 @@ function Collection() {
   } = useCollection();
 
   useEffect(() => {
-    fetchCollections();
-  }, [fetchCollections]);
+    initializeAdvertisementsList();
+  }, [initializeAdvertisementsList]);
 
   return (
     <ListContainer>
