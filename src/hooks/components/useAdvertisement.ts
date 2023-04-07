@@ -6,16 +6,6 @@ import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
-const AD_TYPE = "ARTICLE";
-
-const urlLinkRegex =
-  // eslint-disable-next-line no-useless-escape
-  /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
-
-const checkUrlLinkValidation = (urlLink: string) => {
-  return urlLinkRegex.test(urlLink);
-};
-
 interface IAdvertisement {
   advertisementId: number;
   advertisementName: string;
@@ -35,7 +25,7 @@ interface IDetailedAdvertisement extends IAdvertisement {
 }
 
 interface IModifiedAdvertisement
-  extends Omit<IAdvertisement, "advertisementId" | "type" | "useYn"> {
+  extends Pick<IAdvertisement, "advertisementName" | "imagePath" | "urlLink"> {
   id: number;
   advertisementType: "ARTICLE";
 }
@@ -62,6 +52,16 @@ interface UseAdvertisement {
   toggleAdvertisementModificationModal: (targetIndex?: number) => void;
   modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
+
+const AD_TYPE = "ARTICLE";
+
+const urlLinkRegex =
+  // eslint-disable-next-line no-useless-escape
+  /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_\+.~#?&\/=]*)$/;
+
+const checkUrlLinkValidation = (urlLink: string) => {
+  return urlLinkRegex.test(urlLink);
+};
 
 const useAdvertisement = (): UseAdvertisement => {
   const [advertisements, setAdvertisements] = useState<Array<IAdvertisement>>(
