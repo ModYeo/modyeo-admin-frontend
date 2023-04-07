@@ -15,7 +15,7 @@ function Category() {
     toBeModifiedCategoryIndex,
     categoryInputRef,
     isCategoryBeingModified,
-    fetchCategories,
+    initializeCategoriesList,
     registerNewCategory,
     fetchDetailedCategory,
     hideDetailedCategoryModal,
@@ -25,8 +25,8 @@ function Category() {
   } = useCategory();
 
   useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
+    initializeCategoriesList();
+  }, [initializeCategoriesList]);
 
   return (
     <ListContainer>

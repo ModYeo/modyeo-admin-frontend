@@ -1,106 +1,29 @@
 import React, { useEffect } from "react";
 import useNotice from "../../hooks/components/useNotice";
+import Modal from "../commons/Modal";
 import {
   CreateInput,
   List,
   ListContainer,
-  // ModalBackground,
+  ModalBackground,
 } from "../../styles/styles";
-// import { IDetailedNotice, INotice } from "../../type/types";
-// import Modal from "../commons/Modal";
 
 function Notice() {
   const {
     notices,
+    detailedNotice,
+    toBeModifiedNoticeIndex,
     contentInputRef,
     titleInputRef,
+    IS_NOTICE_BEING_MODIFIED,
     initializaNoticesList,
     registerNewAdvertisement,
     deleteNotice,
+    initializeDetailedNotice,
+    hideDetailedNoticeModal,
+    toggleNoticeModificationModal,
+    modifyNotice,
   } = useNotice();
-
-  // const [clickedNoticeIndex, setClickedNoticeIndex] = useState(NOT_EXISTS);
-  // const [clickedNotice, setClickedNotice] = useState<IDetailedNotice | null>(
-  //   null,
-  // );
-  // const contentInputRef = useRef<HTMLInputElement>(null);
-  // const titleInputRef = useRef<HTMLInputElement>(null);
-  // const handleOnNoticeFormSubmit = async (
-  //   e: React.FormEvent<HTMLFormElement>,
-  // ) => {
-  //   e.preventDefault();
-  //   let isAPICallSuccessful = false;
-  //   const contentInputValue = contentInputRef.current?.value;
-  //   const titleInputValue = titleInputRef.current?.value;
-  //   if (contentInputValue && titleInputValue) {
-  //     if (clickedNoticeIndex === NOT_EXISTS) {
-  //       const newNoticeId = await apiManager.postNewDataElem(
-  //         routes.server.notice,
-  //         {
-  //           content: contentInputValue,
-  //           imagePath: "",
-  //           title: titleInputValue,
-  //         },
-  //       );
-  //       if (newNoticeId) {
-  //         const newNotice: INotice = {
-  //           id: newNoticeId,
-  //           title: titleInputValue,
-  //           content: contentInputValue,
-  //           imagePath: "",
-  //         };
-  //         setNotices([newNotice, ...notices]);
-  //         isAPICallSuccessful = true;
-  //       }
-  //     } else {
-  //       const modifiedNoticeId = await apiManager.modifyData(
-  //         routes.server.notice,
-  //         {
-  //           id: notices[clickedNoticeIndex].id,
-  //           content: contentInputValue,
-  //           title: titleInputValue,
-  //           imagePath: "",
-  //         },
-  //       );
-  //       if (modifiedNoticeId) {
-  //         const modifiedNotice: INotice = {
-  //           id: modifiedNoticeId,
-  //           title: titleInputValue,
-  //           content: contentInputValue,
-  //           imagePath: "",
-  //         };
-  //         notices.splice(clickedNoticeIndex, 1, modifiedNotice);
-  //         setNotices([...notices]);
-  //         setClickedNoticeIndex(NOT_EXISTS);
-  //         isAPICallSuccessful = true;
-  //       }
-  //     }
-  //     if (isAPICallSuccessful) {
-  //       contentInputRef.current.value = "";
-  //       titleInputRef.current.value = "";
-  //     }
-  //   }
-  // };
-  // const deleteNotice = async (noticeId: number, index: number) => {
-  //   const confirmNoticeDelete = window.confirm("공지를 삭제하시겠습니까?");
-  //   if (!confirmNoticeDelete) return;
-  //   const idDeleteSuccessful = await apiManager.deleteData(
-  //     routes.server.notice,
-  //     noticeId,
-  //   );
-  //   if (idDeleteSuccessful) {
-  //     notices.splice(index, 1);
-  //     setNotices([...notices]);
-  //   }
-  // };
-  // const fetchDetailedNoticeInfo = async (noticeId: number) => {
-  //   const fetchedDetailedNotice =
-  //     await apiManager.fetchDetailedData<IDetailedNotice>(
-  //       routes.server.notice,
-  //       noticeId,
-  //     );
-  //   if (fetchedDetailedNotice) setClickedNotice(fetchedDetailedNotice);
-  // };
 
   useEffect(() => {
     initializaNoticesList();
@@ -111,8 +34,8 @@ function Notice() {
       <h5>notice list</h5>
       <br />
       <form onSubmit={registerNewAdvertisement}>
-        <CreateInput placeholder="content" ref={contentInputRef} required />
         <CreateInput placeholder="title" ref={titleInputRef} required />
+        <CreateInput placeholder="content" ref={contentInputRef} required />
         <button type="submit">make a new column code</button>
       </form>
       <br />
@@ -123,15 +46,18 @@ function Notice() {
             <div>content - {notice.content}</div>
           </div>
           <div>
-            {/* <button
+            <button
               type="button"
-              onClick={() => fetchDetailedNoticeInfo(notice.id)}
+              onClick={() => initializeDetailedNotice(notice.id)}
             >
               about
             </button>
-            <button type="button" onClick={() => setClickedNoticeIndex(index)}>
+            <button
+              type="button"
+              onClick={() => toggleNoticeModificationModal(index)}
+            >
               modify
-            </button> */}
+            </button>
             <button
               type="button"
               onClick={() => deleteNotice(notice.id, index)}
@@ -141,40 +67,40 @@ function Notice() {
           </div>
         </List>
       ))}
-      {/* {clickedNotice && (
-        <ModalBackground onClick={() => setClickedNotice(null)}>
+      {detailedNotice && (
+        <ModalBackground onClick={() => hideDetailedNoticeModal()}>
           <Modal width={400} height={200}>
             <div>
-              <h5>created by {clickedNotice.createdBy}</h5>
+              <h5>created by {detailedNotice.createdBy}</h5>
             </div>
             &emsp;
             <div>
-              <h5>updated by {clickedNotice.updatedBy}</h5>
+              <h5>updated by {detailedNotice.updatedBy}</h5>
             </div>
           </Modal>
         </ModalBackground>
-      )} */}
-      {/* {clickedNoticeIndex !== NOT_EXISTS && (
-        <ModalBackground onClick={() => setClickedNoticeIndex(NOT_EXISTS)}>
+      )}
+      {IS_NOTICE_BEING_MODIFIED && (
+        <ModalBackground onClick={() => toggleNoticeModificationModal()}>
           <Modal width={400} height={200}>
-            <form onSubmit={handleOnNoticeFormSubmit}>
+            <form onSubmit={modifyNotice}>
               <CreateInput
                 placeholder="title"
                 ref={titleInputRef}
-                defaultValue={notices[clickedNoticeIndex].title}
+                defaultValue={notices[toBeModifiedNoticeIndex].title}
                 required
               />
               <CreateInput
                 placeholder="content"
                 ref={contentInputRef}
-                defaultValue={notices[clickedNoticeIndex].content}
+                defaultValue={notices[toBeModifiedNoticeIndex].content}
                 required
               />
               <button type="submit">modify column code</button>
             </form>
           </Modal>
         </ModalBackground>
-      )} */}
+      )}
     </ListContainer>
   );
 }

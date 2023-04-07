@@ -98,7 +98,7 @@ class APIManager implements IAPIManager {
           } else this.authCookieManager.deleteAccessAndRefreshToken();
         } else {
           this.showErrorMessageToast(
-            error.message || error.response?.data.error.message,
+            error.response?.data.error.message || error.message,
           );
         }
         return Promise.reject(error);

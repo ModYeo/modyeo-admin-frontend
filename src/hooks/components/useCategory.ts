@@ -30,7 +30,7 @@ interface UseCategory {
   toBeModifiedCategoryIndex: number;
   categoryInputRef: React.RefObject<HTMLInputElement>;
   isCategoryBeingModified: boolean;
-  fetchCategories: () => Promise<void>;
+  initializeCategoriesList: () => Promise<void>;
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCategory: (
     categoryId: number,
@@ -54,20 +54,14 @@ const useCategory = (): UseCategory => {
 
   const categoryInputRef = useRef<HTMLInputElement>(null);
 
-  const initializeCategoriesList = useCallback(
-    (categoriesList: Array<ICategory>) => {
-      setCategories(categoriesList);
-    },
-    [],
-  );
+  const fetchCategories = useCallback(() => {
+    return apiManager.fetchData<ICategory>(routes.server.category);
+  }, []);
 
-  const fetchCategories = useCallback(async () => {
-    const fetchedCategories = await apiManager.fetchData<ICategory>(
-      routes.server.category,
-    );
-    if (fetchedCategories)
-      initializeCategoriesList(fetchedCategories.reverse());
-  }, [initializeCategoriesList]);
+  const initializeCategoriesList = useCallback(async () => {
+    const fetchedCategories = await fetchCategories();
+    if (fetchedCategories) setCategories(fetchedCategories.reverse());
+  }, [fetchCategories]);
 
   const addNewCategoryInList = useCallback((newCategory: ICategory) => {
     setCategories((categoriesList) => {
@@ -204,7 +198,7 @@ const useCategory = (): UseCategory => {
     toBeModifiedCategoryIndex,
     categoryInputRef,
     isCategoryBeingModified,
-    fetchCategories,
+    initializeCategoriesList,
     registerNewCategory,
     fetchDetailedCategory,
     hideDetailedCategoryModal,

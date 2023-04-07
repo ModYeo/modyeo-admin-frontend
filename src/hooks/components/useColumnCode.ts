@@ -24,8 +24,8 @@ interface UseColumnCode {
   codeInputRef: React.RefObject<HTMLInputElement>;
   columnNameInputRef: React.RefObject<HTMLInputElement>;
   codeDescriptionInputRef: React.RefObject<HTMLInputElement>;
-  isColumnCodeBeingModified: boolean;
-  fetchColumnCodes: () => Promise<void>;
+  IS_COLUMNCODE_BEING_MODIFIED: boolean;
+  initializeAdvertisementsList: () => Promise<void>;
   registerNewColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteColumnCode: (
     columnCodeId: number,
@@ -52,19 +52,14 @@ const useColumnCode = (): UseColumnCode => {
 
   const codeDescriptionInputRef = useRef<HTMLInputElement>(null);
 
-  const initializeAdvertisementsList = useCallback(
-    (collectionsList: Array<IColumCode>) => {
-      setColumnCodes(collectionsList);
-    },
-    [],
-  );
-
   const fetchColumnCodes = useCallback(async () => {
-    const fetchedColumnCodes = await apiManager.fetchData<IColumCode>(
-      routes.server.column,
-    );
-    if (fetchedColumnCodes) initializeAdvertisementsList(fetchedColumnCodes);
-  }, [initializeAdvertisementsList]);
+    return apiManager.fetchData<IColumCode>(routes.server.column);
+  }, []);
+
+  const initializeAdvertisementsList = useCallback(async () => {
+    const fetchedColumnCodes = await fetchColumnCodes();
+    if (fetchedColumnCodes) setColumnCodes(fetchedColumnCodes);
+  }, [fetchColumnCodes]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
@@ -72,10 +67,6 @@ const useColumnCode = (): UseColumnCode => {
       columnNameInputRef.current?.value,
       codeDescriptionInputRef.current?.value,
     ];
-  }, []);
-
-  const addNewColumnCodeInList = useCallback((newColumnCode: IColumCode) => {
-    setColumnCodes((columnCodesList) => [newColumnCode, ...columnCodesList]);
   }, []);
 
   const initializeInputValues = useCallback(() => {
@@ -89,6 +80,20 @@ const useColumnCode = (): UseColumnCode => {
     }
   }, []);
 
+  const addNewColumnCodeInList = useCallback((newColumnCode: IColumCode) => {
+    setColumnCodes((columnCodesList) => [newColumnCode, ...columnCodesList]);
+  }, []);
+
+  const sendPostColumnCodeRequest = useCallback(
+    (newColumnCode: INewColumnCode) => {
+      return apiManager.postNewDataElem<INewColumnCode>(
+        routes.server.notice,
+        newColumnCode,
+      );
+    },
+    [],
+  );
+
   const registerNewColumnCode = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -97,21 +102,16 @@ const useColumnCode = (): UseColumnCode => {
         extractInputValuesFromElementsRef();
 
       if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
-        const newColumnCodeId =
-          await apiManager.postNewDataElem<INewColumnCode>(
-            routes.server.column,
-            {
-              code: codeInputValue,
-              columnCodeName: columnNameInputValue,
-              description: codeDescriptionInputValue,
-            },
-          );
+        const newColumnCode = {
+          code: codeInputValue,
+          columnCodeName: columnNameInputValue,
+          description: codeDescriptionInputValue,
+        };
+        const newColumnCodeId = await sendPostColumnCodeRequest(newColumnCode);
         if (newColumnCodeId) {
           addNewColumnCodeInList({
+            ...newColumnCode,
             columnCodeId: newColumnCodeId,
-            code: codeInputValue,
-            columnCodeName: columnNameInputValue,
-            description: codeDescriptionInputValue,
           });
           initializeInputValues();
         }
@@ -119,10 +119,15 @@ const useColumnCode = (): UseColumnCode => {
     },
     [
       extractInputValuesFromElementsRef,
+      sendPostColumnCodeRequest,
       addNewColumnCodeInList,
       initializeInputValues,
     ],
   );
+
+  const sendDeleteColumnCodeRequest = useCallback((columnCodeId: number) => {
+    return apiManager.deleteData(routes.server.column, columnCodeId);
+  }, []);
 
   const removeColumnCodeInList = useCallback(
     (targetColumnCodeIndex: number) => {
@@ -142,8 +147,7 @@ const useColumnCode = (): UseColumnCode => {
       "정말 해당 칼럼을 삭제하시겠습니끼?",
     );
     if (!confirmColumnDelete) return;
-    const isColumnCodeDeleteSuccessful = await apiManager.deleteData(
-      routes.server.column,
+    const isColumnCodeDeleteSuccessful = await sendDeleteColumnCodeRequest(
       columnCodeId,
     );
     if (isColumnCodeDeleteSuccessful)
@@ -167,19 +171,25 @@ const useColumnCode = (): UseColumnCode => {
     setDetailedColumnCode(null);
   }, []);
 
-  const updateTargetColumnCode = () => {
-    const [codeInputValue, columnNameInputValue, codeDescriptionInputValue] =
-      extractInputValuesFromElementsRef();
+  const sendColumnCodePatchRequest = useCallback(
+    (modifiedColumnCode: IColumCode) => {
+      return apiManager.modifyData<IColumCode>(
+        routes.server.column,
+        modifiedColumnCode,
+      );
+    },
+    [],
+  );
 
-    if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
-      setColumnCodes((columnCodesList) => {
-        const targetColumnCode = columnCodesList[toBeModifiedColumnCodeIndex];
-        targetColumnCode.code = codeInputValue;
-        targetColumnCode.columnCodeName = columnNameInputValue;
-        targetColumnCode.description = codeDescriptionInputValue;
-        return [...columnCodesList];
-      });
-    }
+  const updateTargetColumnCode = (modifiedColumnCode: IColumCode) => {
+    setColumnCodes((columnCodesList) => {
+      columnCodesList.splice(
+        toBeModifiedColumnCodeIndex,
+        1,
+        modifiedColumnCode,
+      );
+      return [...columnCodesList];
+    });
   };
 
   const toggleColumnCodeModificationModal = useCallback(
@@ -197,27 +207,27 @@ const useColumnCode = (): UseColumnCode => {
     const [codeInputValue, columnNameInputValue, codeDescriptionInputValue] =
       extractInputValuesFromElementsRef();
 
-    if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
-      const { columnCodeId } = columnCodes[toBeModifiedColumnCodeIndex];
+    const { columnCodeId } = columnCodes[toBeModifiedColumnCodeIndex];
 
-      const modifiedColumnCodeId = await apiManager.modifyData<IColumCode>(
-        routes.server.column,
-        {
-          columnCodeId,
-          code: codeInputValue,
-          columnCodeName: columnNameInputValue,
-          description: codeDescriptionInputValue,
-        },
+    if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
+      const modifiedColumnCode = {
+        columnCodeId,
+        code: codeInputValue,
+        columnCodeName: columnNameInputValue,
+        description: codeDescriptionInputValue,
+      };
+      const modifiedColumnCodeId = await sendColumnCodePatchRequest(
+        modifiedColumnCode,
       );
-      if (modifiedColumnCodeId) {
-        updateTargetColumnCode();
+      if (columnCodeId === modifiedColumnCodeId) {
+        updateTargetColumnCode(modifiedColumnCode);
         toggleColumnCodeModificationModal();
         initializeInputValues();
       }
     }
   };
 
-  const isColumnCodeBeingModified =
+  const IS_COLUMNCODE_BEING_MODIFIED =
     toBeModifiedColumnCodeIndex !== NOTHING_BEING_MODIFIED;
 
   return {
@@ -227,8 +237,8 @@ const useColumnCode = (): UseColumnCode => {
     codeInputRef,
     columnNameInputRef,
     codeDescriptionInputRef,
-    isColumnCodeBeingModified,
-    fetchColumnCodes,
+    IS_COLUMNCODE_BEING_MODIFIED,
+    initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
     fetchDetailedColumnCode,
