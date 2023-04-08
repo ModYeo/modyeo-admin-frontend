@@ -14,10 +14,10 @@ function Category() {
     detailedCategory,
     toBeModifiedCategoryIndex,
     categoryInputRef,
-    isCategoryBeingModified,
+    IS_CATEGORY_BEING_MODIFIED,
     initializeCategoriesList,
     registerNewCategory,
-    fetchDetailedCategory,
+    initializeDetailedCategory,
     hideDetailedCategoryModal,
     toggleCategoryModificationModal,
     deleteCategory,
@@ -43,7 +43,7 @@ function Category() {
           <span>
             <button
               type="button"
-              onClick={() => fetchDetailedCategory(category.id)}
+              onClick={() => initializeDetailedCategory(category.id)}
             >
               about
             </button>
@@ -77,7 +77,7 @@ function Category() {
           </Modal>
         </ModalBackground>
       )}
-      {isCategoryBeingModified && (
+      {IS_CATEGORY_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleCategoryModificationModal()}>
           <Modal width={350} height={200}>
             <form onSubmit={modifyCategory}>

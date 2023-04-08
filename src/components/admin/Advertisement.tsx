@@ -15,7 +15,7 @@ function Advertisement() {
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
-    isAdvertisementBeingModified,
+    IS_ADVERTISEMENT_BEING_MODIFIED,
     initializeAdvertisementsList,
     registerNewAdvertisement,
     deleteAdvertisement,
@@ -88,7 +88,7 @@ function Advertisement() {
           </Modal>
         </ModalBackground>
       )}
-      {isAdvertisementBeingModified && (
+      {IS_ADVERTISEMENT_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleAdvertisementModificationModal()}>
           <Modal width={600} height={200}>
             <form onSubmit={modifyAdvertisement}>

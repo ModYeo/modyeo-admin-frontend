@@ -6,20 +6,22 @@ import routes from "../../constants/routes";
 import { toastSentences } from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
+const AD_TYPE = "ARTICLE";
+
 interface IAdvertisement {
   advertisementId: number;
   advertisementName: string;
   imagePath: string;
-  type: unknown;
+  type: string;
   urlLink: string;
-  useYn: unknown;
+  useYn: "Y" | "N";
 }
 
 interface IDetailedAdvertisement extends IAdvertisement {
   createdBy: number;
   createdDate: Array<number>;
   lastModifiedDate: Array<number>;
-  type: "ARTICLE";
+  type: string;
   updatedBy: number;
   useYn: "Y" | "N";
 }
@@ -27,7 +29,7 @@ interface IDetailedAdvertisement extends IAdvertisement {
 interface IModifiedAdvertisement
   extends Pick<IAdvertisement, "advertisementName" | "imagePath" | "urlLink"> {
   id: number;
-  advertisementType: "ARTICLE";
+  advertisementType: string;
 }
 
 interface INewAdvertisement extends Omit<IModifiedAdvertisement, "id"> {}
@@ -38,7 +40,7 @@ interface UseAdvertisement {
   toBeModifiedAdvertisementIndex: number;
   advertisementNameInputRef: React.RefObject<HTMLInputElement>;
   urlLinkInputRef: React.RefObject<HTMLInputElement>;
-  isAdvertisementBeingModified: boolean;
+  IS_ADVERTISEMENT_BEING_MODIFIED: boolean;
   initializeAdvertisementsList: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
@@ -52,8 +54,6 @@ interface UseAdvertisement {
   toggleAdvertisementModificationModal: (targetIndex?: number) => void;
   modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
-
-const AD_TYPE = "ARTICLE";
 
 const urlLinkRegex =
   // eslint-disable-next-line no-useless-escape
@@ -103,6 +103,16 @@ const useAdvertisement = (): UseAdvertisement => {
     }
   }, []);
 
+  const sendPostAdvertisementRequest = useCallback(
+    <T extends object>(newAdvertisement: T) => {
+      return apiManager.postNewDataElem<T>(
+        routes.server.advertisement,
+        newAdvertisement,
+      );
+    },
+    [],
+  );
+
   const addNewAdvertisementInList = useCallback(
     (newAdvertisement: IAdvertisement) => {
       setAdvertisements((advertisementsList) => [
@@ -125,24 +135,22 @@ const useAdvertisement = (): UseAdvertisement => {
           toast.error(toastSentences.advertisement.urlLinkInvalid);
           return;
         }
+        const newAdvertisement = {
+          advertisementName: advertisementNameInputValue,
+          advertisementType: AD_TYPE,
+          urlLink: urlLinkInputValue,
+          imagePath: "",
+        };
         const advertisementId =
-          await apiManager.postNewDataElem<INewAdvertisement>(
-            routes.server.advertisement,
-            {
-              advertisementName: advertisementNameInputValue,
-              advertisementType: AD_TYPE,
-              imagePath: "",
-              urlLink: urlLinkInputValue,
-            },
+          await sendPostAdvertisementRequest<INewAdvertisement>(
+            newAdvertisement,
           );
         if (advertisementId) {
           addNewAdvertisementInList({
+            ...newAdvertisement,
             advertisementId,
-            advertisementName: advertisementNameInputValue,
-            urlLink: urlLinkInputValue,
-            imagePath: "",
-            useYn: null,
-            type: null,
+            useYn: "Y",
+            type: AD_TYPE,
           });
           initializeInputValues();
         }
@@ -150,9 +158,20 @@ const useAdvertisement = (): UseAdvertisement => {
     },
     [
       extractInputValuesFromElementsRef,
+      sendPostAdvertisementRequest,
       addNewAdvertisementInList,
       initializeInputValues,
     ],
+  );
+
+  const sendDeleteAdvertisementRequest = useCallback(
+    (advertisementId: number) => {
+      return apiManager.deleteData(
+        routes.server.advertisement,
+        advertisementId,
+      );
+    },
+    [],
   );
 
   const removeAdvertisementInList = useCallback(
@@ -170,14 +189,13 @@ const useAdvertisement = (): UseAdvertisement => {
       const confirmAdvertisementDelete =
         window.confirm("정말 이 광고를 삭제하시겠습니까?");
       if (!confirmAdvertisementDelete) return;
-      const isDeleteSuccessful = await apiManager.deleteData(
-        routes.server.advertisement,
+      const isDeleteSuccessful = await sendDeleteAdvertisementRequest(
         advertisementId,
       );
       if (isDeleteSuccessful)
         removeAdvertisementInList(targetAdvertisementIndex);
     },
-    [removeAdvertisementInList],
+    [sendDeleteAdvertisementRequest, removeAdvertisementInList],
   );
 
   const fetchDetailedAdvertisement = useCallback(
@@ -206,19 +224,24 @@ const useAdvertisement = (): UseAdvertisement => {
     [],
   );
 
-  const updateTargetAdvertisement = () => {
-    const [advertisementNameInputValue, urlLinkInputValue] =
-      extractInputValuesFromElementsRef();
+  const sendPatchAdvertisementRequest = <T extends object>(
+    modifiedAdvertisement: T,
+  ) => {
+    return apiManager.modifyData<T>(
+      routes.server.advertisement,
+      modifiedAdvertisement,
+    );
+  };
 
-    if (advertisementNameInputValue && urlLinkInputValue) {
-      setAdvertisements((advertisementsList) => {
-        const targetAdvertisement =
-          advertisementsList[toBeModifiedAdvertisementIndex];
-        targetAdvertisement.advertisementName = advertisementNameInputValue;
-        targetAdvertisement.urlLink = urlLinkInputValue;
-        return [...advertisementsList];
-      });
-    }
+  const updateTargetAdvertisement = (modifiedAdvertisement: IAdvertisement) => {
+    setAdvertisements((advertisementsList) => {
+      advertisementsList.splice(
+        toBeModifiedAdvertisementIndex,
+        1,
+        modifiedAdvertisement,
+      );
+      return [...advertisementsList];
+    });
   };
 
   const modifyAdvertisement = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -232,28 +255,33 @@ const useAdvertisement = (): UseAdvertisement => {
         toast.error(toastSentences.advertisement.urlLinkInvalid);
         return;
       }
-      const { advertisementId } =
+      const { advertisementId, type } =
         advertisements[toBeModifiedAdvertisementIndex];
+      const modifiedAdvertisement = {
+        id: advertisementId,
+        advertisementName: advertisementNameInputValue,
+        urlLink: urlLinkInputValue,
+        advertisementType: AD_TYPE,
+        imagePath: "",
+      };
       const modifiedAdvertisementId =
-        await apiManager.modifyData<IModifiedAdvertisement>(
-          routes.server.advertisement,
-          {
-            id: advertisementId,
-            advertisementName: advertisementNameInputValue,
-            urlLink: urlLinkInputValue,
-            advertisementType: AD_TYPE,
-            imagePath: "",
-          },
+        await sendPatchAdvertisementRequest<IModifiedAdvertisement>(
+          modifiedAdvertisement,
         );
-      if (modifiedAdvertisementId) {
-        updateTargetAdvertisement();
+      if (advertisementId === modifiedAdvertisementId) {
+        updateTargetAdvertisement({
+          ...modifiedAdvertisement,
+          advertisementId: modifiedAdvertisementId,
+          type,
+          useYn: "Y",
+        });
         toggleAdvertisementModificationModal();
         initializeInputValues();
       }
     }
   };
 
-  const isAdvertisementBeingModified =
+  const IS_ADVERTISEMENT_BEING_MODIFIED =
     toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
 
   return {
@@ -262,7 +290,7 @@ const useAdvertisement = (): UseAdvertisement => {
     toBeModifiedAdvertisementIndex,
     advertisementNameInputRef,
     urlLinkInputRef,
-    isAdvertisementBeingModified,
+    IS_ADVERTISEMENT_BEING_MODIFIED,
     initializeAdvertisementsList,
     registerNewAdvertisement,
     deleteAdvertisement,

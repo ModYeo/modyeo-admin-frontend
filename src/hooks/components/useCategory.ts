@@ -29,14 +29,14 @@ interface UseCategory {
   detailedCategory: IDetailedCategory | null;
   toBeModifiedCategoryIndex: number;
   categoryInputRef: React.RefObject<HTMLInputElement>;
-  isCategoryBeingModified: boolean;
+  IS_CATEGORY_BEING_MODIFIED: boolean;
   initializeCategoriesList: () => Promise<void>;
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCategory: (
     categoryId: number,
     targetCategoryIndex: number,
   ) => Promise<void>;
-  fetchDetailedCategory: (categoryId: number) => Promise<void>;
+  initializeDetailedCategory: (categoryId: number) => Promise<void>;
   hideDetailedCategoryModal: () => void;
   toggleCategoryModificationModal: (targetCategoryIndex?: number) => void;
   modifyCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -73,6 +73,17 @@ const useCategory = (): UseCategory => {
     return [categoryInputRef.current?.value];
   }, []);
 
+  const sendPostCategoryRequest = useCallback(
+    (inputNewCategoryName: string) => {
+      return apiManager.postNewDataElem<{
+        name: string;
+      }>(routes.server.category, {
+        name: inputNewCategoryName,
+      });
+    },
+    [],
+  );
+
   const initializeInputValues = useCallback(() => {
     const categoryNameCurrent = categoryInputRef.current;
     if (categoryNameCurrent) categoryNameCurrent.value = "";
@@ -85,16 +96,14 @@ const useCategory = (): UseCategory => {
       const [inputNewCategoryName] = extractInputValuesFromElementsRef();
 
       if (inputNewCategoryName) {
-        const newCategoryId = await apiManager.postNewDataElem<{
-          name: string;
-        }>(routes.server.category, {
-          name: inputNewCategoryName,
-        });
+        const newCategoryId = await sendPostCategoryRequest(
+          inputNewCategoryName,
+        );
         if (newCategoryId) {
           addNewCategoryInList({
             id: newCategoryId,
-            imagePath: "/",
             name: inputNewCategoryName,
+            imagePath: "/",
           });
           initializeInputValues();
         }
@@ -102,19 +111,26 @@ const useCategory = (): UseCategory => {
     },
     [
       extractInputValuesFromElementsRef,
+      sendPostCategoryRequest,
       addNewCategoryInList,
       initializeInputValues,
     ],
   );
 
-  const fetchDetailedCategory = useCallback(async (categoryId: number) => {
-    const fetchedDetailedCategory =
-      await apiManager.fetchDetailedData<IDetailedCategory>(
-        routes.server.category,
-        categoryId,
-      );
-    if (fetchedDetailedCategory) setDetailedCategory(fetchedDetailedCategory);
+  const fetchDetailedCategory = useCallback((categoryId: number) => {
+    return apiManager.fetchDetailedData<IDetailedCategory>(
+      routes.server.category,
+      categoryId,
+    );
   }, []);
+
+  const initializeDetailedCategory = useCallback(
+    async (categoryId: number) => {
+      const fetchedDetailedCategory = await fetchDetailedCategory(categoryId);
+      if (fetchedDetailedCategory) setDetailedCategory(fetchedDetailedCategory);
+    },
+    [fetchDetailedCategory],
+  );
 
   const hideDetailedCategoryModal = useCallback(() => {
     setDetailedCategory(null);
@@ -128,6 +144,10 @@ const useCategory = (): UseCategory => {
     },
     [setToBeModifiedCategoryIndex],
   );
+
+  const sendDeleteCategoryRequest = useCallback((categoryId: number) => {
+    return apiManager.deleteData(routes.server.category, categoryId);
+  }, []);
 
   const removeTargetCategoryInList = useCallback(
     (targetCategoryIndex: number) => {
@@ -144,26 +164,24 @@ const useCategory = (): UseCategory => {
       const isDeleteConfirmed =
         window.confirm("정말 카테고리를 삭제하시겠습니까?");
       if (!isDeleteConfirmed) return;
-      const isCategoryDeleteSuccessful = await apiManager.deleteData(
-        routes.server.category,
+      const isCategoryDeleteSuccessful = await sendDeleteCategoryRequest(
         categoryId,
       );
       if (isCategoryDeleteSuccessful)
         removeTargetCategoryInList(targetCategoryIndex);
     },
-    [removeTargetCategoryInList],
+    [sendDeleteCategoryRequest, removeTargetCategoryInList],
   );
 
-  const updateTargetCategory = () => {
-    const [inputNewCategoryName] = extractInputValuesFromElementsRef();
+  const sendPatchCategoryRequest = <T extends object>(modifiedCategory: T) => {
+    return apiManager.modifyData<T>(routes.server.category, modifiedCategory);
+  };
 
-    if (inputNewCategoryName) {
-      setCategories((nowCategories) => {
-        const copiedCategories = [...nowCategories];
-        copiedCategories[toBeModifiedCategoryIndex].name = inputNewCategoryName;
-        return copiedCategories;
-      });
-    }
+  const updateTargetCategory = (modifiedCategory: ICategory) => {
+    setCategories((categoriesList) => {
+      categoriesList.splice(toBeModifiedCategoryIndex, 1, modifiedCategory);
+      return [...categoriesList];
+    });
   };
 
   const modifyCategory = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -172,24 +190,23 @@ const useCategory = (): UseCategory => {
     const [inputNewCategoryName] = extractInputValuesFromElementsRef();
 
     if (inputNewCategoryName) {
-      const { id } = categories[toBeModifiedCategoryIndex];
-      const modifiedCategoryId = await apiManager.modifyData<IModifiedCategory>(
-        routes.server.category,
-        {
-          categoryId: id,
-          name: inputNewCategoryName,
-          imagePath: "",
-        },
-      );
-      if (modifiedCategoryId) {
-        updateTargetCategory();
+      const { id: targetCategoryId } = categories[toBeModifiedCategoryIndex];
+      const modifiedCategory: IModifiedCategory = {
+        categoryId: targetCategoryId,
+        name: inputNewCategoryName,
+        imagePath: "",
+      };
+      const modifiedCategoryId =
+        await sendPatchCategoryRequest<IModifiedCategory>(modifiedCategory);
+      if (targetCategoryId === modifiedCategoryId) {
+        updateTargetCategory({ ...modifiedCategory, id: modifiedCategoryId });
         toggleCategoryModificationModal();
         initializeInputValues();
       }
     }
   };
 
-  const isCategoryBeingModified =
+  const IS_CATEGORY_BEING_MODIFIED =
     toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
 
   return {
@@ -197,10 +214,10 @@ const useCategory = (): UseCategory => {
     detailedCategory,
     toBeModifiedCategoryIndex,
     categoryInputRef,
-    isCategoryBeingModified,
+    IS_CATEGORY_BEING_MODIFIED,
     initializeCategoriesList,
     registerNewCategory,
-    fetchDetailedCategory,
+    initializeDetailedCategory,
     hideDetailedCategoryModal,
     toggleCategoryModificationModal,
     deleteCategory,

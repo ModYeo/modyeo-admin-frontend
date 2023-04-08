@@ -9,7 +9,7 @@ function Collection() {
     toBeModifiedCollectionIndex,
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
-    isCollectionBeingModified,
+    IS_COLLECTION_BEING_MODIFIED,
     initializeAdvertisementsList,
     registerNewCollection,
     deleteCollection,
@@ -60,7 +60,7 @@ function Collection() {
           </span>
         </List>
       ))}
-      {isCollectionBeingModified && (
+      {IS_COLLECTION_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleCollectionModificationModal()}>
           <Modal width={500} height={500}>
             <form onSubmit={modifyCollection}>
