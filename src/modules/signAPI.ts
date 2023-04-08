@@ -1,10 +1,16 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
+import authCookieManager, { AuthCookieManager } from "./authCookie";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
 import { toastSentences } from "../constants/toastSentences";
-import { IAuth } from "../type/types";
-import authCookieManager, { AuthCookieManager } from "./authCookie";
+
+interface IAuth {
+  accessToken: string;
+  accessTokenExpiresIn: number;
+  grantType: string;
+  refreshToken: string;
+}
 
 interface ISignAPIManager {
   handleSignIn: (id: string, password: string) => Promise<boolean | null>;
@@ -120,3 +126,4 @@ class SignAPIManager implements ISignAPIManager {
 const signAPIManager = new SignAPIManager(authCookieManager);
 
 export default signAPIManager;
+export type { IAuth };

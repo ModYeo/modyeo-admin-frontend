@@ -8,8 +8,7 @@ import Notice from "../components/admin/Notice";
 import Collection from "../components/admin/Collection";
 import Inquiry from "../components/admin/Inquiry";
 import InquiryDetail from "./InquiryDetail";
-import { ChosenTabMenuEnum } from "../type/enums";
-import useAdmin from "../hooks/pages/useAdmin";
+import useAdmin, { ChosenTabMenuEnum } from "../hooks/pages/useAdmin";
 
 function showChosenTabMenu(
   chosenTabMenu: ChosenTabMenuEnum,
@@ -34,7 +33,7 @@ function showChosenTabMenu(
     return <Collection />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.inquiry && pathParam) {
-    return <InquiryDetail inquiryId={pathParam} />;
+    return <InquiryDetail />;
   }
   if (chosenTabMenu === ChosenTabMenuEnum.inquiry) {
     return <Inquiry />;
@@ -52,10 +51,7 @@ function Admin() {
   return (
     <div>
       <NavBar />
-      {showChosenTabMenu(
-        currentPath,
-        Number.isInteger(inquiryId) ? inquiryId : undefined,
-      )}
+      {showChosenTabMenu(currentPath, inquiryId)}
     </div>
   );
 }

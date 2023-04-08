@@ -93,16 +93,16 @@ const useCategory = (): UseCategory => {
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      const [inputNewCategoryName] = extractInputValuesFromElementsRef();
+      const [categoryNameInputValue] = extractInputValuesFromElementsRef();
 
-      if (inputNewCategoryName) {
+      if (categoryNameInputValue) {
         const newCategoryId = await sendPostCategoryRequest(
-          inputNewCategoryName,
+          categoryNameInputValue,
         );
         if (newCategoryId) {
           addNewCategoryInList({
             id: newCategoryId,
-            name: inputNewCategoryName,
+            name: categoryNameInputValue,
             imagePath: "/",
           });
           initializeInputValues();

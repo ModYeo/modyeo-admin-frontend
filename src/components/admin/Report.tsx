@@ -1,59 +1,26 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { reportType } from "../../constants/reportTypes";
-import routes from "../../constants/routes";
-import { toastSentences } from "../../constants/toastSentences";
-import apiManager from "../../modules/apiManager";
+import React from "react";
+import useReport, {
+  ReportStatusEnum,
+  reportType,
+} from "../../hooks/components/useReport";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
-import { ReportStatusEnum } from "../../type/enums";
-import { IDetailedReport, IReport } from "../../type/types";
 import Modal from "../commons/Modal";
 
-function contains<T extends string>(
-  list: ReadonlyArray<T>,
-  value: string,
-): value is T {
-  return list.some((item) => item === value);
-}
-
 function Report() {
-  const [reports, setReports] = useState<Array<IReport>>([]);
-  const [clickedReport, setClickedReport] = useState<IDetailedReport | null>(
-    null,
-  );
-  const handleReportTypeSelectOnChange = async (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => {
-    const selectedType = e.currentTarget.value;
-    if (contains(reportType, selectedType)) {
-      const fetchedReport = await apiManager.fetchData<IReport>(
-        routes.server.report.type,
-        selectedType,
-      );
-      if (fetchedReport) setReports(fetchedReport.reverse());
-    }
-  };
-  const handleOnReportStatusChange = async (
-    newStatus: ReportStatusEnum,
-    reportId: number,
-  ) => {
-    const modifiedReportId = await apiManager.modifyData(
-      `${routes.server.report.index}/${reportId}/${newStatus}`,
-    );
-    if (modifiedReportId) toast.info(toastSentences.report.modified);
-  };
-  const fetchDetailedReport = async (reportId: number) => {
-    const fetchedDetailedReport =
-      await apiManager.fetchDetailedData<IDetailedReport>(
-        `${routes.server.report.index}/${reportId}`,
-      );
-    if (fetchedDetailedReport) setClickedReport(fetchedDetailedReport);
-  };
+  const {
+    reports,
+    detailedReport,
+    onChangeReportType,
+    onChangeTargetReportStatus,
+    initializeDetailedReport,
+    hideDetailedReportModal,
+  } = useReport();
+
   return (
     <ListContainer>
       <h5>report type select</h5>
       <br />
-      <select defaultValue="-" onChange={handleReportTypeSelectOnChange}>
+      <select defaultValue="-" onChange={onChangeReportType}>
         <option>-</option>
         {reportType.map((type) => (
           <option key={type}>{type}</option>
@@ -70,9 +37,11 @@ function Report() {
               처리 상태 -
               <select
                 defaultValue={report.reportStatus}
-                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                  handleOnReportStatusChange(
-                    e.currentTarget.value as ReportStatusEnum,
+                onChange={({
+                  currentTarget: { value: changedReportStatus },
+                }: React.ChangeEvent<HTMLSelectElement>) =>
+                  onChangeTargetReportStatus(
+                    changedReportStatus as ReportStatusEnum,
                     report.id,
                   )
                 }
@@ -85,20 +54,20 @@ function Report() {
             <div>
               <button
                 type="button"
-                onClick={() => fetchDetailedReport(report.id)}
+                onClick={() => initializeDetailedReport(report.id)}
               >
                 about
               </button>
             </div>
           </div>
-          {clickedReport && (
-            <ModalBackground onClick={() => setClickedReport(null)}>
+          {detailedReport && (
+            <ModalBackground onClick={hideDetailedReportModal}>
               <Modal width={300} height={450}>
                 <div>
-                  <div>{clickedReport.title}</div>
-                  <div>report type - {clickedReport.reportType}</div>
-                  <div>created by - {clickedReport.createdBy}</div>
-                  <div>updated by - {clickedReport.updatedBy}</div>
+                  <div>{detailedReport.title}</div>
+                  <div>report type - {detailedReport.reportType}</div>
+                  <div>created by - {detailedReport.createdBy}</div>
+                  <div>updated by - {detailedReport.updatedBy}</div>
                 </div>
               </Modal>
             </ModalBackground>

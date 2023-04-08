@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
+import authCookieManager, { AuthCookieManager } from "./authCookie";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
 import { toastSentences } from "../constants/toastSentences";
-import { IAuth } from "../type/types";
-import authCookieManager, { AuthCookieManager } from "./authCookie";
+import { IAuth } from "./signAPI";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;

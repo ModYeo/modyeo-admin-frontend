@@ -1,5 +1,5 @@
 import { Cookies } from "react-cookie";
-import { tokenName } from "../constants/tokens";
+import tokenName from "../constants/tokens";
 
 interface IAuthCookieManager {
   saveAccessAndRefreshTokenAsCookie: (

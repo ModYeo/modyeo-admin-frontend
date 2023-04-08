@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import routes from "../../constants/routes";
 import authCookieManager from "../../modules/authCookie";
@@ -11,11 +11,13 @@ import {
 
 function NavBar() {
   const navigator = useNavigate();
-  const handleSignOut = async () => {
+
+  const handleSignOut = useCallback(async () => {
     const isSignOutSuccessful = await signAPIManager.handleSignOut();
     if (!isSignOutSuccessful) authCookieManager.deleteAccessAndRefreshToken();
     navigator(routes.client.signin);
-  };
+  }, [navigator]);
+
   return (
     <NavBarContainer>
       <NavBarSection>
