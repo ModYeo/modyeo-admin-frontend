@@ -18,7 +18,7 @@ interface UseCollection {
   toBeModifiedCollectionIndex: number;
   collectionInfoNameTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   collectionDescTextAreaRef: React.RefObject<HTMLTextAreaElement>;
-  isCollectionBeingModified: boolean;
+  IS_COLLECTION_BEING_MODIFIED: boolean;
   initializeAdvertisementsList: () => Promise<void>;
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
@@ -196,7 +196,7 @@ const useCollection = (): UseCollection => {
     }
   };
 
-  const isCollectionBeingModified =
+  const IS_COLLECTION_BEING_MODIFIED =
     toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
 
   return {
@@ -204,7 +204,7 @@ const useCollection = (): UseCollection => {
     toBeModifiedCollectionIndex,
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
-    isCollectionBeingModified,
+    IS_COLLECTION_BEING_MODIFIED,
     initializeAdvertisementsList,
     registerNewCollection,
     deleteCollection,

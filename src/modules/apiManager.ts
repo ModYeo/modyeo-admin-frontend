@@ -29,7 +29,7 @@ enum HttpMethodEnum {
 
 type BodyDataType = { [key: string]: unknown };
 
-class APIManager implements IAPIManager {
+export class APIManager implements IAPIManager {
   public apiAxios: AxiosInstance = axios.create();
 
   private reRequestAxios: AxiosInstance = axios.create();
