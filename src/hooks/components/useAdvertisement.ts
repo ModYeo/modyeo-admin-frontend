@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
 
 import apiManager from "../../modules/apiManager";
@@ -41,7 +41,6 @@ interface UseAdvertisement {
   advertisementNameInputRef: React.RefObject<HTMLInputElement>;
   urlLinkInputRef: React.RefObject<HTMLInputElement>;
   IS_ADVERTISEMENT_BEING_MODIFIED: boolean;
-  initializeAdvertisementsList: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -284,6 +283,10 @@ const useAdvertisement = (): UseAdvertisement => {
   const IS_ADVERTISEMENT_BEING_MODIFIED =
     toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
 
+  useEffect(() => {
+    initializeAdvertisementsList();
+  }, [initializeAdvertisementsList]);
+
   return {
     advertisements,
     detailedAdvertisement,
@@ -291,7 +294,6 @@ const useAdvertisement = (): UseAdvertisement => {
     advertisementNameInputRef,
     urlLinkInputRef,
     IS_ADVERTISEMENT_BEING_MODIFIED,
-    initializeAdvertisementsList,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,

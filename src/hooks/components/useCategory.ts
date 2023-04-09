@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
@@ -30,7 +30,6 @@ interface UseCategory {
   toBeModifiedCategoryIndex: number;
   categoryInputRef: React.RefObject<HTMLInputElement>;
   IS_CATEGORY_BEING_MODIFIED: boolean;
-  initializeCategoriesList: () => Promise<void>;
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCategory: (
     categoryId: number,
@@ -209,13 +208,16 @@ const useCategory = (): UseCategory => {
   const IS_CATEGORY_BEING_MODIFIED =
     toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
 
+  useEffect(() => {
+    initializeCategoriesList();
+  }, [initializeCategoriesList]);
+
   return {
     categories,
     detailedCategory,
     toBeModifiedCategoryIndex,
     categoryInputRef,
     IS_CATEGORY_BEING_MODIFIED,
-    initializeCategoriesList,
     registerNewCategory,
     initializeDetailedCategory,
     hideDetailedCategoryModal,

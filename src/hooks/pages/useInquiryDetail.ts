@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import apiManager from "../../modules/apiManager";
@@ -38,7 +38,6 @@ interface UseInquiryDetail {
   contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   IS_ANSWER_BEING_MODIFIED: boolean;
   goBackToInquiryListPage: () => void;
-  initializeDetailedInquiry: () => Promise<void>;
   registerNewAnswer: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteAnswer: (answerId: number, index: number) => Promise<void>;
   toggleAnswerModificationModal: (targetAnswerIndex?: number) => void;
@@ -230,13 +229,16 @@ const useInquiryDetail = (): UseInquiryDetail => {
   const IS_ANSWER_BEING_MODIFIED =
     toBeModifiedAnswerIndex !== NOTHING_BEING_MODIFIED;
 
+  useEffect(() => {
+    initializeDetailedInquiry();
+  }, [initializeDetailedInquiry]);
+
   return {
     inquiry,
     toBeModifiedAnswerIndex,
     contentTextAreaRef,
     IS_ANSWER_BEING_MODIFIED,
     goBackToInquiryListPage,
-    initializeDetailedInquiry,
     registerNewAnswer,
     deleteAnswer,
     toggleAnswerModificationModal,

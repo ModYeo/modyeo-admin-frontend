@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useInquiryDetail from "../hooks/pages/useInquiryDetail";
 
 import Modal from "../components/commons/Modal";
@@ -11,16 +11,11 @@ function InquiryDetail() {
     contentTextAreaRef,
     IS_ANSWER_BEING_MODIFIED,
     goBackToInquiryListPage,
-    initializeDetailedInquiry,
     registerNewAnswer,
     deleteAnswer,
     toggleAnswerModificationModal,
     modifyAnswer,
   } = useInquiryDetail();
-
-  useEffect(() => {
-    initializeDetailedInquiry();
-  }, [initializeDetailedInquiry]);
 
   return (
     <div>

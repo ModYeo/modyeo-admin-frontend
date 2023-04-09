@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
@@ -27,7 +27,6 @@ interface UseNotice {
   contentInputRef: React.RefObject<HTMLInputElement>;
   titleInputRef: React.RefObject<HTMLInputElement>;
   IS_NOTICE_BEING_MODIFIED: boolean;
-  initializaNoticesList: () => Promise<void>;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -211,6 +210,10 @@ const useNotice = (): UseNotice => {
   const IS_NOTICE_BEING_MODIFIED =
     toBeModifiedNoticeIndex !== NOTHING_BEING_MODIFIED;
 
+  useEffect(() => {
+    initializaNoticesList();
+  }, [initializaNoticesList]);
+
   return {
     notices,
     detailedNotice,
@@ -218,7 +221,6 @@ const useNotice = (): UseNotice => {
     contentInputRef,
     titleInputRef,
     IS_NOTICE_BEING_MODIFIED,
-    initializaNoticesList,
     registerNewAdvertisement,
     deleteNotice,
     initializeDetailedNotice,

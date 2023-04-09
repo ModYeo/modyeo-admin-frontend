@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import authCookieManager from "../../modules/authCookie";
 import signAPIManager from "../../modules/signAPI";
@@ -7,7 +7,6 @@ import routes from "../../constants/routes";
 interface UseSignIn {
   idInputRef: React.RefObject<HTMLInputElement>;
   pwInputRef: React.RefObject<HTMLInputElement>;
-  checkTokensValidation: () => Promise<void>;
   signinAdminService: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
@@ -40,7 +39,11 @@ const useSingnIn = (): UseSignIn => {
     [navigator],
   );
 
-  return { idInputRef, pwInputRef, checkTokensValidation, signinAdminService };
+  useEffect(() => {
+    checkTokensValidation();
+  }, [checkTokensValidation]);
+
+  return { idInputRef, pwInputRef, signinAdminService };
 };
 
 export default useSingnIn;

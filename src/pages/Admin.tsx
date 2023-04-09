@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import NavBar from "../components/commons/NavBar";
 import ColumnCode from "../components/admin/ColumnCode";
 import Advertisement from "../components/admin/Advertisement";
@@ -42,11 +42,7 @@ function showChosenTabMenu(
 }
 
 function Admin() {
-  const { currentPath, inquiryId, checkTokensExistence } = useAdmin();
-
-  useEffect(() => {
-    checkTokensExistence();
-  }, [checkTokensExistence]);
+  const { currentPath, inquiryId } = useAdmin();
 
   return (
     <div>

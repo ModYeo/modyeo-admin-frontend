@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useAdvertisement from "../../hooks/components/useAdvertisement";
 import Modal from "../commons/Modal";
 import {
@@ -16,7 +16,6 @@ function Advertisement() {
     advertisementNameInputRef,
     urlLinkInputRef,
     IS_ADVERTISEMENT_BEING_MODIFIED,
-    initializeAdvertisementsList,
     registerNewAdvertisement,
     deleteAdvertisement,
     fetchDetailedAdvertisement,
@@ -24,10 +23,6 @@ function Advertisement() {
     toggleAdvertisementModificationModal,
     modifyAdvertisement,
   } = useAdvertisement();
-
-  useEffect(() => {
-    initializeAdvertisementsList();
-  }, [initializeAdvertisementsList]);
 
   return (
     <ListContainer>

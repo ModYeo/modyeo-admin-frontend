@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useCategory from "../../hooks/components/useCategory";
 import Modal from "../commons/Modal";
 import {
@@ -15,7 +15,6 @@ function Category() {
     toBeModifiedCategoryIndex,
     categoryInputRef,
     IS_CATEGORY_BEING_MODIFIED,
-    initializeCategoriesList,
     registerNewCategory,
     initializeDetailedCategory,
     hideDetailedCategoryModal,
@@ -23,10 +22,6 @@ function Category() {
     deleteCategory,
     modifyCategory,
   } = useCategory();
-
-  useEffect(() => {
-    initializeCategoriesList();
-  }, [initializeCategoriesList]);
 
   return (
     <ListContainer>

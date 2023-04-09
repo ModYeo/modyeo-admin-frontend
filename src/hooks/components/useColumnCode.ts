@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
@@ -25,7 +25,6 @@ interface UseColumnCode {
   columnNameInputRef: React.RefObject<HTMLInputElement>;
   codeDescriptionInputRef: React.RefObject<HTMLInputElement>;
   IS_COLUMNCODE_BEING_MODIFIED: boolean;
-  initializeAdvertisementsList: () => Promise<void>;
   registerNewColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteColumnCode: (
     columnCodeId: number,
@@ -231,6 +230,10 @@ const useColumnCode = (): UseColumnCode => {
   const IS_COLUMNCODE_BEING_MODIFIED =
     toBeModifiedColumnCodeIndex !== NOTHING_BEING_MODIFIED;
 
+  useEffect(() => {
+    initializeAdvertisementsList();
+  }, [initializeAdvertisementsList]);
+
   return {
     columnCodes,
     detailedColumCode,
@@ -239,7 +242,6 @@ const useColumnCode = (): UseColumnCode => {
     columnNameInputRef,
     codeDescriptionInputRef,
     IS_COLUMNCODE_BEING_MODIFIED,
-    initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
     initializeDetailedColumnCode,
