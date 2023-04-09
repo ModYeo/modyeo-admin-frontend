@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
-import { toastSentences } from "../constants/toastSentences";
+import toastSentences from "../constants/toastSentences";
 import { IAuth } from "./signAPI";
 
 interface IAPIManager {

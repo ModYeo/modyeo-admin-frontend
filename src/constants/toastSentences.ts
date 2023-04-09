@@ -1,4 +1,4 @@
-export const toastSentences = {
+const toastSentences = {
   signInFailed: "ID 또는 비밀번호가 일치하지 않습니다.",
   requestResignIn: "오류가 있습니다. 다시 로그인해주세요.",
   advertisement: {
@@ -10,4 +10,7 @@ export const toastSentences = {
   report: {
     modified: "신고 항목의 상태를 변경했습니다.",
   },
+  invalidRequest: "올바르지 않은 요청입니다.",
 } as const;
+
+export default toastSentences;

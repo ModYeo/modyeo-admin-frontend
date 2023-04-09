@@ -1,10 +1,12 @@
-import { useCallback, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
-import { toastSentences } from "../../constants/toastSentences";
+import toastSentences from "../../constants/toastSentences";
 
-export const reportType = [
+export const reportTypesList = [
   "ART",
   "MEMBER",
   "REP",
@@ -19,7 +21,9 @@ enum ReportStatusEnum {
   RCPT = "RCPT",
 }
 
-type ReportTypeType = (typeof reportType)[number];
+type ReportTypeType = (typeof reportTypesList)[number];
+
+const REPORT_STATUS_LIST = Object.values(ReportStatusEnum);
 
 interface IReport {
   contents: string;
@@ -48,10 +52,9 @@ function contains<T extends string>(
 
 interface UseReport {
   reports: Array<IReport>;
+  selectedReportType: string;
   detailedReport: IDetailedReport | null;
-  onChangeReportType: (
-    e: React.ChangeEvent<HTMLSelectElement>,
-  ) => Promise<void>;
+  onChangeReportType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onChangeTargetReportStatus: (
     changedReportStatus: ReportStatusEnum,
     reportId: number,
@@ -61,33 +64,62 @@ interface UseReport {
 }
 
 const useReport = (): UseReport => {
-  // TODO: navigator로 report type 바꾸면 useEffect로 알맞은 type의 report들 가져오기. url을 통한 방문에 대응할 수 있도록 url과 report type 일치시키기.
+  const navigator = useNavigate();
+
+  const { pathname } = useLocation();
+
   const [reports, setReports] = useState<Array<IReport>>([]);
 
   const [detailedReport, setDetailedReport] = useState<IDetailedReport | null>(
     null,
   );
 
-  const fetchReports = useCallback(
-    (changedReportStatusType: ReportTypeType) => {
-      return apiManager.fetchData<IReport>(
-        routes.server.report.type,
-        changedReportStatusType,
-      );
-    },
-    [],
+  const reportTypePathParam = useMemo(() => {
+    const pathElements = pathname.split("/");
+    return pathElements[pathElements.length - 1];
+  }, [pathname]);
+
+  const isValidReportType = useMemo(
+    () => contains(reportTypesList, reportTypePathParam),
+    [reportTypePathParam],
   );
 
+  const selectedReportType = useMemo(() => {
+    return isValidReportType ? reportTypePathParam : "-";
+  }, [isValidReportType, reportTypePathParam]);
+
+  const fetchReports = useCallback(() => {
+    return apiManager.fetchData<IReport>(
+      routes.server.report.type,
+      reportTypePathParam,
+    );
+  }, [reportTypePathParam]);
+
+  const initializaReportsList = useCallback(async () => {
+    const fetchedReport = await fetchReports();
+    if (fetchedReport) setReports(fetchedReport.reverse());
+  }, [fetchReports]);
+
+  const setReportsListAsDefault = useCallback(() => {
+    setReports((reportsList) => {
+      if (reportsList.length !== 0) return [];
+      return reportsList;
+    });
+    if (pathname !== routes.client.report) {
+      toast.error(toastSentences.invalidRequest);
+      navigator(routes.client.report);
+    }
+  }, [pathname, setReports, navigator]);
+
   const onChangeReportType = useCallback(
-    async ({
+    ({
       currentTarget: { value: changedReportType },
     }: React.ChangeEvent<HTMLSelectElement>) => {
-      if (contains(reportType, changedReportType)) {
-        const fetchedReport = await fetchReports(changedReportType);
-        if (fetchedReport) setReports(fetchedReport.reverse());
-      }
+      if (contains(reportTypesList, changedReportType)) {
+        navigator(`${routes.client.report}/${changedReportType}`);
+      } else setReportsListAsDefault();
     },
-    [fetchReports],
+    [navigator, setReportsListAsDefault],
   );
 
   const sendPatchReportRequest = useCallback(
@@ -101,12 +133,13 @@ const useReport = (): UseReport => {
 
   const onChangeTargetReportStatus = useCallback(
     async (changedReportStatus: ReportStatusEnum, reportId: number) => {
-      // TODO: 위 onChangeReportType 함수와 같이 올바르지 못한 report status 입력하지 못하도록 js로 방어하기.
-      const modifiedReportId = await sendPatchReportRequest(
-        changedReportStatus,
-        reportId,
-      );
-      if (modifiedReportId) toast.info(toastSentences.report.modified);
+      if (REPORT_STATUS_LIST.includes(changedReportStatus)) {
+        const modifiedReportId = await sendPatchReportRequest(
+          changedReportStatus,
+          reportId,
+        );
+        if (modifiedReportId) toast.info(toastSentences.report.modified);
+      } else toast.error(toastSentences.invalidRequest);
     },
     [sendPatchReportRequest],
   );
@@ -129,8 +162,19 @@ const useReport = (): UseReport => {
     setDetailedReport(null);
   }, []);
 
+  useEffect(() => {
+    if (isValidReportType) initializaReportsList();
+    else setReportsListAsDefault();
+  }, [
+    reportTypePathParam,
+    isValidReportType,
+    initializaReportsList,
+    setReportsListAsDefault,
+  ]);
+
   return {
     reports,
+    selectedReportType,
     detailedReport,
     onChangeReportType,
     onChangeTargetReportStatus,

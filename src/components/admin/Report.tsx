@@ -1,14 +1,15 @@
 import React from "react";
 import useReport, {
   ReportStatusEnum,
-  reportType,
+  reportTypesList,
 } from "../../hooks/components/useReport";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import Modal from "../commons/Modal";
+import { List, ListContainer, ModalBackground } from "../../styles/styles";
 
 function Report() {
   const {
     reports,
+    selectedReportType,
     detailedReport,
     onChangeReportType,
     onChangeTargetReportStatus,
@@ -20,9 +21,9 @@ function Report() {
     <ListContainer>
       <h5>report type select</h5>
       <br />
-      <select defaultValue="-" onChange={onChangeReportType}>
-        <option>-</option>
-        {reportType.map((type) => (
+      <select value={selectedReportType} onChange={onChangeReportType}>
+        <option disabled>-</option>
+        {reportTypesList.map((type) => (
           <option key={type}>{type}</option>
         ))}
       </select>
