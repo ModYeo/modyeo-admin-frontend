@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import authCookieManager from "../../modules/authCookie";
 import routes from "../../constants/routes";
@@ -27,7 +27,7 @@ const useAdmin = (): UseAdmin => {
 
   const { pathname } = useLocation();
 
-  const lastIndexOfSlash = pathname.lastIndexOf("/");
+  const lastIndexOfSlash = useMemo(() => pathname.lastIndexOf("/"), [pathname]);
 
   const currentPath = pathname.slice(
     MINIMUN_PATH_LENGTH_START,
@@ -49,6 +49,10 @@ const useAdmin = (): UseAdmin => {
       authCookieManager.getAccessAndRefreshTokenFromCookie();
     if (!accessToken || !refreshToken) navigator(routes.client.signin);
   }, [navigator]);
+
+  useEffect(() => {
+    checkTokensExistence();
+  }, [checkTokensExistence]);
 
   return {
     currentPath,

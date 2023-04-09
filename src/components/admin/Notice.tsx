@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useNotice from "../../hooks/components/useNotice";
 import Modal from "../commons/Modal";
 import {
@@ -16,7 +16,6 @@ function Notice() {
     contentInputRef,
     titleInputRef,
     IS_NOTICE_BEING_MODIFIED,
-    initializaNoticesList,
     registerNewAdvertisement,
     deleteNotice,
     initializeDetailedNotice,
@@ -24,10 +23,6 @@ function Notice() {
     toggleNoticeModificationModal,
     modifyNotice,
   } = useNotice();
-
-  useEffect(() => {
-    initializaNoticesList();
-  }, [initializaNoticesList]);
 
   return (
     <ListContainer>

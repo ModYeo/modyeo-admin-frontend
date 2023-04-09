@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
@@ -19,7 +19,6 @@ interface UseCollection {
   collectionInfoNameTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   collectionDescTextAreaRef: React.RefObject<HTMLTextAreaElement>;
   IS_COLLECTION_BEING_MODIFIED: boolean;
-  initializeAdvertisementsList: () => Promise<void>;
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
     collectionInfoId: number,
@@ -199,13 +198,16 @@ const useCollection = (): UseCollection => {
   const IS_COLLECTION_BEING_MODIFIED =
     toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
 
+  useEffect(() => {
+    initializeAdvertisementsList();
+  }, [initializeAdvertisementsList]);
+
   return {
     collections,
     toBeModifiedCollectionIndex,
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
     IS_COLLECTION_BEING_MODIFIED,
-    initializeAdvertisementsList,
     registerNewCollection,
     deleteCollection,
     toggleCollectionModificationModal,

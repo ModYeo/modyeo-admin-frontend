@@ -1,15 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useSingnIn from "../hooks/pages/useSignIn";
 
 import { Container, SignButton, SignForm, SignInput } from "../styles/styles";
 
 function SignIn() {
-  const { idInputRef, pwInputRef, checkTokensValidation, signinAdminService } =
-    useSingnIn();
-
-  useEffect(() => {
-    checkTokensValidation();
-  }, [checkTokensValidation]);
+  const { idInputRef, pwInputRef, signinAdminService } = useSingnIn();
 
   return (
     <Container>

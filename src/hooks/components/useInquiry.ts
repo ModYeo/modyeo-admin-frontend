@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
@@ -22,7 +22,12 @@ interface IInquiry {
   title: string;
 }
 
-const useInquiry = () => {
+interface UseInquiry {
+  inquiries: IInquiry[];
+  goToDetailedInquiryPage: (inquiryId: number) => void;
+}
+
+const useInquiry = (): UseInquiry => {
   const navigator = useNavigate();
 
   const [inquiries, setInquries] = useState<Array<IInquiry>>([]);
@@ -45,7 +50,11 @@ const useInquiry = () => {
     [navigator],
   );
 
-  return { inquiries, initializeInquiriesList, goToDetailedInquiryPage };
+  useEffect(() => {
+    initializeInquiriesList();
+  }, [initializeInquiriesList]);
+
+  return { inquiries, goToDetailedInquiryPage };
 };
 
 export default useInquiry;

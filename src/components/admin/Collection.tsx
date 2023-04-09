@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useCollection from "../../hooks/components/useCollection";
 import Modal from "../commons/Modal";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
@@ -10,16 +10,11 @@ function Collection() {
     collectionInfoNameTextAreaRef,
     collectionDescTextAreaRef,
     IS_COLLECTION_BEING_MODIFIED,
-    initializeAdvertisementsList,
     registerNewCollection,
     deleteCollection,
     toggleCollectionModificationModal,
     modifyCollection,
   } = useCollection();
-
-  useEffect(() => {
-    initializeAdvertisementsList();
-  }, [initializeAdvertisementsList]);
 
   return (
     <ListContainer>

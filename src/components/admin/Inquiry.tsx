@@ -1,15 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useInquiry from "../../hooks/components/useInquiry";
 
 import { List, ListContainer } from "../../styles/styles";
 
 function Inquiry() {
-  const { inquiries, initializeInquiriesList, goToDetailedInquiryPage } =
-    useInquiry();
-
-  useEffect(() => {
-    initializeInquiriesList();
-  }, [initializeInquiriesList]);
+  const { inquiries, goToDetailedInquiryPage } = useInquiry();
 
   return (
     <ListContainer>

@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import useColumnCode from "../../hooks/components/useColumnCode";
 import Modal from "../commons/Modal";
 import {
@@ -17,7 +17,6 @@ function ColumnCode() {
     columnNameInputRef,
     codeDescriptionInputRef,
     IS_COLUMNCODE_BEING_MODIFIED,
-    initializeAdvertisementsList,
     registerNewColumnCode,
     deleteColumnCode,
     initializeDetailedColumnCode,
@@ -25,10 +24,6 @@ function ColumnCode() {
     toggleColumnCodeModificationModal,
     modifyColumnCode,
   } = useColumnCode();
-
-  useEffect(() => {
-    initializeAdvertisementsList();
-  }, [initializeAdvertisementsList]);
 
   return (
     <ListContainer>
