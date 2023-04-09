@@ -1,23 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import routes from "../../constants/routes";
-import apiManager from "../../modules/apiManager";
+import React, { useEffect } from "react";
+import useInquiry from "../../hooks/components/useInquiry";
+
 import { List, ListContainer } from "../../styles/styles";
-import { ChosenTabMenuEnum } from "../../type/enums";
-import { IInquiry } from "../../type/types";
 
 function Inquiry() {
-  const navigator = useNavigate();
-  const [inquiries, setInquries] = useState<Array<IInquiry>>([]);
+  const { inquiries, initializeInquiriesList, goToDetailedInquiryPage } =
+    useInquiry();
+
   useEffect(() => {
-    (async () => {
-      const fetchedInquiries = await apiManager.fetchData<IInquiry>(
-        routes.server.inquiry.index,
-      );
-      // FIX: inquiry/list로 get 요청 에러 메세지 없음. 500에러
-      if (fetchedInquiries) setInquries(fetchedInquiries);
-    })();
-  }, []);
+    initializeInquiriesList();
+  }, [initializeInquiriesList]);
+
   return (
     <ListContainer>
       <h5>관리자 질문</h5>
@@ -33,11 +26,7 @@ function Inquiry() {
           <div>
             <button
               type="button"
-              onClick={() =>
-                navigator(
-                  `${routes.client.admin}/${ChosenTabMenuEnum.inquiry}/${inquiry.inquiryId}`,
-                )
-              }
+              onClick={() => goToDetailedInquiryPage(inquiry.inquiryId)}
             >
               about
             </button>

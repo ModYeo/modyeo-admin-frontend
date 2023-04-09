@@ -86,7 +86,7 @@ const useColumnCode = (): UseColumnCode => {
 
   const sendPostColumnCodeRequest = useCallback(
     <T extends object>(newColumnCode: T) => {
-      return apiManager.postNewDataElem<T>(routes.server.notice, newColumnCode);
+      return apiManager.postNewDataElem<T>(routes.server.column, newColumnCode);
     },
     [],
   );

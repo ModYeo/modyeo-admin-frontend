@@ -2,13 +2,23 @@ import { useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import authCookieManager from "../../modules/authCookie";
 import routes from "../../constants/routes";
-import { ChosenTabMenuEnum } from "../../type/enums";
+
+export enum ChosenTabMenuEnum {
+  category = "category",
+  report = "report",
+  notice = "notice",
+  advertisement = "advertisement",
+  columnCode = "columnCode",
+  collection = "collection",
+  inquiry = "inquiry",
+  inquiryDetailed = "inquiryDetailed",
+}
 
 const MINIMUN_PATH_LENGTH_START = 7;
 
 interface UseAdmin {
   currentPath: ChosenTabMenuEnum;
-  inquiryId: number;
+  inquiryId?: number;
   checkTokensExistence: () => void;
 }
 
@@ -26,9 +36,13 @@ const useAdmin = (): UseAdmin => {
       : lastIndexOfSlash,
   ) as ChosenTabMenuEnum;
 
-  const inquiryId = Number(
+  const inquiryIdPathParam = Number(
     pathname.slice(lastIndexOfSlash + 1, pathname.length),
   );
+
+  const inquiryId = Number.isInteger(inquiryIdPathParam)
+    ? inquiryIdPathParam
+    : undefined;
 
   const checkTokensExistence = useCallback(() => {
     const [accessToken, refreshToken] =

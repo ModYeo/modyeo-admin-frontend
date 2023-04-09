@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
-import { toastSentences } from "../../constants/toastSentences";
+import toastSentences from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 
 const AD_TYPE = "ARTICLE";
