@@ -7,6 +7,8 @@ import {
   ListContainer,
   ModalBackground,
 } from "../../styles/styles";
+import Card from "../molcules/ListElement";
+import { ObjectType } from "../atoms/Card";
 
 function Category() {
   const {
@@ -34,27 +36,14 @@ function Category() {
       <br />
       {categories.map((category, index) => (
         <List key={category.id}>
-          {category.name}
-          <span>
-            <button
-              type="button"
-              onClick={() => initializeDetailedCategory(category.id)}
-            >
-              about
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleCategoryModificationModal(index)}
-            >
-              modify
-            </button>
-            <button
-              type="button"
-              onClick={() => deleteCategory(category.id, index)}
-            >
-              delete
-            </button>
-          </span>
+          <Card
+            listElement={category as unknown as ObjectType}
+            elementId={category.id}
+            elementIndex={index}
+            initializeDetailedElement={initializeDetailedCategory}
+            toggleModificationModal={toggleCategoryModificationModal}
+            deleteElement={deleteCategory}
+          />
         </List>
       ))}
       {detailedCategory && (

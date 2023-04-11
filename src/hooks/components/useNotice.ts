@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 interface INotice {
   content: string;
@@ -24,12 +25,9 @@ interface UseNotice {
   notices: Array<INotice>;
   detailedNotice: IDetailedNotice | null;
   toBeModifiedNoticeIndex: number;
-  contentInputRef: React.RefObject<HTMLInputElement>;
-  titleInputRef: React.RefObject<HTMLInputElement>;
+  requiredInputItems: RequiredInputItems;
   IS_NOTICE_BEING_MODIFIED: boolean;
-  registerNewAdvertisement: (
-    e: React.FormEvent<HTMLFormElement>,
-  ) => Promise<void>;
+  registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteNotice: (noticeId: number, targetNoticeIndex: number) => Promise<void>;
   initializeDetailedNotice: (noticeId: number) => Promise<void>;
   hideDetailedNoticeModal: () => void;
@@ -44,19 +42,41 @@ const useNotice = (): UseNotice => {
     null,
   );
 
-  const [toBeModifiedNoticeIndex, setToBoModifiedNoticeIndex] = useState(
+  const [toBeModifiedNoticeIndex, setToBeModifiedNoticeIndex] = useState(
     NOTHING_BEING_MODIFIED,
   );
+
+  const IS_NOTHING_BEING_MODIFIED =
+    toBeModifiedNoticeIndex === NOTHING_BEING_MODIFIED;
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   const contentInputRef = useRef<HTMLInputElement>(null);
 
+  const requiredInputItems = useMemo((): RequiredInputItems => {
+    return [
+      {
+        itemName: "title",
+        refObject: titleInputRef,
+        defaultValue: IS_NOTHING_BEING_MODIFIED
+          ? ""
+          : notices[toBeModifiedNoticeIndex].title,
+      },
+      {
+        itemName: "content",
+        refObject: contentInputRef,
+        defaultValue: IS_NOTHING_BEING_MODIFIED
+          ? ""
+          : notices[toBeModifiedNoticeIndex].content,
+      },
+    ];
+  }, [IS_NOTHING_BEING_MODIFIED, notices, toBeModifiedNoticeIndex]);
+
   const fetchNotices = useCallback(async () => {
     return apiManager.fetchData<INotice>(routes.server.notice);
   }, []);
 
-  const initializaNoticesList = useCallback(async () => {
+  const initializeNoticesList = useCallback(async () => {
     const fetchedNotices = await fetchNotices();
     if (fetchedNotices) setNotices(fetchedNotices.reverse());
   }, [fetchNotices]);
@@ -85,7 +105,7 @@ const useNotice = (): UseNotice => {
     [],
   );
 
-  const registerNewAdvertisement = useCallback(
+  const registerNewNotice = useCallback(
     async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
@@ -175,8 +195,8 @@ const useNotice = (): UseNotice => {
   const toggleNoticeModificationModal = useCallback(
     (targetNoticeIndex?: number) => {
       if (targetNoticeIndex !== undefined)
-        setToBoModifiedNoticeIndex(targetNoticeIndex);
-      else setToBoModifiedNoticeIndex(NOTHING_BEING_MODIFIED);
+        setToBeModifiedNoticeIndex(targetNoticeIndex);
+      else setToBeModifiedNoticeIndex(NOTHING_BEING_MODIFIED);
     },
     [],
   );
@@ -211,17 +231,16 @@ const useNotice = (): UseNotice => {
     toBeModifiedNoticeIndex !== NOTHING_BEING_MODIFIED;
 
   useEffect(() => {
-    initializaNoticesList();
-  }, [initializaNoticesList]);
+    initializeNoticesList();
+  }, [initializeNoticesList]);
 
   return {
     notices,
     detailedNotice,
     toBeModifiedNoticeIndex,
-    contentInputRef,
-    titleInputRef,
+    requiredInputItems,
     IS_NOTICE_BEING_MODIFIED,
-    registerNewAdvertisement,
+    registerNewNotice,
     deleteNotice,
     initializeDetailedNotice,
     hideDetailedNoticeModal,
@@ -231,3 +250,4 @@ const useNotice = (): UseNotice => {
 };
 
 export default useNotice;
+export type { INotice };
