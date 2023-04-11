@@ -1,12 +1,12 @@
 import React from "react";
 import NavBar from "../components/commons/NavBar";
-import ColumnCode from "../components/admin/ColumnCode";
-import Advertisement from "../components/admin/Advertisement";
-import Category from "../components/admin/Category";
-import Report from "../components/admin/Report";
-import Notice from "../components/admin/Notice";
-import Collection from "../components/admin/Collection";
-import Inquiry from "../components/admin/Inquiry";
+import ColumnCode from "../components/organisms/ColumnCode";
+import Advertisement from "../components/organisms/Advertisement";
+import Category from "../components/organisms/Category";
+import Report from "../components/organisms/Report";
+import Notice from "../components/organisms/Notice";
+import Collection from "../components/organisms/Collection";
+import Inquiry from "../components/organisms/Inquiry";
 import InquiryDetail from "./InquiryDetail";
 import useAdmin, { ChosenTabMenuEnum } from "../hooks/pages/useAdmin";
 
