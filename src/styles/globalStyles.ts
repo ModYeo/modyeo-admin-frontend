@@ -1,23 +1,18 @@
 import { createGlobalStyle } from "styled-components";
 
-export const GlobalStyle = createGlobalStyle`
+const GlobalStyle = createGlobalStyle`
   * {
     border: none;
     outline: none;
     box-sizing: border-box;
   }
-  body {
+  body, h1, h2, h3, h4, h5, p {
     margin: 0;
-  }
-  h1, h2, h3, h4, h5 {
-    margin: 0;
-    text-align: center;
   }
   ul {
     padding-left: 0;
     list-style: none;
   }
-  button {
-    cursor: pointer;
-  }
 `;
+
+export default GlobalStyle;
