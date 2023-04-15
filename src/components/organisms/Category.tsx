@@ -1,21 +1,17 @@
 import React from "react";
 import useCategory from "../../hooks/components/useCategory";
 import Modal from "../commons/Modal";
-import {
-  CreateInput,
-  List,
-  ListContainer,
-  ModalBackground,
-} from "../../styles/styles";
+import { List, ListContainer, ModalBackground } from "../../styles/styles";
 import Card from "../molcules/ListElement";
 import { ObjectType } from "../atoms/Card";
+import SubmitForm from "../molcules/SubmitForm";
+import ModalContent from "../molcules/ModalContent";
 
 function Category() {
   const {
     categories,
     detailedCategory,
-    toBeModifiedCategoryIndex,
-    categoryInputRef,
+    requiredInputItems,
     IS_CATEGORY_BEING_MODIFIED,
     registerNewCategory,
     initializeDetailedCategory,
@@ -27,13 +23,11 @@ function Category() {
 
   return (
     <ListContainer>
-      <h5>category list</h5>
-      <br />
-      <form onSubmit={registerNewCategory}>
-        <CreateInput placeholder="category name" ref={categoryInputRef} />
-        <button type="submit">make a new category</button>
-      </form>
-      <br />
+      <SubmitForm
+        title="categories list"
+        requiredInputItems={requiredInputItems}
+        registerNewElement={registerNewCategory}
+      />
       {categories.map((category, index) => (
         <List key={category.id}>
           <Card
@@ -49,31 +43,21 @@ function Category() {
       {detailedCategory && (
         <ModalBackground onClick={hideDetailedCategoryModal}>
           <Modal width={400} height={300}>
-            <div>
-              <h5>category name {detailedCategory.categoryName}</h5>
-            </div>
-            <div>
-              <h5>created time {detailedCategory.createdTime}</h5>
-            </div>
-            <div>
-              <h5>updated time {detailedCategory.updatedTime}</h5>
-            </div>
+            <ModalContent
+              detailedElement={detailedCategory as unknown as ObjectType}
+            />
           </Modal>
         </ModalBackground>
       )}
       {IS_CATEGORY_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleCategoryModificationModal()}>
           <Modal width={350} height={200}>
-            <form onSubmit={modifyCategory}>
-              <h5>{categories[toBeModifiedCategoryIndex].name}</h5>
-              <CreateInput
-                placeholder="new category name"
-                defaultValue={categories[toBeModifiedCategoryIndex].name}
-                ref={categoryInputRef}
-                required
-              />
-              <button type="submit">modify category</button>
-            </form>
+            <SubmitForm
+              title="category list"
+              requiredInputItems={requiredInputItems}
+              registerNewElement={modifyCategory}
+              isModificationAction={true}
+            />
           </Modal>
         </ModalBackground>
       )}

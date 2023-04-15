@@ -1,10 +1,17 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { toast } from "react-toastify";
 
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import toastSentences from "../../constants/toastSentences";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 const AD_TYPE = "ARTICLE";
 
@@ -37,9 +44,7 @@ interface INewAdvertisement extends Omit<IModifiedAdvertisement, "id"> {}
 interface UseAdvertisement {
   advertisements: Array<IAdvertisement>;
   detailedAdvertisement: IDetailedAdvertisement | null;
-  toBeModifiedAdvertisementIndex: number;
-  advertisementNameInputRef: React.RefObject<HTMLInputElement>;
-  urlLinkInputRef: React.RefObject<HTMLInputElement>;
+  requiredInputItems: RequiredInputItems;
   IS_ADVERTISEMENT_BEING_MODIFIED: boolean;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
@@ -48,7 +53,7 @@ interface UseAdvertisement {
     advertisementId: number,
     targetAdvertisementIndex: number,
   ) => Promise<void>;
-  fetchDetailedAdvertisement: (advertisementId: number) => Promise<void>;
+  initializeDetailedAdvertisement: (advertisementId: number) => Promise<void>;
   hideDetailedAdvertisementModal: () => void;
   toggleAdvertisementModificationModal: (targetIndex?: number) => void;
   modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -76,6 +81,34 @@ const useAdvertisement = (): UseAdvertisement => {
   const advertisementNameInputRef = useRef<HTMLInputElement>(null);
 
   const urlLinkInputRef = useRef<HTMLInputElement>(null);
+
+  const IS_ADVERTISEMENT_BEING_MODIFIED =
+    toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
+
+  const requiredInputItems = useMemo((): RequiredInputItems => {
+    return [
+      {
+        itemName: "ad name",
+        refObject: advertisementNameInputRef,
+        elementType: "input",
+        defaultValue: IS_ADVERTISEMENT_BEING_MODIFIED
+          ? advertisements[toBeModifiedAdvertisementIndex].advertisementName
+          : "",
+      },
+      {
+        itemName: "url link",
+        refObject: urlLinkInputRef,
+        elementType: "input",
+        defaultValue: IS_ADVERTISEMENT_BEING_MODIFIED
+          ? advertisements[toBeModifiedAdvertisementIndex].urlLink
+          : "",
+      },
+    ];
+  }, [
+    IS_ADVERTISEMENT_BEING_MODIFIED,
+    advertisements,
+    toBeModifiedAdvertisementIndex,
+  ]);
 
   const fetchAdvertisements = useCallback(() => {
     return apiManager.fetchData<IAdvertisement>(routes.server.advertisement);
@@ -199,15 +232,23 @@ const useAdvertisement = (): UseAdvertisement => {
 
   const fetchDetailedAdvertisement = useCallback(
     async (advertisementId: number) => {
-      const fetchedDetailedAdvertisement =
-        await apiManager.fetchDetailedData<IDetailedAdvertisement>(
-          routes.server.advertisement,
-          advertisementId,
-        );
+      return apiManager.fetchDetailedData<IDetailedAdvertisement>(
+        routes.server.advertisement,
+        advertisementId,
+      );
+    },
+    [],
+  );
+
+  const initializeDetailedAdvertisement = useCallback(
+    async (advertisementId: number) => {
+      const fetchedDetailedAdvertisement = await fetchDetailedAdvertisement(
+        advertisementId,
+      );
       if (fetchedDetailedAdvertisement)
         setDetailedAdvertisement(fetchedDetailedAdvertisement);
     },
-    [],
+    [fetchDetailedAdvertisement],
   );
 
   const hideDetailedAdvertisementModal = useCallback(() => {
@@ -280,9 +321,6 @@ const useAdvertisement = (): UseAdvertisement => {
     }
   };
 
-  const IS_ADVERTISEMENT_BEING_MODIFIED =
-    toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
-
   useEffect(() => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
@@ -290,13 +328,11 @@ const useAdvertisement = (): UseAdvertisement => {
   return {
     advertisements,
     detailedAdvertisement,
-    toBeModifiedAdvertisementIndex,
-    advertisementNameInputRef,
-    urlLinkInputRef,
+    requiredInputItems,
     IS_ADVERTISEMENT_BEING_MODIFIED,
     registerNewAdvertisement,
     deleteAdvertisement,
-    fetchDetailedAdvertisement,
+    initializeDetailedAdvertisement,
     hideDetailedAdvertisementModal,
     toggleAdvertisementModificationModal,
     modifyAdvertisement,

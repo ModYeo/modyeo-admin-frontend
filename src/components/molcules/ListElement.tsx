@@ -7,11 +7,13 @@ interface ListElementInterface {
   listElement: ObjectType;
   elementId: number;
   elementIndex: number;
-  initializeDetailedElement: ((elementId: number) => Promise<void>) | undefined;
-  toggleModificationModal:
+  initializeDetailedElement?:
+    | ((elementId: number) => Promise<void>)
+    | undefined;
+  toggleModificationModal?:
     | ((targetElementIndex?: number | undefined) => void)
     | undefined;
-  deleteElement:
+  deleteElement?:
     | ((elementId: number, targetElementIndex: number) => Promise<void>)
     | undefined;
 }

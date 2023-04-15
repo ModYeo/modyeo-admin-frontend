@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 interface ICollection {
   collectionInfoId: number;
@@ -15,9 +16,7 @@ interface ICollection {
 
 interface UseCollection {
   collections: Array<ICollection>;
-  toBeModifiedCollectionIndex: number;
-  collectionInfoNameTextAreaRef: React.RefObject<HTMLTextAreaElement>;
-  collectionDescTextAreaRef: React.RefObject<HTMLTextAreaElement>;
+  requiredInputItems: RequiredInputItems;
   IS_COLLECTION_BEING_MODIFIED: boolean;
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
@@ -37,6 +36,30 @@ const useCollection = (): UseCollection => {
   const collectionInfoNameTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const collectionDescTextAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const IS_COLLECTION_BEING_MODIFIED =
+    toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
+
+  const requiredInputItems = useMemo((): RequiredInputItems => {
+    return [
+      {
+        itemName: "collection info name",
+        refObject: collectionInfoNameTextAreaRef,
+        elementType: "textarea",
+        defaultValue: IS_COLLECTION_BEING_MODIFIED
+          ? collections[toBeModifiedCollectionIndex].collectionInfoName
+          : "",
+      },
+      {
+        itemName: "description",
+        refObject: collectionDescTextAreaRef,
+        elementType: "textarea",
+        defaultValue: IS_COLLECTION_BEING_MODIFIED
+          ? collections[toBeModifiedCollectionIndex].description
+          : "",
+      },
+    ];
+  }, [IS_COLLECTION_BEING_MODIFIED, collections, toBeModifiedCollectionIndex]);
 
   const fetchCollections = useCallback(() => {
     return apiManager.fetchData<ICollection>(routes.server.collection);
@@ -195,18 +218,13 @@ const useCollection = (): UseCollection => {
     }
   };
 
-  const IS_COLLECTION_BEING_MODIFIED =
-    toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
-
   useEffect(() => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
 
   return {
     collections,
-    toBeModifiedCollectionIndex,
-    collectionInfoNameTextAreaRef,
-    collectionDescTextAreaRef,
+    requiredInputItems,
     IS_COLLECTION_BEING_MODIFIED,
     registerNewCollection,
     deleteCollection,

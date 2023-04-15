@@ -2,13 +2,15 @@ import React from "react";
 import useInquiryDetail from "../hooks/pages/useInquiryDetail";
 
 import Modal from "../components/commons/Modal";
-import { ModalBackground } from "../styles/styles";
+import { List, ModalBackground } from "../styles/styles";
+import Card, { ObjectType } from "../components/atoms/Card";
+import ListElement from "../components/molcules/ListElement";
+import SubmitForm from "../components/molcules/SubmitForm";
 
 function InquiryDetail() {
   const {
     inquiry,
-    toBeModifiedAnswerIndex,
-    contentTextAreaRef,
+    requiredInputItems,
     IS_ANSWER_BEING_MODIFIED,
     goBackToInquiryListPage,
     registerNewAnswer,
@@ -21,34 +23,25 @@ function InquiryDetail() {
     <div>
       <h5>inquiry detail</h5>
       {inquiry ? (
-        <div>
-          <p>title - {inquiry.title}</p>
-          <p>content - {inquiry.content}</p>
-          <p>작성 시간 - {inquiry.createdTime}</p>
+        <>
+          <Card element={inquiry as unknown as ObjectType} />
           {inquiry.answerList.map((answer, index) => (
-            <div key={answer.answerId}>
-              <p>answer - {answer.content}</p>
-              <p>답변 시간 - {answer.createdTime}</p>
-              <button
-                type="button"
-                onClick={() => toggleAnswerModificationModal(index)}
-              >
-                modify
-              </button>
-              <button
-                type="button"
-                onClick={() => deleteAnswer(answer.answerId, index)}
-              >
-                delete
-              </button>
-            </div>
+            <List key={answer.answerId}>
+              <ListElement
+                listElement={answer as unknown as ObjectType}
+                elementId={answer.answerId}
+                elementIndex={index}
+                toggleModificationModal={toggleAnswerModificationModal}
+                deleteElement={deleteAnswer}
+              />
+            </List>
           ))}
-          <br />
-          <form onSubmit={registerNewAnswer}>
-            <textarea placeholder="content" ref={contentTextAreaRef} required />
-            <button type="submit">submit admin answer</button>
-          </form>
-        </div>
+          <SubmitForm
+            title="admin answer"
+            requiredInputItems={requiredInputItems}
+            registerNewElement={registerNewAnswer}
+          />
+        </>
       ) : (
         <p>정보를 불러오는 중입니다...</p>
       )}
@@ -58,17 +51,12 @@ function InquiryDetail() {
       {IS_ANSWER_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleAnswerModificationModal()}>
           <Modal width={500} height={200}>
-            <form onSubmit={modifyAnswer}>
-              <textarea
-                placeholder="content"
-                ref={contentTextAreaRef}
-                defaultValue={
-                  inquiry?.answerList[toBeModifiedAnswerIndex].content
-                }
-                required
-              />
-              <button type="submit">submit admin answer</button>
-            </form>
+            <SubmitForm
+              title="notices list"
+              requiredInputItems={requiredInputItems}
+              registerNewElement={modifyAnswer}
+              isModificationAction={true}
+            />
           </Modal>
         </ModalBackground>
       )}

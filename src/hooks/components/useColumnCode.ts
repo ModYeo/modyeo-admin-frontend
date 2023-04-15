@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 interface IColumCode {
   code: string;
@@ -20,10 +21,7 @@ interface IDetailedColumnCode extends IColumCode {
 interface UseColumnCode {
   columnCodes: IColumCode[];
   detailedColumCode: IDetailedColumnCode | null;
-  toBeModifiedColumnCodeIndex: number;
-  codeInputRef: React.RefObject<HTMLInputElement>;
-  columnNameInputRef: React.RefObject<HTMLInputElement>;
-  codeDescriptionInputRef: React.RefObject<HTMLInputElement>;
+  requiredInputItems: RequiredInputItems;
   IS_COLUMNCODE_BEING_MODIFIED: boolean;
   registerNewColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteColumnCode: (
@@ -50,6 +48,38 @@ const useColumnCode = (): UseColumnCode => {
   const columnNameInputRef = useRef<HTMLInputElement>(null);
 
   const codeDescriptionInputRef = useRef<HTMLInputElement>(null);
+
+  const IS_COLUMNCODE_BEING_MODIFIED =
+    toBeModifiedColumnCodeIndex !== NOTHING_BEING_MODIFIED;
+
+  const requiredInputItems = useMemo((): RequiredInputItems => {
+    return [
+      {
+        itemName: "code",
+        refObject: codeInputRef,
+        elementType: "input",
+        defaultValue: IS_COLUMNCODE_BEING_MODIFIED
+          ? columnCodes[toBeModifiedColumnCodeIndex].code
+          : "",
+      },
+      {
+        itemName: "column name",
+        refObject: columnNameInputRef,
+        elementType: "input",
+        defaultValue: IS_COLUMNCODE_BEING_MODIFIED
+          ? columnCodes[toBeModifiedColumnCodeIndex].columnCodeName
+          : "",
+      },
+      {
+        itemName: "description",
+        refObject: codeDescriptionInputRef,
+        elementType: "input",
+        defaultValue: IS_COLUMNCODE_BEING_MODIFIED
+          ? columnCodes[toBeModifiedColumnCodeIndex].description
+          : "",
+      },
+    ];
+  }, [IS_COLUMNCODE_BEING_MODIFIED, columnCodes, toBeModifiedColumnCodeIndex]);
 
   const fetchColumnCodes = useCallback(async () => {
     return apiManager.fetchData<IColumCode>(routes.server.column);
@@ -227,9 +257,6 @@ const useColumnCode = (): UseColumnCode => {
     }
   };
 
-  const IS_COLUMNCODE_BEING_MODIFIED =
-    toBeModifiedColumnCodeIndex !== NOTHING_BEING_MODIFIED;
-
   useEffect(() => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
@@ -237,10 +264,7 @@ const useColumnCode = (): UseColumnCode => {
   return {
     columnCodes,
     detailedColumCode,
-    toBeModifiedColumnCodeIndex,
-    codeInputRef,
-    columnNameInputRef,
-    codeDescriptionInputRef,
+    requiredInputItems,
     IS_COLUMNCODE_BEING_MODIFIED,
     registerNewColumnCode,
     deleteColumnCode,

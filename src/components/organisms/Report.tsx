@@ -5,6 +5,8 @@ import useReport, {
 } from "../../hooks/components/useReport";
 import Modal from "../commons/Modal";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
+import { ObjectType } from "../atoms/Card";
+import ModalContent from "../molcules/ModalContent";
 
 function Report() {
   const {
@@ -64,12 +66,9 @@ function Report() {
           {detailedReport && (
             <ModalBackground onClick={hideDetailedReportModal}>
               <Modal width={300} height={450}>
-                <div>
-                  <div>{detailedReport.title}</div>
-                  <div>report type - {detailedReport.reportType}</div>
-                  <div>created by - {detailedReport.createdBy}</div>
-                  <div>updated by - {detailedReport.updatedBy}</div>
-                </div>
+                <ModalContent
+                  detailedElement={detailedReport as unknown as ObjectType}
+                />
               </Modal>
             </ModalBackground>
           )}

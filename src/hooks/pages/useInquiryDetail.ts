@@ -4,6 +4,7 @@ import dayjs from "dayjs";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 enum AuthorityEnum {
   ROLE_USER = "ROLE_USER",
@@ -34,8 +35,7 @@ interface IDetailedInquiry {
 
 interface UseInquiryDetail {
   inquiry: IDetailedInquiry | null;
-  toBeModifiedAnswerIndex: number;
-  contentTextAreaRef: React.RefObject<HTMLTextAreaElement>;
+  requiredInputItems: RequiredInputItems;
   IS_ANSWER_BEING_MODIFIED: boolean;
   goBackToInquiryListPage: () => void;
   registerNewAnswer: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
@@ -63,6 +63,22 @@ const useInquiryDetail = (): UseInquiryDetail => {
   );
 
   const contentTextAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const IS_ANSWER_BEING_MODIFIED =
+    toBeModifiedAnswerIndex !== NOTHING_BEING_MODIFIED;
+
+  const requiredInputItems = useMemo((): RequiredInputItems => {
+    return [
+      {
+        itemName: "admin answer",
+        refObject: contentTextAreaRef,
+        elementType: "input",
+        defaultValue: IS_ANSWER_BEING_MODIFIED
+          ? inquiry?.answerList[toBeModifiedAnswerIndex].content || ""
+          : "",
+      },
+    ];
+  }, [IS_ANSWER_BEING_MODIFIED, inquiry, toBeModifiedAnswerIndex]);
 
   const goBackToInquiryListPage = useCallback(() => {
     navigator(routes.client.inquiry);
@@ -226,17 +242,13 @@ const useInquiryDetail = (): UseInquiryDetail => {
     }
   };
 
-  const IS_ANSWER_BEING_MODIFIED =
-    toBeModifiedAnswerIndex !== NOTHING_BEING_MODIFIED;
-
   useEffect(() => {
     initializeDetailedInquiry();
   }, [initializeDetailedInquiry]);
 
   return {
     inquiry,
-    toBeModifiedAnswerIndex,
-    contentTextAreaRef,
+    requiredInputItems,
     IS_ANSWER_BEING_MODIFIED,
     goBackToInquiryListPage,
     registerNewAnswer,
