@@ -30,7 +30,6 @@ function Notice() {
         requiredInputItems={requiredInputItems}
         registerNewElement={registerNewNotice}
       />
-      <br />
       {notices.map((notice, index) => (
         <List key={notice.id}>
           <ListElement
@@ -59,6 +58,7 @@ function Notice() {
               title="notices list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyNotice}
+              isModificationAction={true}
             />
           </Modal>
         </ModalBackground>

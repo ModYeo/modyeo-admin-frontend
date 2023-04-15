@@ -1,21 +1,17 @@
 import React from "react";
 import useColumnCode from "../../hooks/components/useColumnCode";
 import Modal from "../commons/Modal";
-import {
-  CreateInput,
-  List,
-  ListContainer,
-  ModalBackground,
-} from "../../styles/styles";
+import { List, ListContainer, ModalBackground } from "../../styles/styles";
+import SubmitForm from "../molcules/SubmitForm";
+import ListElement from "../molcules/ListElement";
+import { ObjectType } from "../atoms/Card";
+import ModalContent from "../molcules/ModalContent";
 
 function ColumnCode() {
   const {
     columnCodes,
     detailedColumCode,
-    toBeModifiedColumnCodeIndex,
-    codeInputRef,
-    columnNameInputRef,
-    codeDescriptionInputRef,
+    requiredInputItems,
     IS_COLUMNCODE_BEING_MODIFIED,
     registerNewColumnCode,
     deleteColumnCode,
@@ -27,101 +23,41 @@ function ColumnCode() {
 
   return (
     <ListContainer>
-      <h5>column codes list</h5>
-      <br />
-      <form onSubmit={registerNewColumnCode}>
-        <CreateInput placeholder="code" ref={codeInputRef} required />
-        <CreateInput
-          placeholder="column code name"
-          ref={columnNameInputRef}
-          required
-        />
-        <CreateInput
-          placeholder="desc"
-          ref={codeDescriptionInputRef}
-          required
-        />
-        <button type="submit">make a new column code</button>
-      </form>
-      <br />
-      {columnCodes.map((columnCode, index) => {
-        return (
-          <List key={columnCode.columnCodeId}>
-            <div>
-              <div>code - {columnCode.code}</div>
-              <div>name - {columnCode.columnCodeName}</div>
-              <div>desc - {columnCode.description}</div>
-            </div>
-            <div>
-              <button
-                type="button"
-                onClick={() =>
-                  initializeDetailedColumnCode(columnCode.columnCodeId)
-                }
-              >
-                about
-              </button>
-              <button
-                type="button"
-                onClick={() => toggleColumnCodeModificationModal(index)}
-              >
-                modify
-              </button>
-              <button
-                type="button"
-                onClick={() => deleteColumnCode(columnCode.columnCodeId, index)}
-              >
-                delete
-              </button>
-            </div>
-          </List>
-        );
-      })}
-      {IS_COLUMNCODE_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleColumnCodeModificationModal()}>
-          <Modal width={400} height={400}>
-            <form onSubmit={modifyColumnCode}>
-              <CreateInput
-                placeholder="code"
-                ref={codeInputRef}
-                defaultValue={columnCodes[toBeModifiedColumnCodeIndex].code}
-                required
-              />
-              <CreateInput
-                placeholder="column code name"
-                ref={columnNameInputRef}
-                defaultValue={
-                  columnCodes[toBeModifiedColumnCodeIndex].columnCodeName
-                }
-                required
-              />
-              <CreateInput
-                placeholder="desc"
-                ref={codeDescriptionInputRef}
-                defaultValue={
-                  columnCodes[toBeModifiedColumnCodeIndex].description
-                }
-                required
-              />
-              <button type="submit">modify column code</button>
-            </form>
-          </Modal>
-        </ModalBackground>
-      )}
+      <SubmitForm
+        title="column codes list"
+        requiredInputItems={requiredInputItems}
+        registerNewElement={registerNewColumnCode}
+      />
+      {columnCodes.map((columnCode, index) => (
+        <List key={columnCode.columnCodeId}>
+          <ListElement
+            listElement={columnCode as unknown as ObjectType}
+            elementId={columnCode.columnCodeId}
+            elementIndex={index}
+            initializeDetailedElement={initializeDetailedColumnCode}
+            toggleModificationModal={toggleColumnCodeModificationModal}
+            deleteElement={deleteColumnCode}
+          />
+        </List>
+      ))}
       {detailedColumCode && (
         <ModalBackground onClick={hideDetailedColumnCodeModal}>
           <Modal width={350} height={150}>
-            <div>
-              <div>
-                <h5>column code {detailedColumCode.code}</h5>
-              </div>
-              <div>
-                <h5>created time {detailedColumCode.createdTime}</h5>
-              </div>
-              <div>
-                <h5>email {detailedColumCode.email}</h5>
-              </div>
-            </div>
+            <ModalContent
+              detailedElement={detailedColumCode as unknown as ObjectType}
+            />
+          </Modal>
+        </ModalBackground>
+      )}
+      {IS_COLUMNCODE_BEING_MODIFIED && (
+        <ModalBackground onClick={() => toggleColumnCodeModificationModal()}>
+          <Modal width={400} height={400}>
+            <SubmitForm
+              title="notices list"
+              requiredInputItems={requiredInputItems}
+              registerNewElement={modifyColumnCode}
+              isModificationAction={true}
+            />
           </Modal>
         </ModalBackground>
       )}

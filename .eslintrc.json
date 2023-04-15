@@ -22,6 +22,8 @@
     "prettier/prettier": "error",
     "no-var": "error",
     "class-methods-use-this": "off",
+    "react/require-default-props": "off",
+    "react/jsx-boolean-value": "off",
     "@typescript-eslint/no-misused-promises": "off",
     "@typescript-eslint/no-floating-promises": "off"
   }

@@ -1,8 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
+import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 interface ICategory {
   id: number;
@@ -27,8 +34,7 @@ interface IDetailedCategory {
 interface UseCategory {
   categories: Array<ICategory>;
   detailedCategory: IDetailedCategory | null;
-  toBeModifiedCategoryIndex: number;
-  categoryInputRef: React.RefObject<HTMLInputElement>;
+  requiredInputItems: RequiredInputItems;
   IS_CATEGORY_BEING_MODIFIED: boolean;
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCategory: (
@@ -52,6 +58,22 @@ const useCategory = (): UseCategory => {
   );
 
   const categoryInputRef = useRef<HTMLInputElement>(null);
+
+  const IS_CATEGORY_BEING_MODIFIED =
+    toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
+
+  const requiredInputItems = useMemo((): RequiredInputItems => {
+    return [
+      {
+        itemName: "category name",
+        refObject: categoryInputRef,
+        elementType: "input",
+        defaultValue: IS_CATEGORY_BEING_MODIFIED
+          ? categories[toBeModifiedCategoryIndex].name
+          : "",
+      },
+    ];
+  }, [IS_CATEGORY_BEING_MODIFIED, categories, toBeModifiedCategoryIndex]);
 
   const fetchCategories = useCallback(() => {
     return apiManager.fetchData<ICategory>(routes.server.category);
@@ -205,9 +227,6 @@ const useCategory = (): UseCategory => {
     }
   };
 
-  const IS_CATEGORY_BEING_MODIFIED =
-    toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
-
   useEffect(() => {
     initializeCategoriesList();
   }, [initializeCategoriesList]);
@@ -215,8 +234,7 @@ const useCategory = (): UseCategory => {
   return {
     categories,
     detailedCategory,
-    toBeModifiedCategoryIndex,
-    categoryInputRef,
+    requiredInputItems,
     IS_CATEGORY_BEING_MODIFIED,
     registerNewCategory,
     initializeDetailedCategory,

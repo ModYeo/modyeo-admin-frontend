@@ -1,5 +1,6 @@
 import React from "react";
 import Card from "../atoms/Card";
+import { Button } from "../../styles/styles";
 
 type ObjectType = { [key: string]: string | number };
 
@@ -7,11 +8,13 @@ interface ListElementInterface {
   listElement: ObjectType;
   elementId: number;
   elementIndex: number;
-  initializeDetailedElement: ((elementId: number) => Promise<void>) | undefined;
-  toggleModificationModal:
+  initializeDetailedElement?:
+    | ((elementId: number) => Promise<void>)
+    | undefined;
+  toggleModificationModal?:
     | ((targetElementIndex?: number | undefined) => void)
     | undefined;
-  deleteElement:
+  deleteElement?:
     | ((elementId: number, targetElementIndex: number) => Promise<void>)
     | undefined;
 }
@@ -27,30 +30,31 @@ function ListElement({
   return (
     <div>
       <Card element={listElement} />
+      {/* <br /> */}
       <div>
         {initializeDetailedElement && (
-          <button
+          <Button
             type="button"
             onClick={() => initializeDetailedElement(elementId)}
           >
             about
-          </button>
+          </Button>
         )}
         {toggleModificationModal && (
-          <button
+          <Button
             type="button"
             onClick={() => toggleModificationModal(elementIndex)}
           >
             modify
-          </button>
+          </Button>
         )}
         {deleteElement && (
-          <button
+          <Button
             type="button"
             onClick={() => deleteElement(elementId, elementIndex)}
           >
             delete
-          </button>
+          </Button>
         )}
       </div>
     </div>

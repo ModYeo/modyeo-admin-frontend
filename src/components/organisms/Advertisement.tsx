@@ -1,24 +1,21 @@
 import React from "react";
 import useAdvertisement from "../../hooks/components/useAdvertisement";
 import Modal from "../commons/Modal";
-import {
-  CreateInput,
-  List,
-  ListContainer,
-  ModalBackground,
-} from "../../styles/styles";
+import { List, ListContainer, ModalBackground } from "../../styles/styles";
+import SubmitForm from "../molcules/SubmitForm";
+import ListElement from "../molcules/ListElement";
+import { ObjectType } from "../atoms/Card";
+import ModalContent from "../molcules/ModalContent";
 
 function Advertisement() {
   const {
     advertisements,
     detailedAdvertisement,
-    toBeModifiedAdvertisementIndex,
-    advertisementNameInputRef,
-    urlLinkInputRef,
+    requiredInputItems,
     IS_ADVERTISEMENT_BEING_MODIFIED,
     registerNewAdvertisement,
     deleteAdvertisement,
-    fetchDetailedAdvertisement,
+    initializeDetailedAdvertisement,
     hideDetailedAdvertisementModal,
     toggleAdvertisementModificationModal,
     modifyAdvertisement,
@@ -26,86 +23,41 @@ function Advertisement() {
 
   return (
     <ListContainer>
-      <h5>advertisement list</h5>
-      <br />
-      <form onSubmit={registerNewAdvertisement}>
-        <CreateInput
-          placeholder="advertisement name"
-          ref={advertisementNameInputRef}
-          required
-        />
-        <CreateInput placeholder="url link" ref={urlLinkInputRef} required />
-        <button type="submit">add a advertisemnet</button>
-      </form>
-      <br />
+      <SubmitForm
+        title="advertisements list"
+        requiredInputItems={requiredInputItems}
+        registerNewElement={registerNewAdvertisement}
+      />
       {advertisements.map((advertisement, index) => (
         <List key={advertisement.advertisementId}>
-          <div>
-            <div>name - {advertisement.advertisementName}</div>
-            <div>url link - {advertisement.urlLink}</div>
-          </div>
-          <span>
-            <button
-              type="button"
-              onClick={() =>
-                fetchDetailedAdvertisement(advertisement.advertisementId)
-              }
-            >
-              about
-            </button>
-            <button
-              type="button"
-              onClick={() => toggleAdvertisementModificationModal(index)}
-            >
-              modify
-            </button>
-            <button
-              type="button"
-              onClick={() =>
-                deleteAdvertisement(advertisement.advertisementId, index)
-              }
-            >
-              delete
-            </button>
-          </span>
+          <ListElement
+            listElement={advertisement as unknown as ObjectType}
+            elementId={advertisement.advertisementId}
+            elementIndex={index}
+            initializeDetailedElement={initializeDetailedAdvertisement}
+            toggleModificationModal={toggleAdvertisementModificationModal}
+            deleteElement={deleteAdvertisement}
+          />
         </List>
       ))}
       {detailedAdvertisement && (
-        <ModalBackground onClick={hideDetailedAdvertisementModal}>
-          <Modal width={300} height={200}>
-            <div>
-              <h5>ad name {detailedAdvertisement.advertisementName}</h5>
-            </div>
-            &emsp;
-            <div>
-              <h5>created by {detailedAdvertisement.createdBy}</h5>
-            </div>
+        <ModalBackground onClick={() => hideDetailedAdvertisementModal()}>
+          <Modal width={400} height={200}>
+            <ModalContent
+              detailedElement={detailedAdvertisement as unknown as ObjectType}
+            />
           </Modal>
         </ModalBackground>
       )}
       {IS_ADVERTISEMENT_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleAdvertisementModificationModal()}>
-          <Modal width={600} height={200}>
-            <form onSubmit={modifyAdvertisement}>
-              <CreateInput
-                placeholder="advertisement name"
-                defaultValue={
-                  advertisements[toBeModifiedAdvertisementIndex]
-                    .advertisementName
-                }
-                ref={advertisementNameInputRef}
-                required
-              />
-              <CreateInput
-                placeholder="url link"
-                defaultValue={
-                  advertisements[toBeModifiedAdvertisementIndex].urlLink
-                }
-                ref={urlLinkInputRef}
-                required
-              />
-              <button type="submit">modify advertisement</button>
-            </form>
+          <Modal width={400} height={200}>
+            <SubmitForm
+              title="notices list"
+              requiredInputItems={requiredInputItems}
+              registerNewElement={modifyAdvertisement}
+              isModificationAction={true}
+            />
           </Modal>
         </ModalBackground>
       )}

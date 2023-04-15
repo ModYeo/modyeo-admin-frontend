@@ -12,7 +12,7 @@ export const SignForm = styled.form`
   width: 350px;
   height: 250px;
   padding: 12px;
-  background-color: #eee;
+  background-color: #f7f7f7;
   justify-content: flex;
   display: flex;
   flex-direction: column;
@@ -33,7 +33,7 @@ export const NavBarContainer = styled.div`
   width: 100vw;
   height: 50px;
   padding: 0 30px;
-  background-color: #eee;
+  background-color: #f7f7f7;
 `;
 
 export const NavBarSection = styled.section`
@@ -51,11 +51,10 @@ export const ListContainer = styled.ul`
 `;
 
 export const List = styled.li`
+  min-height: 125px;
   margin: 10px 0;
   padding: 10px;
   background-color: white;
-  display: flex;
-  justify-content: space-between;
 `;
 
 export const CreateInput = styled(SignInput)`
@@ -72,4 +71,28 @@ export const ModalBackground = styled.div`
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.4);
+`;
+
+export const Button = styled.button`
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  background-color: #5476d7;
+  color: white;
+  cursor: pointer;
+  transition: all 0.5s;
+  &:hover {
+    border: 1px solid #e84b35;
+    background-color: transparent;
+    color: #e84b35;
+  }
+`;
+
+export const ColumnKey = styled.span`
+  color: grey;
+`;
+
+export const ColumnValue = styled.span`
+  color: #111111;
+  font-weight: bolder;
 `;

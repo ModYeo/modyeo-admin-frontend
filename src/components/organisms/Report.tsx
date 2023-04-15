@@ -5,6 +5,9 @@ import useReport, {
 } from "../../hooks/components/useReport";
 import Modal from "../commons/Modal";
 import { List, ListContainer, ModalBackground } from "../../styles/styles";
+import { ObjectType } from "../atoms/Card";
+import ModalContent from "../molcules/ModalContent";
+import ListElement from "../molcules/ListElement";
 
 function Report() {
   const {
@@ -27,13 +30,15 @@ function Report() {
           <option key={type}>{type}</option>
         ))}
       </select>
-      {reports.map((report) => (
+      {reports.map((report, index) => (
         <List key={report.id}>
-          <div>
-            <div>title - {report.title}</div>
-            <div>content - {report.contents}</div>
-            <div>신고 종류 - {report.reportType}</div>
-            <div>신고 사유 - {report.reportReason}</div>
+          <>
+            <ListElement
+              listElement={report as unknown as ObjectType}
+              elementId={report.id}
+              elementIndex={index}
+              initializeDetailedElement={initializeDetailedReport}
+            />
             <div>
               처리 상태 -
               <select
@@ -52,24 +57,13 @@ function Report() {
                 ))}
               </select>
             </div>
-            <div>
-              <button
-                type="button"
-                onClick={() => initializeDetailedReport(report.id)}
-              >
-                about
-              </button>
-            </div>
-          </div>
+          </>
           {detailedReport && (
             <ModalBackground onClick={hideDetailedReportModal}>
               <Modal width={300} height={450}>
-                <div>
-                  <div>{detailedReport.title}</div>
-                  <div>report type - {detailedReport.reportType}</div>
-                  <div>created by - {detailedReport.createdBy}</div>
-                  <div>updated by - {detailedReport.updatedBy}</div>
-                </div>
+                <ModalContent
+                  detailedElement={detailedReport as unknown as ObjectType}
+                />
               </Modal>
             </ModalBackground>
           )}

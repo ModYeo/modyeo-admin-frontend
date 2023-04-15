@@ -46,8 +46,8 @@ const useNotice = (): UseNotice => {
     NOTHING_BEING_MODIFIED,
   );
 
-  const IS_NOTHING_BEING_MODIFIED =
-    toBeModifiedNoticeIndex === NOTHING_BEING_MODIFIED;
+  const IS_NOTICE_BEING_MODIFIED =
+    toBeModifiedNoticeIndex !== NOTHING_BEING_MODIFIED;
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -58,19 +58,21 @@ const useNotice = (): UseNotice => {
       {
         itemName: "title",
         refObject: titleInputRef,
-        defaultValue: IS_NOTHING_BEING_MODIFIED
-          ? ""
-          : notices[toBeModifiedNoticeIndex].title,
+        elementType: "input",
+        defaultValue: IS_NOTICE_BEING_MODIFIED
+          ? notices[toBeModifiedNoticeIndex].title
+          : "",
       },
       {
         itemName: "content",
         refObject: contentInputRef,
-        defaultValue: IS_NOTHING_BEING_MODIFIED
-          ? ""
-          : notices[toBeModifiedNoticeIndex].content,
+        elementType: "input",
+        defaultValue: IS_NOTICE_BEING_MODIFIED
+          ? notices[toBeModifiedNoticeIndex].content
+          : "",
       },
     ];
-  }, [IS_NOTHING_BEING_MODIFIED, notices, toBeModifiedNoticeIndex]);
+  }, [IS_NOTICE_BEING_MODIFIED, notices, toBeModifiedNoticeIndex]);
 
   const fetchNotices = useCallback(async () => {
     return apiManager.fetchData<INotice>(routes.server.notice);
@@ -226,9 +228,6 @@ const useNotice = (): UseNotice => {
       }
     }
   };
-
-  const IS_NOTICE_BEING_MODIFIED =
-    toBeModifiedNoticeIndex !== NOTHING_BEING_MODIFIED;
 
   useEffect(() => {
     initializeNoticesList();
