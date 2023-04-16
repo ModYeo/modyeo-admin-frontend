@@ -29,20 +29,26 @@ const useAdmin = (): UseAdmin => {
 
   const lastIndexOfSlash = useMemo(() => pathname.lastIndexOf("/"), [pathname]);
 
-  const currentPath = pathname.slice(
-    MINIMUN_PATH_LENGTH_START,
-    lastIndexOfSlash + 1 === MINIMUN_PATH_LENGTH_START
-      ? pathname.length
-      : lastIndexOfSlash,
-  ) as ChosenTabMenuEnum;
-
   const inquiryIdPathParam = Number(
     pathname.slice(lastIndexOfSlash + 1, pathname.length),
   );
 
-  const inquiryId = Number.isInteger(inquiryIdPathParam)
-    ? inquiryIdPathParam
-    : undefined;
+  const currentPath = useMemo(
+    () =>
+      pathname.slice(
+        MINIMUN_PATH_LENGTH_START,
+        lastIndexOfSlash + 1 === MINIMUN_PATH_LENGTH_START
+          ? pathname.length
+          : lastIndexOfSlash,
+      ) as ChosenTabMenuEnum,
+    [pathname, lastIndexOfSlash],
+  );
+
+  const inquiryId = useMemo(() => {
+    return Number.isInteger(inquiryIdPathParam)
+      ? inquiryIdPathParam
+      : undefined;
+  }, [inquiryIdPathParam]);
 
   const checkTokensExistence = useCallback(() => {
     const [accessToken, refreshToken] =

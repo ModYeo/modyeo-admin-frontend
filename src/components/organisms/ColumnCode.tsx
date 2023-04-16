@@ -24,7 +24,7 @@ function ColumnCode() {
   return (
     <ListContainer>
       <SubmitForm
-        title="column codes list"
+        title="Column codes List"
         requiredInputItems={requiredInputItems}
         registerNewElement={registerNewColumnCode}
       />
@@ -42,7 +42,7 @@ function ColumnCode() {
       ))}
       {detailedColumCode && (
         <ModalBackground onClick={hideDetailedColumnCodeModal}>
-          <Modal width={350} height={150}>
+          <Modal>
             <ModalContent
               detailedElement={detailedColumCode as unknown as ObjectType}
             />
@@ -51,9 +51,8 @@ function ColumnCode() {
       )}
       {IS_COLUMNCODE_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleColumnCodeModificationModal()}>
-          <Modal width={400} height={400}>
+          <Modal>
             <SubmitForm
-              title="notices list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyColumnCode}
               isModificationAction={true}

@@ -1,4 +1,5 @@
 import React from "react";
+
 import Card from "../atoms/Card";
 import { Button } from "../../styles/styles";
 
@@ -30,7 +31,7 @@ function ListElement({
   return (
     <div>
       <Card element={listElement} />
-      {/* <br /> */}
+      <br />
       <div>
         {initializeDetailedElement && (
           <Button

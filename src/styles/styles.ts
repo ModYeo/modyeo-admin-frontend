@@ -25,15 +25,27 @@ export const SignInput = styled.input`
   padding: 0 10px;
 `;
 
-export const SignButton = styled.button`
+export const TabButton = styled.button<{ isChosenTab?: boolean }>`
   height: 50px;
+  cursor: pointer;
+  transition: all 0.5s;
+  color: ${({ isChosenTab }) => (isChosenTab ? "white" : "black")};
+  background-color: ${({ isChosenTab }) =>
+    isChosenTab ? "#5476d7" : "transparent"};
+  &:hover {
+    background-color: #5476d7;
+    color: white;
+  }
 `;
 
 export const NavBarContainer = styled.div`
   width: 100vw;
+  min-width: 600px;
   height: 50px;
   padding: 0 30px;
   background-color: #f7f7f7;
+  position: fixed;
+  top: 0;
 `;
 
 export const NavBarSection = styled.section`
@@ -44,7 +56,7 @@ export const NavBarSection = styled.section`
 `;
 
 export const ListContainer = styled.ul`
-  width: 450px;
+  width: 600px;
   margin: 100px auto;
   padding: 10px;
   background-color: #eee;
@@ -55,10 +67,6 @@ export const List = styled.li`
   margin: 10px 0;
   padding: 10px;
   background-color: white;
-`;
-
-export const CreateInput = styled(SignInput)`
-  width: 50%;
 `;
 
 export const ModalBackground = styled.div`
@@ -73,26 +81,20 @@ export const ModalBackground = styled.div`
   background-color: rgba(0, 0, 0, 0.4);
 `;
 
-export const Button = styled.button`
-  padding: 8px;
+export const Button = styled(TabButton)`
+  height: 30px;
+  margin-right: 5px;
   border-radius: 8px;
-  border: 1px solid transparent;
-  background-color: #5476d7;
-  color: white;
-  cursor: pointer;
-  transition: all 0.5s;
+  border: 1px solid #e84b35;
+  background-color: transparent;
+  color: #e84b35;
   &:hover {
-    border: 1px solid #e84b35;
-    background-color: transparent;
-    color: #e84b35;
+    border: 1px solid #5476d7;
   }
 `;
 
-export const ColumnKey = styled.span`
-  color: grey;
-`;
-
-export const ColumnValue = styled.span`
-  color: #111111;
-  font-weight: bolder;
+export const Title = styled.h2`
+  margin: 8px 0;
+  text-align: center;
+  color: #b5b5b5;
 `;

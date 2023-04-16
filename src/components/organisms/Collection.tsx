@@ -20,7 +20,7 @@ function Collection() {
   return (
     <ListContainer>
       <SubmitForm
-        title="collections list"
+        title="Collections List"
         requiredInputItems={requiredInputItems}
         registerNewElement={registerNewCollection}
       />
@@ -37,9 +37,8 @@ function Collection() {
       ))}
       {IS_COLLECTION_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleCollectionModificationModal()}>
-          <Modal width={500} height={500}>
+          <Modal>
             <SubmitForm
-              title="notices list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyCollection}
               isModificationAction={true}

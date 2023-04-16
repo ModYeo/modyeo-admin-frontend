@@ -51,8 +51,8 @@ export class AuthCookieManager implements IAuthCookieManager {
   }
 
   deleteAccessAndRefreshToken() {
-    this.cookies.remove(tokenName.accessToken);
-    this.cookies.remove(tokenName.refreshToken);
+    this.cookies.remove(tokenName.accessToken, { path: "/" });
+    this.cookies.remove(tokenName.refreshToken, { path: "/" });
   }
 }
 

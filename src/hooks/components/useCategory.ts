@@ -59,6 +59,8 @@ const useCategory = (): UseCategory => {
 
   const categoryInputRef = useRef<HTMLInputElement>(null);
 
+  const categoryModifyInputRef = useRef<HTMLInputElement>(null);
+
   const IS_CATEGORY_BEING_MODIFIED =
     toBeModifiedCategoryIndex !== NOTHING_BEING_MODIFIED;
 
@@ -66,7 +68,9 @@ const useCategory = (): UseCategory => {
     return [
       {
         itemName: "category name",
-        refObject: categoryInputRef,
+        refObject: IS_CATEGORY_BEING_MODIFIED
+          ? categoryModifyInputRef
+          : categoryInputRef,
         elementType: "input",
         defaultValue: IS_CATEGORY_BEING_MODIFIED
           ? categories[toBeModifiedCategoryIndex].name
@@ -91,8 +95,12 @@ const useCategory = (): UseCategory => {
   }, []);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [categoryInputRef.current?.value];
-  }, []);
+    return [
+      IS_CATEGORY_BEING_MODIFIED
+        ? categoryModifyInputRef.current?.value
+        : categoryInputRef.current?.value,
+    ];
+  }, [IS_CATEGORY_BEING_MODIFIED]);
 
   const sendPostCategoryRequest = useCallback(
     (inputNewCategoryName: string) => {

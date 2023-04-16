@@ -24,7 +24,7 @@ function Category() {
   return (
     <ListContainer>
       <SubmitForm
-        title="categories list"
+        title="Categories List"
         requiredInputItems={requiredInputItems}
         registerNewElement={registerNewCategory}
       />
@@ -42,7 +42,7 @@ function Category() {
       ))}
       {detailedCategory && (
         <ModalBackground onClick={hideDetailedCategoryModal}>
-          <Modal width={400} height={300}>
+          <Modal>
             <ModalContent
               detailedElement={detailedCategory as unknown as ObjectType}
             />
@@ -51,9 +51,8 @@ function Category() {
       )}
       {IS_CATEGORY_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleCategoryModificationModal()}>
-          <Modal width={350} height={200}>
+          <Modal>
             <SubmitForm
-              title="category list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyCategory}
               isModificationAction={true}

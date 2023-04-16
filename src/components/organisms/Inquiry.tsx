@@ -1,7 +1,7 @@
 import React from "react";
 import useInquiry from "../../hooks/components/useInquiry";
 
-import { List, ListContainer } from "../../styles/styles";
+import { Button, List, ListContainer, Title } from "../../styles/styles";
 import ListElement from "../molcules/ListElement";
 import { ObjectType } from "../atoms/Card";
 
@@ -10,8 +10,7 @@ function Inquiry() {
 
   return (
     <ListContainer>
-      <h5>관리자 질문</h5>
-      <br />
+      <Title>Admin Inquiry</Title>
       {inquiries.map((inquiry, index) => (
         <List key={inquiry.inquiryId}>
           <ListElement
@@ -19,12 +18,12 @@ function Inquiry() {
             elementId={inquiry.inquiryId}
             elementIndex={index}
           />
-          <button
+          <Button
             type="button"
             onClick={() => goToDetailedInquiryPage(inquiry.inquiryId)}
           >
             more
-          </button>
+          </Button>
         </List>
       ))}
     </ListContainer>

@@ -1,5 +1,6 @@
 const toastSentences = {
   signInFailed: "ID 또는 비밀번호가 일치하지 않습니다.",
+  signOutSuccess: "로그아웃되었습니다.",
   requestResignIn: "오류가 있습니다. 다시 로그인해주세요.",
   advertisement: {
     urlLinkInvalid: "입력한 url 주소가 올바르지 않습니다.",

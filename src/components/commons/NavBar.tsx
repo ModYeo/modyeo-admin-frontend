@@ -1,51 +1,61 @@
-import React, { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import useNavBar from "../../hooks/common/useNavBar";
+import { NavBarContainer, NavBarSection, TabButton } from "../../styles/styles";
+
 import routes from "../../constants/routes";
-import authCookieManager from "../../modules/authCookie";
-import signAPIManager from "../../modules/signAPI";
-import {
-  NavBarContainer,
-  NavBarSection,
-  SignButton,
-} from "../../styles/styles";
 
 function NavBar() {
-  const navigator = useNavigate();
-
-  const handleSignOut = useCallback(async () => {
-    const isSignOutSuccessful = await signAPIManager.handleSignOut();
-    if (!isSignOutSuccessful) authCookieManager.deleteAccessAndRefreshToken();
-    navigator(routes.client.signin);
-  }, [navigator]);
+  const { pathname, navigator, handleSignOut } = useNavBar();
 
   return (
     <NavBarContainer>
       <NavBarSection>
         <span>
-          <SignButton onClick={() => navigator(routes.client.report)}>
+          <TabButton
+            isChosenTab={pathname === routes.client.report}
+            onClick={() => navigator(routes.client.report)}
+          >
             게시글 신고관리
-          </SignButton>
-          <SignButton onClick={() => navigator(routes.client.notice)}>
+          </TabButton>
+          <TabButton
+            isChosenTab={pathname === routes.client.notice}
+            onClick={() => navigator(routes.client.notice)}
+          >
             공지 관리
-          </SignButton>
-          <SignButton onClick={() => navigator(routes.client.category)}>
+          </TabButton>
+          <TabButton
+            isChosenTab={pathname === routes.client.category}
+            onClick={() => navigator(routes.client.category)}
+          >
             카테고리 생성
-          </SignButton>
-          <SignButton onClick={() => navigator(routes.client.advertisement)}>
+          </TabButton>
+          <TabButton
+            isChosenTab={pathname === routes.client.advertisement}
+            onClick={() => navigator(routes.client.advertisement)}
+          >
             광고 관리
-          </SignButton>
-          <SignButton onClick={() => navigator(routes.client.columnCode)}>
+          </TabButton>
+          <TabButton
+            isChosenTab={pathname === routes.client.columnCode}
+            onClick={() => navigator(routes.client.columnCode)}
+          >
             컬럼 코드
-          </SignButton>
-          <SignButton onClick={() => navigator(routes.client.collection)}>
+          </TabButton>
+          <TabButton
+            isChosenTab={pathname === routes.client.collection}
+            onClick={() => navigator(routes.client.collection)}
+          >
             컬렉션
-          </SignButton>
-          <SignButton onClick={() => navigator(routes.client.inquiry)}>
+          </TabButton>
+          <TabButton
+            isChosenTab={pathname === routes.client.inquiry}
+            onClick={() => navigator(routes.client.inquiry)}
+          >
             질의 관리
-          </SignButton>
+          </TabButton>
         </span>
         <span>
-          <SignButton onClick={handleSignOut}>sign out</SignButton>
+          <TabButton onClick={handleSignOut}>로그아웃</TabButton>
         </span>
       </NavBarSection>
     </NavBarContainer>
