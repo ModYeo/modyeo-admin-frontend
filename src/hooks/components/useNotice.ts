@@ -51,13 +51,19 @@ const useNotice = (): UseNotice => {
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
+  const titleModifyInputRef = useRef<HTMLInputElement>(null);
+
   const contentInputRef = useRef<HTMLInputElement>(null);
+
+  const contentModifyInputRef = useRef<HTMLInputElement>(null);
 
   const requiredInputItems = useMemo((): RequiredInputItems => {
     return [
       {
         itemName: "title",
-        refObject: titleInputRef,
+        refObject: IS_NOTICE_BEING_MODIFIED
+          ? titleModifyInputRef
+          : titleInputRef,
         elementType: "input",
         defaultValue: IS_NOTICE_BEING_MODIFIED
           ? notices[toBeModifiedNoticeIndex].title
@@ -65,7 +71,9 @@ const useNotice = (): UseNotice => {
       },
       {
         itemName: "content",
-        refObject: contentInputRef,
+        refObject: IS_NOTICE_BEING_MODIFIED
+          ? contentModifyInputRef
+          : contentInputRef,
         elementType: "input",
         defaultValue: IS_NOTICE_BEING_MODIFIED
           ? notices[toBeModifiedNoticeIndex].content
@@ -84,8 +92,15 @@ const useNotice = (): UseNotice => {
   }, [fetchNotices]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [titleInputRef.current?.value, contentInputRef.current?.value];
-  }, []);
+    return [
+      IS_NOTICE_BEING_MODIFIED
+        ? titleModifyInputRef.current?.value
+        : titleInputRef.current?.value,
+      IS_NOTICE_BEING_MODIFIED
+        ? contentModifyInputRef.current?.value
+        : contentInputRef.current?.value,
+    ];
+  }, [IS_NOTICE_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {
     const noticeTitleCurrent = titleInputRef.current;

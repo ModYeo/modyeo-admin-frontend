@@ -64,6 +64,8 @@ const useInquiryDetail = (): UseInquiryDetail => {
 
   const contentTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  const contentModifyTextAreaRef = useRef<HTMLTextAreaElement>(null);
+
   const IS_ANSWER_BEING_MODIFIED =
     toBeModifiedAnswerIndex !== NOTHING_BEING_MODIFIED;
 
@@ -71,7 +73,9 @@ const useInquiryDetail = (): UseInquiryDetail => {
     return [
       {
         itemName: "admin answer",
-        refObject: contentTextAreaRef,
+        refObject: IS_ANSWER_BEING_MODIFIED
+          ? contentModifyTextAreaRef
+          : contentTextAreaRef,
         elementType: "textarea",
         defaultValue: IS_ANSWER_BEING_MODIFIED
           ? inquiry?.answerList[toBeModifiedAnswerIndex].content || ""
@@ -98,8 +102,12 @@ const useInquiryDetail = (): UseInquiryDetail => {
   }, [fetchInquiry, goBackToInquiryListPage]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [contentTextAreaRef.current?.value];
-  }, []);
+    return [
+      IS_ANSWER_BEING_MODIFIED
+        ? contentModifyTextAreaRef.current?.value
+        : contentTextAreaRef.current?.value,
+    ];
+  }, [IS_ANSWER_BEING_MODIFIED]);
 
   const sendPostAnswerRequest = useCallback(
     <T extends object>(newAnswer: T) => {

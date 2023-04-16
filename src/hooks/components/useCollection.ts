@@ -35,7 +35,11 @@ const useCollection = (): UseCollection => {
 
   const collectionInfoNameTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
+  const collectionInfoNameModifyTextAreaRef = useRef<HTMLTextAreaElement>(null);
+
   const collectionDescTextAreaRef = useRef<HTMLTextAreaElement>(null);
+
+  const collectionDescModifyTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const IS_COLLECTION_BEING_MODIFIED =
     toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
@@ -44,7 +48,9 @@ const useCollection = (): UseCollection => {
     return [
       {
         itemName: "collection info name",
-        refObject: collectionInfoNameTextAreaRef,
+        refObject: IS_COLLECTION_BEING_MODIFIED
+          ? collectionInfoNameModifyTextAreaRef
+          : collectionInfoNameTextAreaRef,
         elementType: "textarea",
         defaultValue: IS_COLLECTION_BEING_MODIFIED
           ? collections[toBeModifiedCollectionIndex].collectionInfoName
@@ -52,7 +58,9 @@ const useCollection = (): UseCollection => {
       },
       {
         itemName: "description",
-        refObject: collectionDescTextAreaRef,
+        refObject: IS_COLLECTION_BEING_MODIFIED
+          ? collectionDescModifyTextAreaRef
+          : collectionDescTextAreaRef,
         elementType: "textarea",
         defaultValue: IS_COLLECTION_BEING_MODIFIED
           ? collections[toBeModifiedCollectionIndex].description
@@ -72,10 +80,14 @@ const useCollection = (): UseCollection => {
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
-      collectionInfoNameTextAreaRef.current?.value,
-      collectionDescTextAreaRef.current?.value,
+      IS_COLLECTION_BEING_MODIFIED
+        ? collectionInfoNameModifyTextAreaRef.current?.value
+        : collectionInfoNameTextAreaRef.current?.value,
+      IS_COLLECTION_BEING_MODIFIED
+        ? collectionDescModifyTextAreaRef.current?.value
+        : collectionDescTextAreaRef.current?.value,
     ];
-  }, []);
+  }, [IS_COLLECTION_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {
     const collectionInfoNameCurrent = collectionInfoNameTextAreaRef.current;

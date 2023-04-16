@@ -52,17 +52,19 @@ function SubmitForm({
       {isModificationAction || <Title>{title}</Title>}
       <form onSubmit={registerNewElement}>
         {requiredInputItems.map((item) => {
-          const elementId = `id-${item.itemName}`;
-          const labelValue = `* ${item.itemName}`;
+          const { itemName } = item;
+          const elementId = `id-${itemName}`;
+          const labelValue = `* ${itemName}`;
+          const defaultValue = isModificationAction ? item.defaultValue : "";
           if (item.elementType === "input") {
             return (
-              <span key={item.itemName}>
+              <span key={itemName}>
                 <Label htmlFor={elementId}>{labelValue}</Label>
                 <Input
                   id={elementId}
-                  placeholder={item.itemName}
+                  placeholder={itemName}
                   ref={item.refObject as RefObject<HTMLInputElement>}
-                  defaultValue={item.defaultValue}
+                  defaultValue={defaultValue}
                   required
                 />
               </span>
@@ -70,19 +72,19 @@ function SubmitForm({
           }
           if (item.elementType === "textarea") {
             return (
-              <span key={item.itemName}>
+              <span key={itemName}>
                 <Label htmlFor={elementId}>{labelValue}</Label>
                 <TextArea
-                  placeholder={item.itemName}
+                  placeholder={itemName}
                   ref={item.refObject as RefObject<HTMLTextAreaElement>}
-                  defaultValue={item.defaultValue}
+                  defaultValue={defaultValue}
                   required
                 />
               </span>
             );
           }
           return (
-            <span key={item.itemName}>
+            <span key={itemName}>
               <Label htmlFor={elementId}>{labelValue}</Label>
               <input
                 alt="image input"
