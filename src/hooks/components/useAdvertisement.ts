@@ -80,7 +80,11 @@ const useAdvertisement = (): UseAdvertisement => {
 
   const advertisementNameInputRef = useRef<HTMLInputElement>(null);
 
+  const advertisementNameModifyInput = useRef<HTMLInputElement>(null);
+
   const urlLinkInputRef = useRef<HTMLInputElement>(null);
+
+  const urlLinkModifyInputRef = useRef<HTMLInputElement>(null);
 
   const IS_ADVERTISEMENT_BEING_MODIFIED =
     toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
@@ -89,7 +93,9 @@ const useAdvertisement = (): UseAdvertisement => {
     return [
       {
         itemName: "ad name",
-        refObject: advertisementNameInputRef,
+        refObject: IS_ADVERTISEMENT_BEING_MODIFIED
+          ? advertisementNameModifyInput
+          : advertisementNameInputRef,
         elementType: "input",
         defaultValue: IS_ADVERTISEMENT_BEING_MODIFIED
           ? advertisements[toBeModifiedAdvertisementIndex].advertisementName
@@ -97,7 +103,9 @@ const useAdvertisement = (): UseAdvertisement => {
       },
       {
         itemName: "url link",
-        refObject: urlLinkInputRef,
+        refObject: IS_ADVERTISEMENT_BEING_MODIFIED
+          ? urlLinkModifyInputRef
+          : urlLinkInputRef,
         elementType: "input",
         defaultValue: IS_ADVERTISEMENT_BEING_MODIFIED
           ? advertisements[toBeModifiedAdvertisementIndex].urlLink
@@ -121,10 +129,14 @@ const useAdvertisement = (): UseAdvertisement => {
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
-      advertisementNameInputRef.current?.value,
-      urlLinkInputRef.current?.value,
+      IS_ADVERTISEMENT_BEING_MODIFIED
+        ? advertisementNameModifyInput.current?.value
+        : advertisementNameInputRef.current?.value,
+      IS_ADVERTISEMENT_BEING_MODIFIED
+        ? urlLinkModifyInputRef.current?.value
+        : urlLinkInputRef.current?.value,
     ];
-  }, []);
+  }, [IS_ADVERTISEMENT_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {
     const advertisementNameCurrent = advertisementNameInputRef.current;

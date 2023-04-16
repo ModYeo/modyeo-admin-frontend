@@ -45,9 +45,15 @@ const useColumnCode = (): UseColumnCode => {
 
   const codeInputRef = useRef<HTMLInputElement>(null);
 
+  const codeModifyInputRef = useRef<HTMLInputElement>(null);
+
   const columnNameInputRef = useRef<HTMLInputElement>(null);
 
+  const columnNameModifyInputRef = useRef<HTMLInputElement>(null);
+
   const codeDescriptionInputRef = useRef<HTMLInputElement>(null);
+
+  const codeDescriptionModifyInputRef = useRef<HTMLInputElement>(null);
 
   const IS_COLUMNCODE_BEING_MODIFIED =
     toBeModifiedColumnCodeIndex !== NOTHING_BEING_MODIFIED;
@@ -56,7 +62,9 @@ const useColumnCode = (): UseColumnCode => {
     return [
       {
         itemName: "code",
-        refObject: codeInputRef,
+        refObject: IS_COLUMNCODE_BEING_MODIFIED
+          ? codeModifyInputRef
+          : codeInputRef,
         elementType: "input",
         defaultValue: IS_COLUMNCODE_BEING_MODIFIED
           ? columnCodes[toBeModifiedColumnCodeIndex].code
@@ -64,7 +72,9 @@ const useColumnCode = (): UseColumnCode => {
       },
       {
         itemName: "column name",
-        refObject: columnNameInputRef,
+        refObject: IS_COLUMNCODE_BEING_MODIFIED
+          ? columnNameModifyInputRef
+          : columnNameInputRef,
         elementType: "input",
         defaultValue: IS_COLUMNCODE_BEING_MODIFIED
           ? columnCodes[toBeModifiedColumnCodeIndex].columnCodeName
@@ -72,7 +82,9 @@ const useColumnCode = (): UseColumnCode => {
       },
       {
         itemName: "description",
-        refObject: codeDescriptionInputRef,
+        refObject: IS_COLUMNCODE_BEING_MODIFIED
+          ? codeDescriptionModifyInputRef
+          : codeDescriptionInputRef,
         elementType: "input",
         defaultValue: IS_COLUMNCODE_BEING_MODIFIED
           ? columnCodes[toBeModifiedColumnCodeIndex].description
@@ -92,11 +104,17 @@ const useColumnCode = (): UseColumnCode => {
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
-      codeInputRef.current?.value,
-      columnNameInputRef.current?.value,
-      codeDescriptionInputRef.current?.value,
+      IS_COLUMNCODE_BEING_MODIFIED
+        ? codeModifyInputRef.current?.value
+        : codeInputRef.current?.value,
+      IS_COLUMNCODE_BEING_MODIFIED
+        ? columnNameModifyInputRef.current?.value
+        : columnNameInputRef.current?.value,
+      IS_COLUMNCODE_BEING_MODIFIED
+        ? codeDescriptionModifyInputRef.current?.value
+        : codeDescriptionInputRef.current?.value,
     ];
-  }, []);
+  }, [IS_COLUMNCODE_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {
     const codeCurrent = codeInputRef.current;
