@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 import NavBar from "../components/commons/NavBar";
 import ColumnCode from "../components/organisms/ColumnCode";
 import Advertisement from "../components/organisms/Advertisement";
@@ -9,6 +10,11 @@ import Collection from "../components/organisms/Collection";
 import Inquiry from "../components/organisms/Inquiry";
 import InquiryDetail from "./InquiryDetail";
 import useAdmin, { ChosenTabMenuEnum } from "../hooks/pages/useAdmin";
+
+const Greetings = styled.h1`
+  margin-top: 300px;
+  text-align: center;
+`;
 
 function showChosenTabMenu(
   chosenTabMenu: ChosenTabMenuEnum,
@@ -38,7 +44,7 @@ function showChosenTabMenu(
   if (chosenTabMenu === ChosenTabMenuEnum.inquiry) {
     return <Inquiry />;
   }
-  return <div>chose admin tab menu</div>;
+  return <Greetings>관리할 항목을 위의 메뉴에서 선택하세요</Greetings>;
 }
 
 function Admin() {

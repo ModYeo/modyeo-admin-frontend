@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import styled from "styled-components";
 
 const ModalWindow = styled.div`
+  width: 700px;
   padding: 25px 25px;
   border-radius: 25px;
   background-color: #eee;

@@ -6,12 +6,11 @@ const Column = styled.div`
 `;
 
 const ColumnKey = styled.span`
-  color: grey;
+  color: #b5b5b5;
 `;
 
 const ColumnValue = styled.span`
-  color: #111111;
-  font-weight: bolder;
+  color: black;
 `;
 
 type ObjectType = { [key: string]: string | number };

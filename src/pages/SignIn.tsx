@@ -1,7 +1,13 @@
 import React from "react";
 import useSingnIn from "../hooks/pages/useSignIn";
 
-import { Container, TabButton, SignForm, SignInput } from "../styles/styles";
+import {
+  Container,
+  TabButton,
+  SignForm,
+  SignInput,
+  Title,
+} from "../styles/styles";
 
 function SignIn() {
   const { idInputRef, pwInputRef, signinAdminService } = useSingnIn();
@@ -9,7 +15,7 @@ function SignIn() {
   return (
     <Container>
       <SignForm onSubmit={signinAdminService}>
-        <h5>MODYEO ADMIN SERVICE</h5>
+        <Title>MODYEO ADMIN SERVICE</Title>
         <div>
           <SignInput placeholder="ID" ref={idInputRef} required />
         </div>

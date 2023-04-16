@@ -29,7 +29,7 @@ const useSingnIn = (): UseSignIn => {
       const idCurrent = idInputRef.current;
       const pwCurrent = pwInputRef.current;
       if (idCurrent && pwCurrent) {
-        const isSignInSuccessful = await signAPIManager.handleSignIn(
+        const isSignInSuccessful = await signAPIManager.requestSignIn(
           idCurrent.value,
           pwCurrent.value,
         );

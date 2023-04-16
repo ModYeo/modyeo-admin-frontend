@@ -13,8 +13,8 @@ interface IAuth {
 }
 
 interface ISignAPIManager {
-  handleSignIn: (id: string, password: string) => Promise<boolean | null>;
-  handleSignOut: () => Promise<boolean>;
+  requestSignIn: (id: string, password: string) => Promise<boolean | null>;
+  requestSignOut: () => Promise<boolean>;
   checkTokensValidation: () => Promise<boolean>;
 }
 
@@ -28,7 +28,7 @@ class SignAPIManager implements ISignAPIManager {
     this.authCookieManager = authCookieManagerParam;
   }
 
-  async handleSignIn(id: string, password: string) {
+  async requestSignIn(id: string, password: string) {
     if (this.signInAxios) {
       try {
         const encodedAuth = this.encodeIdAndPassword(id, password);
@@ -63,7 +63,7 @@ class SignAPIManager implements ISignAPIManager {
     return false;
   }
 
-  async handleSignOut() {
+  async requestSignOut() {
     if (this.signInAxios) {
       try {
         const [accessToken, refreshToken] =
@@ -77,6 +77,7 @@ class SignAPIManager implements ISignAPIManager {
           status === serverStatus.UNAUTHORIZED
         ) {
           this.authCookieManager.deleteAccessAndRefreshToken();
+          toast.info(toastSentences.signOutSuccess);
           return true;
         }
         throw new Error();
