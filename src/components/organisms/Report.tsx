@@ -1,13 +1,24 @@
 import React from "react";
+import styled from "styled-components";
 import useReport, {
   ReportStatusEnum,
   reportTypesList,
 } from "../../hooks/components/useReport";
 import Modal from "../commons/Modal";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
+import {
+  List,
+  ListContainer,
+  ModalBackground,
+  Title,
+} from "../../styles/styles";
 import { ObjectType } from "../atoms/Card";
 import ModalContent from "../molcules/ModalContent";
 import ListElement from "../molcules/ListElement";
+
+const ReportWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
 
 function Report() {
   const {
@@ -22,8 +33,7 @@ function Report() {
 
   return (
     <ListContainer>
-      <h5>report type select</h5>
-      <br />
+      <Title>Report Types</Title>
       <select value={selectedReportType} onChange={onChangeReportType}>
         <option disabled>-</option>
         {reportTypesList.map((type) => (
@@ -32,7 +42,7 @@ function Report() {
       </select>
       {reports.map((report, index) => (
         <List key={report.id}>
-          <>
+          <ReportWrapper>
             <ListElement
               listElement={report as unknown as ObjectType}
               elementId={report.id}
@@ -57,10 +67,10 @@ function Report() {
                 ))}
               </select>
             </div>
-          </>
+          </ReportWrapper>
           {detailedReport && (
             <ModalBackground onClick={hideDetailedReportModal}>
-              <Modal width={300} height={450}>
+              <Modal>
                 <ModalContent
                   detailedElement={detailedReport as unknown as ObjectType}
                 />

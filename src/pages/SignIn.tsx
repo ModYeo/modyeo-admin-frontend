@@ -1,7 +1,7 @@
 import React from "react";
 import useSingnIn from "../hooks/pages/useSignIn";
 
-import { Container, SignButton, SignForm, SignInput } from "../styles/styles";
+import { Container, TabButton, SignForm, SignInput } from "../styles/styles";
 
 function SignIn() {
   const { idInputRef, pwInputRef, signinAdminService } = useSingnIn();
@@ -21,7 +21,7 @@ function SignIn() {
             required
           />
         </div>
-        <SignButton type="submit">submit</SignButton>
+        <TabButton type="submit">submit</TabButton>
       </SignForm>
     </Container>
   );

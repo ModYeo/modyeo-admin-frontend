@@ -72,7 +72,7 @@ const useInquiryDetail = (): UseInquiryDetail => {
       {
         itemName: "admin answer",
         refObject: contentTextAreaRef,
-        elementType: "input",
+        elementType: "textarea",
         defaultValue: IS_ANSWER_BEING_MODIFIED
           ? inquiry?.answerList[toBeModifiedAnswerIndex].content || ""
           : "",

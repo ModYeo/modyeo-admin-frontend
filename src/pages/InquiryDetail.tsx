@@ -2,7 +2,13 @@ import React from "react";
 import useInquiryDetail from "../hooks/pages/useInquiryDetail";
 
 import Modal from "../components/commons/Modal";
-import { List, ModalBackground } from "../styles/styles";
+import {
+  Button,
+  List,
+  ListContainer,
+  ModalBackground,
+  Title,
+} from "../styles/styles";
 import Card, { ObjectType } from "../components/atoms/Card";
 import ListElement from "../components/molcules/ListElement";
 import SubmitForm from "../components/molcules/SubmitForm";
@@ -20,8 +26,9 @@ function InquiryDetail() {
   } = useInquiryDetail();
 
   return (
-    <div>
-      <h5>inquiry detail</h5>
+    <ListContainer>
+      <Title>Inquiry Detail</Title>
+      <br />
       {inquiry ? (
         <>
           <Card element={inquiry as unknown as ObjectType} />
@@ -36,8 +43,8 @@ function InquiryDetail() {
               />
             </List>
           ))}
+          <br />
           <SubmitForm
-            title="admin answer"
             requiredInputItems={requiredInputItems}
             registerNewElement={registerNewAnswer}
           />
@@ -45,14 +52,13 @@ function InquiryDetail() {
       ) : (
         <p>정보를 불러오는 중입니다...</p>
       )}
-      <button type="button" onClick={goBackToInquiryListPage}>
+      <Button type="button" onClick={goBackToInquiryListPage}>
         back
-      </button>
+      </Button>
       {IS_ANSWER_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleAnswerModificationModal()}>
-          <Modal width={500} height={200}>
+          <Modal>
             <SubmitForm
-              title="notices list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyAnswer}
               isModificationAction={true}
@@ -60,7 +66,7 @@ function InquiryDetail() {
           </Modal>
         </ModalBackground>
       )}
-    </div>
+    </ListContainer>
   );
 }
 

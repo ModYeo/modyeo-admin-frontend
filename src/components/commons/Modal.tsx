@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
-const ModalWindow = styled.div<{ width: number; height: number }>`
-  width: ${({ width }) => `${width}px`};
-  height: ${({ height }) => `${height}px`};
+const ModalWindow = styled.div`
+  padding: 25px 25px;
   border-radius: 25px;
   background-color: #eee;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: center;
 `;
 
@@ -21,15 +20,7 @@ const unlockViewScroll = () => {
   if (body) body.style.overflow = "visible";
 };
 
-function Modal({
-  children,
-  width,
-  height,
-}: {
-  children: React.ReactNode;
-  width: number;
-  height: number;
-}) {
+function Modal({ children }: { children: React.ReactNode }) {
   const stopPropagation = (e: React.MouseEvent<HTMLDivElement>) =>
     e.stopPropagation();
 
@@ -37,11 +28,7 @@ function Modal({
     lockViewScroll();
     return () => unlockViewScroll();
   }, []);
-  return (
-    <ModalWindow onClick={stopPropagation} width={width} height={height}>
-      {children}
-    </ModalWindow>
-  );
+  return <ModalWindow onClick={stopPropagation}>{children}</ModalWindow>;
 }
 
 export default Modal;

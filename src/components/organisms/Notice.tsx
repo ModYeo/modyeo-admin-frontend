@@ -26,7 +26,7 @@ function Notice() {
   return (
     <ListContainer>
       <SubmitForm
-        title="notices list"
+        title="Notices List"
         requiredInputItems={requiredInputItems}
         registerNewElement={registerNewNotice}
       />
@@ -44,7 +44,7 @@ function Notice() {
       ))}
       {detailedNotice && (
         <ModalBackground onClick={() => hideDetailedNoticeModal()}>
-          <Modal width={400} height={200}>
+          <Modal>
             <ModalContent
               detailedElement={detailedNotice as unknown as ObjectType}
             />
@@ -53,9 +53,8 @@ function Notice() {
       )}
       {IS_NOTICE_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleNoticeModificationModal()}>
-          <Modal width={400} height={200}>
+          <Modal>
             <SubmitForm
-              title="notices list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyNotice}
               isModificationAction={true}

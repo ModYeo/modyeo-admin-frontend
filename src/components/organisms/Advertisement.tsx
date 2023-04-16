@@ -24,7 +24,7 @@ function Advertisement() {
   return (
     <ListContainer>
       <SubmitForm
-        title="advertisements list"
+        title="Advertisements List"
         requiredInputItems={requiredInputItems}
         registerNewElement={registerNewAdvertisement}
       />
@@ -42,7 +42,7 @@ function Advertisement() {
       ))}
       {detailedAdvertisement && (
         <ModalBackground onClick={() => hideDetailedAdvertisementModal()}>
-          <Modal width={400} height={200}>
+          <Modal>
             <ModalContent
               detailedElement={detailedAdvertisement as unknown as ObjectType}
             />
@@ -51,9 +51,8 @@ function Advertisement() {
       )}
       {IS_ADVERTISEMENT_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleAdvertisementModificationModal()}>
-          <Modal width={400} height={200}>
+          <Modal>
             <SubmitForm
-              title="notices list"
               requiredInputItems={requiredInputItems}
               registerNewElement={modifyAdvertisement}
               isModificationAction={true}
