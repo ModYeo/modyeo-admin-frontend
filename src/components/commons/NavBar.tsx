@@ -55,7 +55,7 @@ function NavBar() {
           </TabButton>
         </span>
         <span>
-          <TabButton onClick={handleSignOut}>sign out</TabButton>
+          <TabButton onClick={handleSignOut}>로그아웃</TabButton>
         </span>
       </NavBarSection>
     </NavBarContainer>

@@ -44,6 +44,8 @@ export const NavBarContainer = styled.div`
   height: 50px;
   padding: 0 30px;
   background-color: #f7f7f7;
+  position: fixed;
+  top: 0;
 `;
 
 export const NavBarSection = styled.section`
