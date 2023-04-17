@@ -95,11 +95,9 @@ const useCategory = (): UseCategory => {
   }, []);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [
-      IS_CATEGORY_BEING_MODIFIED
-        ? categoryModifyInputRef.current?.value
-        : categoryInputRef.current?.value,
-    ];
+    return IS_CATEGORY_BEING_MODIFIED
+      ? [categoryModifyInputRef.current?.value]
+      : [categoryInputRef.current?.value];
   }, [IS_CATEGORY_BEING_MODIFIED]);
 
   const sendPostCategoryRequest = useCallback(
