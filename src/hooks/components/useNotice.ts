@@ -92,14 +92,12 @@ const useNotice = (): UseNotice => {
   }, [fetchNotices]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [
-      IS_NOTICE_BEING_MODIFIED
-        ? titleModifyInputRef.current?.value
-        : titleInputRef.current?.value,
-      IS_NOTICE_BEING_MODIFIED
-        ? contentModifyInputRef.current?.value
-        : contentInputRef.current?.value,
-    ];
+    return IS_NOTICE_BEING_MODIFIED
+      ? [
+          titleModifyInputRef.current?.value,
+          contentModifyInputRef.current?.value,
+        ]
+      : [titleInputRef.current?.value, contentInputRef.current?.value];
   }, [IS_NOTICE_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {

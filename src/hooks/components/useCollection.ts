@@ -1,17 +1,19 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import dayjs from "dayjs";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+import DAY_FORMAT from "../../constants/dayFormat";
 
 interface ICollection {
   collectionInfoId: number;
   collectionInfoName: string;
   description: string;
-  createdBy?: number;
-  createdTime?: string;
-  updatedBy?: number;
-  updatedTime?: string;
+  createdBy: number;
+  createdTime: string;
+  updatedBy: number;
+  updatedTime: string;
 }
 
 interface UseCollection {
@@ -79,14 +81,15 @@ const useCollection = (): UseCollection => {
   }, [fetchCollections]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [
-      IS_COLLECTION_BEING_MODIFIED
-        ? collectionInfoNameModifyTextAreaRef.current?.value
-        : collectionInfoNameTextAreaRef.current?.value,
-      IS_COLLECTION_BEING_MODIFIED
-        ? collectionDescModifyTextAreaRef.current?.value
-        : collectionDescTextAreaRef.current?.value,
-    ];
+    return IS_COLLECTION_BEING_MODIFIED
+      ? [
+          collectionInfoNameModifyTextAreaRef.current?.value,
+          collectionDescModifyTextAreaRef.current?.value,
+        ]
+      : [
+          collectionInfoNameTextAreaRef.current?.value,
+          collectionDescTextAreaRef.current?.value,
+        ];
   }, [IS_COLLECTION_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {
@@ -120,10 +123,15 @@ const useCollection = (): UseCollection => {
         extractInputValuesFromElementsRef();
 
       if (infoNameTextAreaValue && descTextAreaValue) {
+        const answerCreatedTime = dayjs().format(DAY_FORMAT);
         const newCollection: ICollection = {
           collectionInfoId: 0,
           collectionInfoName: infoNameTextAreaValue,
           description: descTextAreaValue,
+          createdBy: 1,
+          createdTime: answerCreatedTime,
+          updatedBy: 1,
+          updatedTime: answerCreatedTime,
         };
         const newCollectionId = await sendPostCollectionRequest<ICollection>(
           newCollection,
@@ -211,7 +219,8 @@ const useCollection = (): UseCollection => {
     const [infoNameTextAreaValue, descTextAreaValue] =
       extractInputValuesFromElementsRef();
 
-    const { collectionInfoId } = collections[toBeModifiedCollectionIndex];
+    const targetCollection = collections[toBeModifiedCollectionIndex];
+    const { collectionInfoId } = targetCollection;
 
     if (infoNameTextAreaValue && descTextAreaValue) {
       const modifiedCollection = {
@@ -223,7 +232,12 @@ const useCollection = (): UseCollection => {
         modifiedCollection,
       );
       if (collectionInfoId === modifiedCollectionId) {
-        updateTargetCollection(modifiedCollection);
+        const answerUpdatedTime = dayjs().format(DAY_FORMAT);
+        updateTargetCollection({
+          ...targetCollection,
+          ...modifiedCollection,
+          updatedTime: answerUpdatedTime,
+        });
         toggleCollectionModificationModal();
         initializeInputValues();
       }

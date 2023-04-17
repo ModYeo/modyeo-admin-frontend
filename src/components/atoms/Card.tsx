@@ -15,17 +15,31 @@ const ColumnValue = styled.span`
 
 type ObjectType = { [key: string]: string | number };
 
+const checkIsVaildElementValue = (
+  element: ObjectType,
+  key: string,
+): boolean => {
+  const elementValue = element[key];
+  if (elementValue === null) return false;
+  if (key.toLocaleLowerCase().includes("id")) return false;
+  if (Array.isArray(elementValue)) return false;
+  return true;
+};
+
 function Card({ element }: { element: ObjectType }) {
   return (
     <div>
       {Object.keys(element).map((key) => {
-        if (key.toLocaleLowerCase().includes("id")) return null;
-        if (Array.isArray(element[key])) return null;
+        const isValidElementValue = checkIsVaildElementValue(element, key);
         return (
-          <Column key={key}>
-            <ColumnKey>{`${key} - `}</ColumnKey>
-            <ColumnValue>{element[key]}</ColumnValue>
-          </Column>
+          <div key={key}>
+            {isValidElementValue && (
+              <Column>
+                <ColumnKey>{`${key} - `}</ColumnKey>
+                <ColumnValue>{element[key]}</ColumnValue>
+              </Column>
+            )}
+          </div>
         );
       })}
     </div>

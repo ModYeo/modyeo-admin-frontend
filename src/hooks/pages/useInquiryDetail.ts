@@ -5,6 +5,7 @@ import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+import DAY_FORMAT from "../../constants/dayFormat";
 
 enum AuthorityEnum {
   ROLE_USER = "ROLE_USER",
@@ -147,7 +148,7 @@ const useInquiryDetail = (): UseInquiryDetail => {
         };
         const newAnswerId = await sendPostAnswerRequest<INewAnswer>(newAnswer);
         if (newAnswerId) {
-          const answerCreatedTime = dayjs().format("YYYY-MM-DD HH:mm:ss");
+          const answerCreatedTime = dayjs().format(DAY_FORMAT);
           addNewAnswerInAnswerList({
             ...newAnswer,
             answerId: newAnswerId,

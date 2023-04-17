@@ -128,14 +128,15 @@ const useAdvertisement = (): UseAdvertisement => {
   }, [fetchAdvertisements]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [
-      IS_ADVERTISEMENT_BEING_MODIFIED
-        ? advertisementNameModifyInput.current?.value
-        : advertisementNameInputRef.current?.value,
-      IS_ADVERTISEMENT_BEING_MODIFIED
-        ? urlLinkModifyInputRef.current?.value
-        : urlLinkInputRef.current?.value,
-    ];
+    return IS_ADVERTISEMENT_BEING_MODIFIED
+      ? [
+          advertisementNameModifyInput.current?.value,
+          urlLinkModifyInputRef.current?.value,
+        ]
+      : [
+          advertisementNameInputRef.current?.value,
+          urlLinkInputRef.current?.value,
+        ];
   }, [IS_ADVERTISEMENT_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {

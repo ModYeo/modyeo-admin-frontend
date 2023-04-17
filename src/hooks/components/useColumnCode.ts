@@ -103,17 +103,17 @@ const useColumnCode = (): UseColumnCode => {
   }, [fetchColumnCodes]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return [
-      IS_COLUMNCODE_BEING_MODIFIED
-        ? codeModifyInputRef.current?.value
-        : codeInputRef.current?.value,
-      IS_COLUMNCODE_BEING_MODIFIED
-        ? columnNameModifyInputRef.current?.value
-        : columnNameInputRef.current?.value,
-      IS_COLUMNCODE_BEING_MODIFIED
-        ? codeDescriptionModifyInputRef.current?.value
-        : codeDescriptionInputRef.current?.value,
-    ];
+    return IS_COLUMNCODE_BEING_MODIFIED
+      ? [
+          codeModifyInputRef.current?.value,
+          columnNameModifyInputRef.current?.value,
+          codeDescriptionModifyInputRef.current?.value,
+        ]
+      : [
+          codeInputRef.current?.value,
+          columnNameInputRef.current?.value,
+          codeDescriptionInputRef.current?.value,
+        ];
   }, [IS_COLUMNCODE_BEING_MODIFIED]);
 
   const initializeInputValues = useCallback(() => {
