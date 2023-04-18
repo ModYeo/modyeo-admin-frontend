@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 const Column = styled.div`
@@ -11,6 +12,19 @@ const ColumnKey = styled.span`
 
 const ColumnValue = styled.span`
   color: black;
+`;
+
+const LinkHrefValue = styled.span`
+  font-size: 13.5px;
+`;
+
+const ImageWrapper = styled.div`
+  width: 80px;
+  height: 80px;
+  margin-top: 15px;
+  background-color: #eee;
+  border-radius: 10px;
+  overflow: hidden;
 `;
 
 type ObjectType = { [key: string]: string | number };
@@ -26,19 +40,56 @@ const checkIsVaildElementValue = (
   return true;
 };
 
+function Image({ src }: { src: string }) {
+  return (
+    <ImageWrapper>
+      <img
+        src="https://i.pravatar.cc/300"
+        alt={` img ${src}`}
+        width={80}
+        height={80}
+      />
+    </ImageWrapper>
+  );
+}
+
+function JSXElementByKey({
+  elementKey,
+  elementValue,
+}: {
+  elementKey: string;
+  elementValue: string | number;
+}) {
+  if (typeof elementValue === "string" && elementKey === "imagePath") {
+    return <Image src={elementValue} />;
+  }
+  if (typeof elementValue === "string" && elementKey === "urlLink") {
+    return (
+      <>
+        <ColumnKey>{`${elementKey} - `}</ColumnKey>
+        <Link to={elementValue} target="_blank">
+          <LinkHrefValue>{elementValue}</LinkHrefValue>
+        </Link>
+      </>
+    );
+  }
+  return (
+    <Column>
+      <ColumnKey>{`${elementKey} - `}</ColumnKey>
+      <ColumnValue>{elementValue}</ColumnValue>
+    </Column>
+  );
+}
+
 function Card({ element }: { element: ObjectType }) {
   return (
     <div>
       {Object.keys(element).map((key) => {
         const isValidElementValue = checkIsVaildElementValue(element, key);
+        if (!isValidElementValue) return null;
         return (
           <div key={key}>
-            {isValidElementValue && (
-              <Column>
-                <ColumnKey>{`${key} - `}</ColumnKey>
-                <ColumnValue>{element[key]}</ColumnValue>
-              </Column>
-            )}
+            <JSXElementByKey elementKey={key} elementValue={element[key]} />
           </div>
         );
       })}

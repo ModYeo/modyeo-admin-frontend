@@ -13,6 +13,10 @@ const GlobalStyle = createGlobalStyle`
     padding-left: 0;
     list-style: none;
   }
+  a {
+    text-decoration: none;
+    color: #5476d7;
+  }
 `;
 
 export default GlobalStyle;
