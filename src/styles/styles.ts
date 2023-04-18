@@ -38,12 +38,14 @@ export const TabButton = styled.button<{ isChosenTab?: boolean }>`
   }
 `;
 
-export const NavBarContainer = styled.div`
+export const NavBarContainer = styled.div<{ isWindowOnTop: boolean }>`
   width: 100vw;
   min-width: 600px;
   height: 50px;
   padding: 0 30px;
   background-color: #f7f7f7;
+  border-bottom: ${({ isWindowOnTop }) =>
+    isWindowOnTop ? "2px solid transparent" : "2px solid #5476d7"};
   position: fixed;
   top: 0;
 `;
