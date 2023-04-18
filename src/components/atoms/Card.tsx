@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Column = styled.div`
   margin-bottom: 10px;
@@ -43,7 +44,7 @@ const checkIsVaildElementValue = (
 function Image({ src }: { src: string }) {
   return (
     <ImageWrapper>
-      <img
+      <LazyLoadImage
         src="https://i.pravatar.cc/300"
         alt={` img ${src}`}
         width={80}
