@@ -5,10 +5,11 @@ import { NavBarContainer, NavBarSection, TabButton } from "../../styles/styles";
 import routes from "../../constants/routes";
 
 function NavBar() {
-  const { isWindowOnTop, pathname, navigator, handleSignOut } = useNavBar();
+  const { isWindowScrollOnTop, pathname, navigator, handleSignOut } =
+    useNavBar();
 
   return (
-    <NavBarContainer isWindowOnTop={isWindowOnTop}>
+    <NavBarContainer isWindowScrollOnTop={isWindowScrollOnTop}>
       <NavBarSection>
         <span>
           <TabButton

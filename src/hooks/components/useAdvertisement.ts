@@ -310,6 +310,7 @@ const useAdvertisement = (): UseAdvertisement => {
       }
       const { advertisementId, type } =
         advertisements[toBeModifiedAdvertisementIndex];
+
       const modifiedAdvertisement = {
         id: advertisementId,
         advertisementName: advertisementNameInputValue,
@@ -317,10 +318,12 @@ const useAdvertisement = (): UseAdvertisement => {
         advertisementType: AD_TYPE,
         imagePath: "",
       };
+
       const modifiedAdvertisementId =
         await sendPatchAdvertisementRequest<IModifiedAdvertisement>(
           modifiedAdvertisement,
         );
+
       if (advertisementId === modifiedAdvertisementId) {
         updateTargetAdvertisement({
           ...modifiedAdvertisement,

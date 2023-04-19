@@ -5,7 +5,7 @@ import signAPIManager from "../../modules/signAPI";
 import routes from "../../constants/routes";
 
 interface UseNavBar {
-  isWindowOnTop: boolean;
+  isWindowScrollOnTop: boolean;
   pathname: string;
   navigator: NavigateFunction;
   handleSignOut: () => Promise<void>;
@@ -14,7 +14,7 @@ interface UseNavBar {
 const useNavBar = (): UseNavBar => {
   const navigator = useNavigate();
 
-  const [isWindowOnTop, setIsWindowOnTop] = useState(true);
+  const [isWindowScrollOnTop, setIsWindowScrollOnTop] = useState(true);
 
   const { pathname } = useLocation();
 
@@ -26,10 +26,10 @@ const useNavBar = (): UseNavBar => {
   const checkIsWindowOnTop = useCallback(() => {
     window.addEventListener("scroll", () => {
       const {
-        documentElement: { scrollTop },
+        documentElement: { scrollTop: scrollDowned },
       } = document;
-      if (scrollTop) setIsWindowOnTop(false);
-      else setIsWindowOnTop(true);
+      if (scrollDowned) setIsWindowScrollOnTop(false);
+      else setIsWindowScrollOnTop(true);
     });
   }, []);
 
@@ -41,7 +41,7 @@ const useNavBar = (): UseNavBar => {
   }, [checkIsWindowOnTop]);
 
   return {
-    isWindowOnTop,
+    isWindowScrollOnTop,
     pathname,
     navigator,
     handleSignOut,
