@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
-/* !!현재 사용하지 않는 커스텀 훅!! */
 function useModal() {
-  const [isModalUsed, setIsModalUsed] = useState(false);
-  const toggleModal = () => setIsModalUsed(!isModalUsed);
-  return { isModalUsed, toggleModal };
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const toggleModal = useCallback(
+    () => setIsModalVisible((isModalVisibleState) => !isModalVisibleState),
+    [setIsModalVisible],
+  );
+
+  return { isModalVisible, toggleModal };
 }
 
 export default useModal;

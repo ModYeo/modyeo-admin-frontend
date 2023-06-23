@@ -1,10 +1,13 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+
 import Admin from "./pages/Admin";
 import SignIn from "./pages/SignIn";
 import GlobalStyle from "./styles/globalStyles";
+
 import "react-toastify/dist/ReactToastify.css";
+import ModalProvider from "./provider/ModalProvider";
 
 const router = createBrowserRouter([
   {
@@ -20,7 +23,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <div className="App">
-      <RouterProvider router={router} />
+      <ModalProvider>
+        <RouterProvider router={router} />
+      </ModalProvider>
       <GlobalStyle />
       <ToastContainer />
     </div>

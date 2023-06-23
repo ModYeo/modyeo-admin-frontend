@@ -25,6 +25,7 @@
     "react/require-default-props": "off",
     "react/jsx-boolean-value": "off",
     "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/no-floating-promises": "off"
+    "@typescript-eslint/no-floating-promises": "off",
+    "react/jsx-no-constructed-context-values": "off"
   }
 }
