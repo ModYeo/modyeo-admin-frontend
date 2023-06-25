@@ -40,7 +40,7 @@ function ColumnCode() {
           />
         </List>
       ))}
-      {detailedColumCode && (
+      {/* {detailedColumCode && (
         <ModalBackground onClick={hideDetailedColumnCodeModal}>
           <Modal>
             <ModalContent
@@ -59,7 +59,7 @@ function ColumnCode() {
             />
           </Modal>
         </ModalBackground>
-      )}
+      )} */}
     </ListContainer>
   );
 }

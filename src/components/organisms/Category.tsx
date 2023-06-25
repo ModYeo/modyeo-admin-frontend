@@ -40,7 +40,7 @@ function Category() {
           />
         </List>
       ))}
-      {detailedCategory && (
+      {/* {detailedCategory && (
         <ModalBackground onClick={hideDetailedCategoryModal}>
           <Modal>
             <ModalContent
@@ -59,7 +59,7 @@ function Category() {
             />
           </Modal>
         </ModalBackground>
-      )}
+      )} */}
     </ListContainer>
   );
 }

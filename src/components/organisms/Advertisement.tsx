@@ -40,7 +40,7 @@ function Advertisement() {
           />
         </List>
       ))}
-      {detailedAdvertisement && (
+      {/* {detailedAdvertisement && (
         <ModalBackground onClick={() => hideDetailedAdvertisementModal()}>
           <Modal>
             <ModalContent
@@ -59,7 +59,7 @@ function Advertisement() {
             />
           </Modal>
         </ModalBackground>
-      )}
+      )} */}
     </ListContainer>
   );
 }

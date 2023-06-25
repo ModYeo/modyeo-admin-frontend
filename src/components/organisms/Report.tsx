@@ -68,7 +68,7 @@ function Report() {
               </select>
             </div>
           </ReportWrapper>
-          {detailedReport && (
+          {/* {detailedReport && (
             <ModalBackground onClick={hideDetailedReportModal}>
               <Modal>
                 <ModalContent
@@ -76,7 +76,7 @@ function Report() {
                 />
               </Modal>
             </ModalBackground>
-          )}
+          )} */}
         </List>
       ))}
     </ListContainer>

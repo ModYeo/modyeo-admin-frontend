@@ -13,7 +13,7 @@ function Collection() {
     IS_COLLECTION_BEING_MODIFIED,
     registerNewCollection,
     deleteCollection,
-    toggleCollectionModificationModal,
+    toggleCollectionModificationModalSecond,
     modifyCollection,
   } = useCollection();
 
@@ -30,12 +30,12 @@ function Collection() {
             listElement={collection as unknown as ObjectType}
             elementId={collection.collectionInfoId}
             elementIndex={index}
-            toggleModificationModal={toggleCollectionModificationModal}
+            toggleModificationModal={toggleCollectionModificationModalSecond}
             deleteElement={deleteCollection}
           />
         </List>
       ))}
-      {IS_COLLECTION_BEING_MODIFIED && (
+      {/* {IS_COLLECTION_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleCollectionModificationModal()}>
           <Modal>
             <SubmitForm
@@ -45,7 +45,7 @@ function Collection() {
             />
           </Modal>
         </ModalBackground>
-      )}
+      )} */}
     </ListContainer>
   );
 }

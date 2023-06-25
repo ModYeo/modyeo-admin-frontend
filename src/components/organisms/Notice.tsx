@@ -42,7 +42,7 @@ function Notice() {
           />
         </List>
       ))}
-      {detailedNotice && (
+      {/* {detailedNotice && (
         <ModalBackground onClick={() => hideDetailedNoticeModal()}>
           <Modal>
             <ModalContent
@@ -61,7 +61,7 @@ function Notice() {
             />
           </Modal>
         </ModalBackground>
-      )}
+      )} */}
     </ListContainer>
   );
 }

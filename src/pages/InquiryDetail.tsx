@@ -55,7 +55,7 @@ function InquiryDetail() {
       <Button type="button" onClick={goBackToInquiryListPage}>
         back
       </Button>
-      {IS_ANSWER_BEING_MODIFIED && (
+      {/* {IS_ANSWER_BEING_MODIFIED && (
         <ModalBackground onClick={() => toggleAnswerModificationModal()}>
           <Modal>
             <SubmitForm
@@ -65,7 +65,7 @@ function InquiryDetail() {
             />
           </Modal>
         </ModalBackground>
-      )}
+      )} */}
     </ListContainer>
   );
 }

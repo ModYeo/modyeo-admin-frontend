@@ -1,14 +1,34 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+const body = document.querySelector("body");
+
+const lockViewScroll = () => {
+  if (body) body.style.overflow = "hidden";
+};
+
+const unlockViewScroll = () => {
+  if (body) body.style.overflow = "visible";
+};
 
 function useModal() {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
-  const toggleModal = useCallback(
-    () => setIsModalVisible((isModalVisibleState) => !isModalVisibleState),
+  const showModal = useCallback(
+    () => setIsModalVisible(true),
     [setIsModalVisible],
   );
 
-  return { isModalVisible, toggleModal };
+  const hideModal = useCallback(
+    () => setIsModalVisible(false),
+    [setIsModalVisible],
+  );
+
+  useEffect(() => {
+    if (isModalVisible) lockViewScroll();
+    else unlockViewScroll();
+  }, [isModalVisible]);
+
+  return { isModalVisible, showModal, hideModal };
 }
 
 export default useModal;

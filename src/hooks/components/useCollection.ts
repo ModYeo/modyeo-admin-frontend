@@ -1,10 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import dayjs from "dayjs";
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 import DAY_FORMAT from "../../constants/dayFormat";
+import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
 interface ICollection {
   collectionInfoId: number;
@@ -25,11 +33,17 @@ interface UseCollection {
     collectionInfoId: number,
     targetCollectionIndex: number,
   ) => Promise<void>;
-  toggleCollectionModificationModal: (targetIndex?: number) => void;
+  toggleCollectionModificationModalSecond: (targetIndex?: number) => void;
   modifyCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const useCollection = (): UseCollection => {
+  const {
+    showModal,
+    closeModalAndInitializeModificationForm,
+    injectModificationModels,
+  } = useContext(MODAL_CONTEXT);
+
   const [collections, setCollections] = useState<Array<ICollection>>([]);
 
   const [toBeModifiedCollectionIndex, setToBeModifiedCollectionIndex] =
@@ -244,9 +258,55 @@ const useCollection = (): UseCollection => {
     }
   };
 
+  const returnRequiredInputItems = (
+    targetIndex: number,
+  ): RequiredInputItems => {
+    return [
+      {
+        itemName: "collection info name",
+        refObject: collectionInfoNameModifyTextAreaRef,
+        elementType: "textarea",
+        defaultValue: collections[targetIndex].collectionInfoName,
+      },
+      {
+        itemName: "description",
+        refObject: collectionDescModifyTextAreaRef,
+        elementType: "textarea",
+        defaultValue: collections[targetIndex].description,
+      },
+    ];
+  };
+
+  /** 이거 사용 예정 */
+  const toggleCollectionModificationModalSecond = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined) {
+        const aaa = returnRequiredInputItems(targetIndex);
+        console.log(typeof modifyCollection);
+        injectModificationModels({
+          requiredInputElementsParam: aaa,
+          elementModificationFunctionParam: modifyCollection,
+        });
+        showModal();
+      } else {
+        closeModalAndInitializeModificationForm();
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      collections,
+      injectModificationModels,
+      closeModalAndInitializeModificationForm,
+    ],
+  );
+
   useEffect(() => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
+
+  // useEffect(() => {
+  //   console.log(collections);
+  // }, [collections]);
 
   return {
     collections,
@@ -254,7 +314,7 @@ const useCollection = (): UseCollection => {
     IS_COLLECTION_BEING_MODIFIED,
     registerNewCollection,
     deleteCollection,
-    toggleCollectionModificationModal,
+    toggleCollectionModificationModalSecond,
     modifyCollection,
   };
 };
