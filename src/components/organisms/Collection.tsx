@@ -1,9 +1,11 @@
 import React from "react";
 import useCollection from "../../hooks/components/useCollection";
-import { List, ListContainer } from "../../styles/styles";
+
 import SubmitForm from "../molcules/SubmitForm";
 import ListElement from "../molcules/ListElement";
 import { ObjectType } from "../atoms/Card";
+
+import { List, ListContainer } from "../../styles/styles";
 
 function Collection() {
   const {
