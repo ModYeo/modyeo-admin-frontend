@@ -40,7 +40,6 @@ interface UseCollection {
 const useCollection = (): UseCollection => {
   const {
     isModalVisible,
-    showModal,
     closeModalAndInitializeModificationForm,
     injectModificationModels,
   } = useContext(MODAL_CONTEXT);
@@ -222,9 +221,9 @@ const useCollection = (): UseCollection => {
     },
     [
       collections,
-      closeModalAndInitializeModificationForm,
       extractInputValuesFromElementsRef,
       sendPatchCollectionRequest,
+      closeModalAndInitializeModificationForm,
     ],
   );
 
@@ -278,14 +277,12 @@ const useCollection = (): UseCollection => {
           requiredInputElementsParam,
           elementModificationFunctionParam: modifyCollection,
         });
-        showModal();
       } else {
         toBeModifiedCollectionIndex.current = NOTHING_BEING_MODIFIED;
         closeModalAndInitializeModificationForm();
       }
     },
     [
-      showModal,
       modifyCollection,
       makeRequiredInputElements,
       injectModificationModels,

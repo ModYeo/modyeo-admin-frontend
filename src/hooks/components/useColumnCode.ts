@@ -1,8 +1,18 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+
+import { MODAL_CONTEXT } from "../../provider/ModalProvider";
+import { ObjectType } from "../../components/atoms/Card";
 
 interface IColumCode {
   code: string;
@@ -20,28 +30,27 @@ interface IDetailedColumnCode extends IColumCode {
 
 interface UseColumnCode {
   columnCodes: IColumCode[];
-  detailedColumCode: IDetailedColumnCode | null;
   requiredInputItems: RequiredInputItems;
-  IS_COLUMNCODE_BEING_MODIFIED: boolean;
   registerNewColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteColumnCode: (
     columnCodeId: number,
     targetColumnCodeIndex: number,
   ) => Promise<void>;
   initializeDetailedColumnCode: (columnCodeId: number) => Promise<void>;
-  hideDetailedColumnCodeModal: () => void;
   toggleColumnCodeModificationModal: (targetColumnCodeIndex?: number) => void;
-  modifyColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const useColumnCode = (): UseColumnCode => {
+  const {
+    isModalVisible,
+    closeModalAndInitializeModificationForm,
+    injectModificationModels,
+    injectDetailedElement,
+  } = useContext(MODAL_CONTEXT);
+
   const [columnCodes, setColumnCodes] = useState<Array<IColumCode>>([]);
 
-  const [detailedColumCode, setDetailedColumnCode] =
-    useState<IDetailedColumnCode | null>(null);
-
-  const [toBeModifiedColumnCodeIndex, setToBeModifiedColumnCodeIndex] =
-    useState(NOTHING_BEING_MODIFIED);
+  const toBeModifiedColumnCodeIndex = useRef<number>(NOTHING_BEING_MODIFIED);
 
   const codeInputRef = useRef<HTMLInputElement>(null);
 
@@ -55,44 +64,6 @@ const useColumnCode = (): UseColumnCode => {
 
   const codeDescriptionModifyInputRef = useRef<HTMLInputElement>(null);
 
-  const IS_COLUMNCODE_BEING_MODIFIED =
-    toBeModifiedColumnCodeIndex !== NOTHING_BEING_MODIFIED;
-
-  const requiredInputItems = useMemo((): RequiredInputItems => {
-    return [
-      {
-        itemName: "code",
-        refObject: IS_COLUMNCODE_BEING_MODIFIED
-          ? codeModifyInputRef
-          : codeInputRef,
-        elementType: "input",
-        defaultValue: IS_COLUMNCODE_BEING_MODIFIED
-          ? columnCodes[toBeModifiedColumnCodeIndex].code
-          : "",
-      },
-      {
-        itemName: "column name",
-        refObject: IS_COLUMNCODE_BEING_MODIFIED
-          ? columnNameModifyInputRef
-          : columnNameInputRef,
-        elementType: "input",
-        defaultValue: IS_COLUMNCODE_BEING_MODIFIED
-          ? columnCodes[toBeModifiedColumnCodeIndex].columnCodeName
-          : "",
-      },
-      {
-        itemName: "description",
-        refObject: IS_COLUMNCODE_BEING_MODIFIED
-          ? codeDescriptionModifyInputRef
-          : codeDescriptionInputRef,
-        elementType: "input",
-        defaultValue: IS_COLUMNCODE_BEING_MODIFIED
-          ? columnCodes[toBeModifiedColumnCodeIndex].description
-          : "",
-      },
-    ];
-  }, [IS_COLUMNCODE_BEING_MODIFIED, columnCodes, toBeModifiedColumnCodeIndex]);
-
   const fetchColumnCodes = useCallback(async () => {
     return apiManager.fetchData<IColumCode>(routes.server.column);
   }, []);
@@ -103,7 +74,7 @@ const useColumnCode = (): UseColumnCode => {
   }, [fetchColumnCodes]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return IS_COLUMNCODE_BEING_MODIFIED
+    return toBeModifiedColumnCodeIndex.current !== NOTHING_BEING_MODIFIED
       ? [
           codeModifyInputRef.current?.value,
           columnNameModifyInputRef.current?.value,
@@ -114,7 +85,7 @@ const useColumnCode = (): UseColumnCode => {
           columnNameInputRef.current?.value,
           codeDescriptionInputRef.current?.value,
         ];
-  }, [IS_COLUMNCODE_BEING_MODIFIED]);
+  }, []);
 
   const initializeInputValues = useCallback(() => {
     const codeCurrent = codeInputRef.current;
@@ -213,14 +184,12 @@ const useColumnCode = (): UseColumnCode => {
         columnCodeId,
       );
       if (fetchedDetailedColumnCode)
-        setDetailedColumnCode(fetchedDetailedColumnCode);
+        injectDetailedElement(
+          fetchedDetailedColumnCode as unknown as ObjectType,
+        );
     },
-    [fetchDetailedColumnCode, setDetailedColumnCode],
+    [fetchDetailedColumnCode, injectDetailedElement],
   );
-
-  const hideDetailedColumnCodeModal = useCallback(() => {
-    setDetailedColumnCode(null);
-  }, []);
 
   const sendColumnCodePatchRequest = useCallback(
     <T extends object>(modifiedColumnCode: T) => {
@@ -232,7 +201,7 @@ const useColumnCode = (): UseColumnCode => {
   const updateTargetColumnCode = (modifiedColumnCode: IColumCode) => {
     setColumnCodes((columnCodesList) => {
       columnCodesList.splice(
-        toBeModifiedColumnCodeIndex,
+        toBeModifiedColumnCodeIndex.current,
         1,
         modifiedColumnCode,
       );
@@ -240,56 +209,122 @@ const useColumnCode = (): UseColumnCode => {
     });
   };
 
-  const toggleColumnCodeModificationModal = useCallback(
-    (targetColumnCodeIndex?: number) => {
-      if (targetColumnCodeIndex !== undefined)
-        setToBeModifiedColumnCodeIndex(targetColumnCodeIndex);
-      else setToBeModifiedColumnCodeIndex(NOTHING_BEING_MODIFIED);
+  const modifyColumnCode = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const [codeInputValue, columnNameInputValue, codeDescriptionInputValue] =
+        extractInputValuesFromElementsRef();
+
+      const { columnCodeId } = columnCodes[toBeModifiedColumnCodeIndex.current];
+
+      if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
+        const modifiedColumnCode = {
+          columnCodeId,
+          code: codeInputValue,
+          columnCodeName: columnNameInputValue,
+          description: codeDescriptionInputValue,
+        };
+        const modifiedColumnCodeId =
+          await sendColumnCodePatchRequest<IColumCode>(modifiedColumnCode);
+        if (columnCodeId === modifiedColumnCodeId) {
+          updateTargetColumnCode(modifiedColumnCode);
+          closeModalAndInitializeModificationForm();
+        }
+      }
     },
-    [setToBeModifiedColumnCodeIndex],
+    [
+      columnCodes,
+      extractInputValuesFromElementsRef,
+      sendColumnCodePatchRequest,
+      closeModalAndInitializeModificationForm,
+    ],
   );
 
-  const modifyColumnCode = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const makeRequiredInputElements = useCallback(
+    (targetIndex?: number): RequiredInputItems => {
+      const isColumnCodeModifiyAction =
+        targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
+      return [
+        {
+          itemName: "code",
+          refObject: isColumnCodeModifiyAction
+            ? codeModifyInputRef
+            : codeInputRef,
+          elementType: "input",
+          defaultValue: isColumnCodeModifiyAction
+            ? columnCodes[toBeModifiedColumnCodeIndex.current].code
+            : "",
+        },
+        {
+          itemName: "column name",
+          refObject: isColumnCodeModifiyAction
+            ? columnNameModifyInputRef
+            : columnNameInputRef,
+          elementType: "input",
+          defaultValue: isColumnCodeModifiyAction
+            ? columnCodes[toBeModifiedColumnCodeIndex.current].columnCodeName
+            : "",
+        },
+        {
+          itemName: "description",
+          refObject: isColumnCodeModifiyAction
+            ? codeDescriptionModifyInputRef
+            : codeDescriptionInputRef,
+          elementType: "input",
+          defaultValue: isColumnCodeModifiyAction
+            ? columnCodes[toBeModifiedColumnCodeIndex.current].description
+            : "",
+        },
+      ];
+    },
+    [columnCodes],
+  );
 
-    const [codeInputValue, columnNameInputValue, codeDescriptionInputValue] =
-      extractInputValuesFromElementsRef();
+  const requiredInputItems = useMemo(
+    () => makeRequiredInputElements(),
+    [makeRequiredInputElements],
+  );
 
-    const { columnCodeId } = columnCodes[toBeModifiedColumnCodeIndex];
-
-    if (codeInputValue && columnNameInputValue && codeDescriptionInputValue) {
-      const modifiedColumnCode = {
-        columnCodeId,
-        code: codeInputValue,
-        columnCodeName: columnNameInputValue,
-        description: codeDescriptionInputValue,
-      };
-      const modifiedColumnCodeId = await sendColumnCodePatchRequest<IColumCode>(
-        modifiedColumnCode,
-      );
-      if (columnCodeId === modifiedColumnCodeId) {
-        updateTargetColumnCode(modifiedColumnCode);
-        toggleColumnCodeModificationModal();
-        initializeInputValues();
+  const toggleColumnCodeModificationModal = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined) {
+        toBeModifiedColumnCodeIndex.current = targetIndex;
+        const requiredInputElementsParam =
+          makeRequiredInputElements(targetIndex);
+        injectModificationModels({
+          requiredInputElementsParam,
+          elementModificationFunctionParam: modifyColumnCode,
+        });
+      } else {
+        toBeModifiedColumnCodeIndex.current = NOTHING_BEING_MODIFIED;
+        closeModalAndInitializeModificationForm();
       }
-    }
-  };
+    },
+    [
+      modifyColumnCode,
+      makeRequiredInputElements,
+      injectModificationModels,
+      closeModalAndInitializeModificationForm,
+    ],
+  );
 
   useEffect(() => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
 
+  useEffect(() => {
+    if (!isModalVisible)
+      toBeModifiedColumnCodeIndex.current = NOTHING_BEING_MODIFIED;
+  }, [isModalVisible]);
+
   return {
     columnCodes,
-    detailedColumCode,
     requiredInputItems,
-    IS_COLUMNCODE_BEING_MODIFIED,
     registerNewColumnCode,
     deleteColumnCode,
     initializeDetailedColumnCode,
-    hideDetailedColumnCodeModal,
     toggleColumnCodeModificationModal,
-    modifyColumnCode,
   };
 };
 

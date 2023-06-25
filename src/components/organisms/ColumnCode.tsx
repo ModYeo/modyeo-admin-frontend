@@ -10,15 +10,11 @@ import ModalContent from "../molcules/ModalContent";
 function ColumnCode() {
   const {
     columnCodes,
-    detailedColumCode,
     requiredInputItems,
-    IS_COLUMNCODE_BEING_MODIFIED,
     registerNewColumnCode,
     deleteColumnCode,
     initializeDetailedColumnCode,
-    hideDetailedColumnCodeModal,
     toggleColumnCodeModificationModal,
-    modifyColumnCode,
   } = useColumnCode();
 
   return (
@@ -40,26 +36,6 @@ function ColumnCode() {
           />
         </List>
       ))}
-      {/* {detailedColumCode && (
-        <ModalBackground onClick={hideDetailedColumnCodeModal}>
-          <Modal>
-            <ModalContent
-              detailedElement={detailedColumCode as unknown as ObjectType}
-            />
-          </Modal>
-        </ModalBackground>
-      )}
-      {IS_COLUMNCODE_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleColumnCodeModificationModal()}>
-          <Modal>
-            <SubmitForm
-              requiredInputItems={requiredInputItems}
-              registerNewElement={modifyColumnCode}
-              isModificationAction={true}
-            />
-          </Modal>
-        </ModalBackground>
-      )} */}
     </ListContainer>
   );
 }

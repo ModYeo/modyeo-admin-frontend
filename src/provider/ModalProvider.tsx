@@ -1,11 +1,15 @@
-import React, { createContext, useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useState } from "react";
+
 import useModal from "../hooks/common/useModal";
-import { ModalBackground } from "../styles/styles";
+
 import Modal from "../components/commons/Modal";
 import SubmitForm, {
   RequiredInputItems,
 } from "../components/molcules/SubmitForm";
 import { ObjectType } from "../components/atoms/Card";
+import ModalContent from "../components/molcules/ModalContent";
+
+import { ModalBackground } from "../styles/styles";
 
 type ElementModificationFunction = (
   e: React.FormEvent<HTMLFormElement>,
@@ -13,7 +17,6 @@ type ElementModificationFunction = (
 
 interface ModalContext {
   isModalVisible: boolean;
-  showModal: () => void;
   closeModalAndInitializeModificationForm: () => void;
   injectDetailedElement: (detailedElementParam: ObjectType) => void;
   injectModificationModels: (modificationParam?: {
@@ -24,7 +27,6 @@ interface ModalContext {
 
 const MODAL_CONTEXT = createContext<ModalContext>({
   isModalVisible: false,
-  showModal: () => null,
   closeModalAndInitializeModificationForm: () => null,
   injectDetailedElement: () => null,
   injectModificationModels: () => null,
@@ -44,14 +46,17 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
     useState<ElementModificationFunction | null>(null);
 
   const injectDetailedElement = useCallback(
-    (detailedElementParam: ObjectType | null) =>
-      setDetailedElement(detailedElementParam),
-    [setDetailedElement],
+    (detailedElementParam: ObjectType | null) => {
+      setDetailedElement(detailedElementParam);
+      showModal();
+    },
+    [setDetailedElement, showModal],
   );
 
   const closeModalAndInitializeModificationForm = useCallback(() => {
     setRequiredInputElements(null);
     setElementModificationFuction(null);
+    setDetailedElement(null);
     hideModal();
   }, [hideModal]);
 
@@ -68,15 +73,15 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
       } else {
         closeModalAndInitializeModificationForm();
       }
+      showModal();
     },
-    [closeModalAndInitializeModificationForm],
+    [closeModalAndInitializeModificationForm, showModal],
   );
 
   return (
     <MODAL_CONTEXT.Provider
       value={{
         isModalVisible,
-        showModal,
         closeModalAndInitializeModificationForm,
         injectDetailedElement,
         injectModificationModels,
@@ -88,6 +93,9 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
         isModalVisible={isModalVisible}
       >
         <Modal>
+          {detailedElement && (
+            <ModalContent detailedElement={detailedElement} />
+          )}
           {requiredInputElements && elementModificationFunction && (
             <SubmitForm
               requiredInputItems={requiredInputElements}
