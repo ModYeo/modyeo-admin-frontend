@@ -1,9 +1,14 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import apiManager from "../../modules/apiManager";
-import routes from "../../constants/routes";
+
+import { MODAL_CONTEXT } from "../../provider/ModalProvider";
+import { ObjectType } from "../../components/atoms/Card";
+
 import toastSentences from "../../constants/toastSentences";
+import routes from "../../constants/routes";
 
 export const reportTypesList = [
   "ART",
@@ -52,26 +57,22 @@ function contains<T extends string>(
 interface UseReport {
   reports: Array<IReport>;
   selectedReportType: string;
-  detailedReport: IDetailedReport | null;
   onChangeReportType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   onChangeTargetReportStatus: (
     changedReportStatus: ReportStatusEnum,
     reportId: number,
   ) => Promise<void>;
   initializeDetailedReport: (reportId: number) => Promise<void>;
-  hideDetailedReportModal: () => void;
 }
 
 const useReport = (): UseReport => {
+  const { isModalVisible, injectDetailedElement } = useContext(MODAL_CONTEXT);
+
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
 
   const [reports, setReports] = useState<Array<IReport>>([]);
-
-  const [detailedReport, setDetailedReport] = useState<IDetailedReport | null>(
-    null,
-  );
 
   const reportTypePathParam = useMemo(() => {
     const pathElements = pathname.split("/");
@@ -152,14 +153,11 @@ const useReport = (): UseReport => {
   const initializeDetailedReport = useCallback(
     async (reportId: number) => {
       const fetchedDetailedReport = await fetchDetailedReport(reportId);
-      if (fetchedDetailedReport) setDetailedReport(fetchedDetailedReport);
+      if (fetchedDetailedReport)
+        injectDetailedElement(fetchedDetailedReport as unknown as ObjectType);
     },
-    [fetchDetailedReport],
+    [fetchDetailedReport, injectDetailedElement],
   );
-
-  const hideDetailedReportModal = useCallback(() => {
-    setDetailedReport(null);
-  }, []);
 
   useEffect(() => {
     if (isValidReportType) initializaReportsList();
@@ -174,11 +172,9 @@ const useReport = (): UseReport => {
   return {
     reports,
     selectedReportType,
-    detailedReport,
     onChangeReportType,
     onChangeTargetReportStatus,
     initializeDetailedReport,
-    hideDetailedReportModal,
   };
 };
 

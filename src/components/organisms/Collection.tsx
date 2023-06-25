@@ -1,20 +1,19 @@
 import React from "react";
 import useCollection from "../../hooks/components/useCollection";
-import Modal from "../commons/Modal";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
+
 import SubmitForm from "../molcules/SubmitForm";
 import ListElement from "../molcules/ListElement";
 import { ObjectType } from "../atoms/Card";
+
+import { List, ListContainer } from "../../styles/styles";
 
 function Collection() {
   const {
     collections,
     requiredInputItems,
-    IS_COLLECTION_BEING_MODIFIED,
     registerNewCollection,
     deleteCollection,
     toggleCollectionModificationModal,
-    modifyCollection,
   } = useCollection();
 
   return (
@@ -35,17 +34,6 @@ function Collection() {
           />
         </List>
       ))}
-      {IS_COLLECTION_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleCollectionModificationModal()}>
-          <Modal>
-            <SubmitForm
-              requiredInputItems={requiredInputItems}
-              registerNewElement={modifyCollection}
-              isModificationAction={true}
-            />
-          </Modal>
-        </ModalBackground>
-      )}
     </ListContainer>
   );
 }

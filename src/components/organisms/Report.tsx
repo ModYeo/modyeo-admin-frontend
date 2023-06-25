@@ -4,16 +4,11 @@ import useReport, {
   ReportStatusEnum,
   reportTypesList,
 } from "../../hooks/components/useReport";
-import Modal from "../commons/Modal";
-import {
-  List,
-  ListContainer,
-  ModalBackground,
-  Title,
-} from "../../styles/styles";
+
 import { ObjectType } from "../atoms/Card";
-import ModalContent from "../molcules/ModalContent";
 import ListElement from "../molcules/ListElement";
+
+import { List, ListContainer, Title } from "../../styles/styles";
 
 const ReportWrapper = styled.div`
   display: flex;
@@ -24,11 +19,9 @@ function Report() {
   const {
     reports,
     selectedReportType,
-    detailedReport,
     onChangeReportType,
     onChangeTargetReportStatus,
     initializeDetailedReport,
-    hideDetailedReportModal,
   } = useReport();
 
   return (
@@ -68,15 +61,6 @@ function Report() {
               </select>
             </div>
           </ReportWrapper>
-          {detailedReport && (
-            <ModalBackground onClick={hideDetailedReportModal}>
-              <Modal>
-                <ModalContent
-                  detailedElement={detailedReport as unknown as ObjectType}
-                />
-              </Modal>
-            </ModalBackground>
-          )}
         </List>
       ))}
     </ListContainer>

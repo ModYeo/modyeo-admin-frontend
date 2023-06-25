@@ -1,28 +1,20 @@
 import React from "react";
 import useInquiryDetail from "../hooks/pages/useInquiryDetail";
 
-import Modal from "../components/commons/Modal";
-import {
-  Button,
-  List,
-  ListContainer,
-  ModalBackground,
-  Title,
-} from "../styles/styles";
 import Card, { ObjectType } from "../components/atoms/Card";
 import ListElement from "../components/molcules/ListElement";
 import SubmitForm from "../components/molcules/SubmitForm";
+
+import { Button, List, ListContainer, Title } from "../styles/styles";
 
 function InquiryDetail() {
   const {
     inquiry,
     requiredInputItems,
-    IS_ANSWER_BEING_MODIFIED,
     goBackToInquiryListPage,
     registerNewAnswer,
     deleteAnswer,
     toggleAnswerModificationModal,
-    modifyAnswer,
   } = useInquiryDetail();
 
   return (
@@ -55,17 +47,6 @@ function InquiryDetail() {
       <Button type="button" onClick={goBackToInquiryListPage}>
         back
       </Button>
-      {IS_ANSWER_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleAnswerModificationModal()}>
-          <Modal>
-            <SubmitForm
-              requiredInputItems={requiredInputItems}
-              registerNewElement={modifyAnswer}
-              isModificationAction={true}
-            />
-          </Modal>
-        </ModalBackground>
-      )}
     </ListContainer>
   );
 }

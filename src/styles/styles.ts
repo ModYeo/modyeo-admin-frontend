@@ -71,7 +71,7 @@ export const List = styled.li`
   background-color: white;
 `;
 
-export const ModalBackground = styled.div`
+export const ModalBackground = styled.div<{ isModalVisible: boolean }>`
   width: 100vw;
   height: 100vh;
   position: fixed;
@@ -81,6 +81,7 @@ export const ModalBackground = styled.div`
   justify-content: center;
   align-items: center;
   background-color: rgba(0, 0, 0, 0.4);
+  display: ${({ isModalVisible }) => (isModalVisible ? "display" : "none")};
 `;
 
 export const Button = styled(TabButton)`

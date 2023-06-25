@@ -1,11 +1,22 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 import apiManager from "../../modules/apiManager";
-import routes from "../../constants/routes";
+
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+
+import routes from "../../constants/routes";
 import DAY_FORMAT from "../../constants/dayFormat";
+
+import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
 enum AuthorityEnum {
   ROLE_USER = "ROLE_USER",
@@ -37,15 +48,19 @@ interface IDetailedInquiry {
 interface UseInquiryDetail {
   inquiry: IDetailedInquiry | null;
   requiredInputItems: RequiredInputItems;
-  IS_ANSWER_BEING_MODIFIED: boolean;
   goBackToInquiryListPage: () => void;
   registerNewAnswer: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteAnswer: (answerId: number, index: number) => Promise<void>;
   toggleAnswerModificationModal: (targetAnswerIndex?: number) => void;
-  modifyAnswer: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const useInquiryDetail = (): UseInquiryDetail => {
+  const {
+    isModalVisible,
+    closeModalAndInitializeModificationForm,
+    injectModificationModels,
+  } = useContext(MODAL_CONTEXT);
+
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
@@ -59,31 +74,11 @@ const useInquiryDetail = (): UseInquiryDetail => {
 
   const [inquiry, setInquiry] = useState<IDetailedInquiry | null>(null);
 
-  const [toBeModifiedAnswerIndex, setToBeModifiedAnswerIndex] = useState(
-    NOTHING_BEING_MODIFIED,
-  );
+  const toBeModifiedAnswerIndex = useRef<number>(NOTHING_BEING_MODIFIED);
 
   const contentTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const contentModifyTextAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  const IS_ANSWER_BEING_MODIFIED =
-    toBeModifiedAnswerIndex !== NOTHING_BEING_MODIFIED;
-
-  const requiredInputItems = useMemo((): RequiredInputItems => {
-    return [
-      {
-        itemName: "admin answer",
-        refObject: IS_ANSWER_BEING_MODIFIED
-          ? contentModifyTextAreaRef
-          : contentTextAreaRef,
-        elementType: "textarea",
-        defaultValue: IS_ANSWER_BEING_MODIFIED
-          ? inquiry?.answerList[toBeModifiedAnswerIndex].content || ""
-          : "",
-      },
-    ];
-  }, [IS_ANSWER_BEING_MODIFIED, inquiry, toBeModifiedAnswerIndex]);
 
   const goBackToInquiryListPage = useCallback(() => {
     navigator(routes.client.inquiry);
@@ -104,11 +99,11 @@ const useInquiryDetail = (): UseInquiryDetail => {
 
   const extractInputValuesFromElementsRef = useCallback(() => {
     return [
-      IS_ANSWER_BEING_MODIFIED
+      toBeModifiedAnswerIndex.current !== NOTHING_BEING_MODIFIED
         ? contentModifyTextAreaRef.current?.value
         : contentTextAreaRef.current?.value,
     ];
-  }, [IS_ANSWER_BEING_MODIFIED]);
+  }, []);
 
   const sendPostAnswerRequest = useCallback(
     <T extends object>(newAnswer: T) => {
@@ -205,7 +200,7 @@ const useInquiryDetail = (): UseInquiryDetail => {
     setInquiry((currentInquiry) => {
       if (currentInquiry) {
         currentInquiry.answerList.splice(
-          toBeModifiedAnswerIndex,
+          toBeModifiedAnswerIndex.current,
           1,
           modifiedAnswer,
         );
@@ -215,55 +210,104 @@ const useInquiryDetail = (): UseInquiryDetail => {
     });
   };
 
-  const toggleAnswerModificationModal = useCallback(
-    (targetAnswerIndex?: number) => {
-      if (targetAnswerIndex !== undefined)
-        setToBeModifiedAnswerIndex(targetAnswerIndex);
-      else setToBeModifiedAnswerIndex(NOTHING_BEING_MODIFIED);
+  const modifyAnswer = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const [answerContentInputValue] = extractInputValuesFromElementsRef();
+
+      if (answerContentInputValue && inquiry) {
+        const { answerId: targetAnswerId } =
+          inquiry.answerList[toBeModifiedAnswerIndex.current];
+
+        const modifiedAnswer = {
+          content: answerContentInputValue,
+          answerId: targetAnswerId,
+        };
+        const modifiedAnswerId = await sendPatchAnswerRequest<IModifiedAnswer>(
+          modifiedAnswer,
+        );
+        if (targetAnswerId === modifiedAnswerId) {
+          updateTargetCategory({
+            ...inquiry.answerList[toBeModifiedAnswerIndex.current],
+            ...modifiedAnswer,
+          });
+          closeModalAndInitializeModificationForm();
+        }
+      }
     },
-    [setToBeModifiedAnswerIndex],
+    [
+      inquiry,
+      extractInputValuesFromElementsRef,
+      sendPatchAnswerRequest,
+      closeModalAndInitializeModificationForm,
+    ],
   );
 
-  const modifyAnswer = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const makeRequiredInputElements = useCallback(
+    (targetIndex?: number): RequiredInputItems => {
+      const isAnswerModifyAction =
+        targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
+      return [
+        {
+          itemName: "admin answer",
+          refObject: isAnswerModifyAction
+            ? contentModifyTextAreaRef
+            : contentTextAreaRef,
+          elementType: "textarea",
+          defaultValue: isAnswerModifyAction
+            ? inquiry?.answerList[toBeModifiedAnswerIndex.current].content || ""
+            : "",
+        },
+      ];
+    },
+    [inquiry],
+  );
 
-    const [answerContentInputValue] = extractInputValuesFromElementsRef();
+  const requiredInputItems = useMemo(
+    () => makeRequiredInputElements(),
+    [makeRequiredInputElements],
+  );
 
-    if (answerContentInputValue && inquiry) {
-      const { answerId: targetAnswerId } =
-        inquiry.answerList[toBeModifiedAnswerIndex];
-
-      const modifiedAnswer = {
-        content: answerContentInputValue,
-        answerId: targetAnswerId,
-      };
-      const modifiedAnswerId = await sendPatchAnswerRequest<IModifiedAnswer>(
-        modifiedAnswer,
-      );
-      if (targetAnswerId === modifiedAnswerId) {
-        updateTargetCategory({
-          ...inquiry.answerList[toBeModifiedAnswerIndex],
-          ...modifiedAnswer,
+  const toggleAnswerModificationModal = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined) {
+        toBeModifiedAnswerIndex.current = targetIndex;
+        const requiredInputElementsParam =
+          makeRequiredInputElements(targetIndex);
+        injectModificationModels({
+          requiredInputElementsParam,
+          elementModificationFunctionParam: modifyAnswer,
         });
-        toggleAnswerModificationModal();
-        initializeInputValues();
+      } else {
+        toBeModifiedAnswerIndex.current = NOTHING_BEING_MODIFIED;
+        closeModalAndInitializeModificationForm();
       }
-    }
-  };
+    },
+    [
+      modifyAnswer,
+      makeRequiredInputElements,
+      injectModificationModels,
+      closeModalAndInitializeModificationForm,
+    ],
+  );
 
   useEffect(() => {
     initializeDetailedInquiry();
   }, [initializeDetailedInquiry]);
 
+  useEffect(() => {
+    if (!isModalVisible)
+      toBeModifiedAnswerIndex.current = NOTHING_BEING_MODIFIED;
+  }, [isModalVisible]);
+
   return {
     inquiry,
     requiredInputItems,
-    IS_ANSWER_BEING_MODIFIED,
     goBackToInquiryListPage,
     registerNewAnswer,
     deleteAnswer,
     toggleAnswerModificationModal,
-    modifyAnswer,
   };
 };
 
