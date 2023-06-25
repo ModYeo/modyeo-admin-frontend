@@ -12,6 +12,7 @@ type ElementModificationFunction = (
 ) => Promise<void>;
 
 interface ModalContext {
+  isModalVisible: boolean;
   showModal: () => void;
   closeModalAndInitializeModificationForm: () => void;
   injectDetailedElement: (detailedElementParam: ObjectType) => void;
@@ -22,6 +23,7 @@ interface ModalContext {
 }
 
 const MODAL_CONTEXT = createContext<ModalContext>({
+  isModalVisible: false,
   showModal: () => null,
   closeModalAndInitializeModificationForm: () => null,
   injectDetailedElement: () => null,
@@ -59,10 +61,8 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
       elementModificationFunctionParam: ElementModificationFunction;
     }) => {
       if (modificationParam) {
-        console.log(typeof modificationParam.elementModificationFunctionParam);
         const { requiredInputElementsParam, elementModificationFunctionParam } =
           modificationParam;
-        console.log(elementModificationFunctionParam.toString());
         setRequiredInputElements(requiredInputElementsParam);
         setElementModificationFuction(() => elementModificationFunctionParam);
       } else {
@@ -72,11 +72,10 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
     [closeModalAndInitializeModificationForm],
   );
 
-  console.log(elementModificationFunction);
-
   return (
     <MODAL_CONTEXT.Provider
       value={{
+        isModalVisible,
         showModal,
         closeModalAndInitializeModificationForm,
         injectDetailedElement,

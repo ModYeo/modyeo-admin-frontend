@@ -12,6 +12,7 @@ import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 import DAY_FORMAT from "../../constants/dayFormat";
+
 import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
 interface ICollection {
@@ -27,18 +28,18 @@ interface ICollection {
 interface UseCollection {
   collections: Array<ICollection>;
   requiredInputItems: RequiredInputItems;
-  IS_COLLECTION_BEING_MODIFIED: boolean;
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
     collectionInfoId: number,
     targetCollectionIndex: number,
   ) => Promise<void>;
-  toggleCollectionModificationModalSecond: (targetIndex?: number) => void;
+  toggleCollectionModificationModal: (targetIndex?: number) => void;
   modifyCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const useCollection = (): UseCollection => {
   const {
+    isModalVisible,
     showModal,
     closeModalAndInitializeModificationForm,
     injectModificationModels,
@@ -46,8 +47,7 @@ const useCollection = (): UseCollection => {
 
   const [collections, setCollections] = useState<Array<ICollection>>([]);
 
-  const [toBeModifiedCollectionIndex, setToBeModifiedCollectionIndex] =
-    useState(NOTHING_BEING_MODIFIED);
+  const toBeModifiedCollectionIndex = useRef<number>(NOTHING_BEING_MODIFIED);
 
   const collectionInfoNameTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -56,34 +56,6 @@ const useCollection = (): UseCollection => {
   const collectionDescTextAreaRef = useRef<HTMLTextAreaElement>(null);
 
   const collectionDescModifyTextAreaRef = useRef<HTMLTextAreaElement>(null);
-
-  const IS_COLLECTION_BEING_MODIFIED =
-    toBeModifiedCollectionIndex !== NOTHING_BEING_MODIFIED;
-
-  const requiredInputItems = useMemo((): RequiredInputItems => {
-    return [
-      {
-        itemName: "collection info name",
-        refObject: IS_COLLECTION_BEING_MODIFIED
-          ? collectionInfoNameModifyTextAreaRef
-          : collectionInfoNameTextAreaRef,
-        elementType: "textarea",
-        defaultValue: IS_COLLECTION_BEING_MODIFIED
-          ? collections[toBeModifiedCollectionIndex].collectionInfoName
-          : "",
-      },
-      {
-        itemName: "description",
-        refObject: IS_COLLECTION_BEING_MODIFIED
-          ? collectionDescModifyTextAreaRef
-          : collectionDescTextAreaRef,
-        elementType: "textarea",
-        defaultValue: IS_COLLECTION_BEING_MODIFIED
-          ? collections[toBeModifiedCollectionIndex].description
-          : "",
-      },
-    ];
-  }, [IS_COLLECTION_BEING_MODIFIED, collections, toBeModifiedCollectionIndex]);
 
   const fetchCollections = useCallback(() => {
     return apiManager.fetchData<ICollection>(routes.server.collection);
@@ -95,7 +67,7 @@ const useCollection = (): UseCollection => {
   }, [fetchCollections]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return IS_COLLECTION_BEING_MODIFIED
+    return toBeModifiedCollectionIndex.current !== NOTHING_BEING_MODIFIED
       ? [
           collectionInfoNameModifyTextAreaRef.current?.value,
           collectionDescModifyTextAreaRef.current?.value,
@@ -104,7 +76,7 @@ const useCollection = (): UseCollection => {
           collectionInfoNameTextAreaRef.current?.value,
           collectionDescTextAreaRef.current?.value,
         ];
-  }, [IS_COLLECTION_BEING_MODIFIED]);
+  }, []);
 
   const initializeInputValues = useCallback(() => {
     const collectionInfoNameCurrent = collectionInfoNameTextAreaRef.current;
@@ -197,15 +169,6 @@ const useCollection = (): UseCollection => {
     [sendDeleteCollectionRequest, removeCollectionInList],
   );
 
-  const toggleCollectionModificationModal = useCallback(
-    (targetIndex?: number) => {
-      if (targetIndex !== undefined)
-        setToBeModifiedCollectionIndex(targetIndex);
-      else setToBeModifiedCollectionIndex(NOTHING_BEING_MODIFIED);
-    },
-    [],
-  );
-
   const sendPatchCollectionRequest = useCallback(
     <T extends object>(modifiedCollection: T) => {
       return apiManager.modifyData<T>(
@@ -219,7 +182,7 @@ const useCollection = (): UseCollection => {
   const updateTargetCollection = (modifiedCollection: ICollection) => {
     setCollections((collectionsList) => {
       collectionsList.splice(
-        toBeModifiedCollectionIndex,
+        toBeModifiedCollectionIndex.current,
         1,
         modifiedCollection,
       );
@@ -227,74 +190,104 @@ const useCollection = (): UseCollection => {
     });
   };
 
-  const modifyCollection = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const modifyCollection = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const [infoNameTextAreaValue, descTextAreaValue] =
-      extractInputValuesFromElementsRef();
+      const [infoNameTextAreaValue, descTextAreaValue] =
+        extractInputValuesFromElementsRef();
 
-    const targetCollection = collections[toBeModifiedCollectionIndex];
-    const { collectionInfoId } = targetCollection;
+      const targetCollection = collections[toBeModifiedCollectionIndex.current];
+      const { collectionInfoId } = targetCollection;
 
-    if (infoNameTextAreaValue && descTextAreaValue) {
-      const modifiedCollection = {
-        collectionInfoId,
-        collectionInfoName: infoNameTextAreaValue,
-        description: descTextAreaValue,
-      };
-      const modifiedCollectionId = await sendPatchCollectionRequest(
-        modifiedCollection,
-      );
-      if (collectionInfoId === modifiedCollectionId) {
-        const answerUpdatedTime = dayjs().format(DAY_FORMAT);
-        updateTargetCollection({
-          ...targetCollection,
-          ...modifiedCollection,
-          updatedTime: answerUpdatedTime,
-        });
-        toggleCollectionModificationModal();
-        initializeInputValues();
+      if (infoNameTextAreaValue && descTextAreaValue) {
+        const modifiedCollection = {
+          collectionInfoId,
+          collectionInfoName: infoNameTextAreaValue,
+          description: descTextAreaValue,
+        };
+        const modifiedCollectionId = await sendPatchCollectionRequest(
+          modifiedCollection,
+        );
+        if (collectionInfoId === modifiedCollectionId) {
+          const answerUpdatedTime = dayjs().format(DAY_FORMAT);
+          updateTargetCollection({
+            ...targetCollection,
+            ...modifiedCollection,
+            updatedTime: answerUpdatedTime,
+          });
+          closeModalAndInitializeModificationForm();
+        }
       }
-    }
-  };
+    },
+    [
+      collections,
+      closeModalAndInitializeModificationForm,
+      extractInputValuesFromElementsRef,
+      sendPatchCollectionRequest,
+    ],
+  );
 
-  const returnRequiredInputItems = (
-    targetIndex: number,
-  ): RequiredInputItems => {
-    return [
-      {
-        itemName: "collection info name",
-        refObject: collectionInfoNameModifyTextAreaRef,
-        elementType: "textarea",
-        defaultValue: collections[targetIndex].collectionInfoName,
-      },
-      {
-        itemName: "description",
-        refObject: collectionDescModifyTextAreaRef,
-        elementType: "textarea",
-        defaultValue: collections[targetIndex].description,
-      },
-    ];
-  };
+  const makeRequiredInputElements = useCallback(
+    (targetIndex?: number): RequiredInputItems => {
+      return targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED
+        ? [
+            {
+              itemName: "collection info name",
+              refObject: collectionInfoNameModifyTextAreaRef,
+              elementType: "textarea",
+              defaultValue: collections[targetIndex].collectionInfoName,
+            },
+            {
+              itemName: "description",
+              refObject: collectionDescModifyTextAreaRef,
+              elementType: "textarea",
+              defaultValue: collections[targetIndex].description,
+            },
+          ]
+        : [
+            {
+              itemName: "collection info name",
+              refObject: collectionInfoNameTextAreaRef,
+              elementType: "textarea",
+              defaultValue: "",
+            },
+            {
+              itemName: "description",
+              refObject: collectionDescTextAreaRef,
+              elementType: "textarea",
+              defaultValue: "",
+            },
+          ];
+    },
+    [collections],
+  );
 
-  /** 이거 사용 예정 */
-  const toggleCollectionModificationModalSecond = useCallback(
+  const requiredInputItems = useMemo(
+    () => makeRequiredInputElements(),
+    [makeRequiredInputElements],
+  );
+
+  const toggleCollectionModificationModal = useCallback(
     (targetIndex?: number) => {
       if (targetIndex !== undefined) {
-        const aaa = returnRequiredInputItems(targetIndex);
-        console.log(typeof modifyCollection);
+        toBeModifiedCollectionIndex.current = targetIndex;
+        const requiredInputElementsParam =
+          makeRequiredInputElements(targetIndex);
         injectModificationModels({
-          requiredInputElementsParam: aaa,
+          requiredInputElementsParam,
           elementModificationFunctionParam: modifyCollection,
         });
         showModal();
       } else {
+        toBeModifiedCollectionIndex.current = NOTHING_BEING_MODIFIED;
         closeModalAndInitializeModificationForm();
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
-      collections,
+      showModal,
+      modifyCollection,
+      makeRequiredInputElements,
       injectModificationModels,
       closeModalAndInitializeModificationForm,
     ],
@@ -304,17 +297,17 @@ const useCollection = (): UseCollection => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
 
-  // useEffect(() => {
-  //   console.log(collections);
-  // }, [collections]);
+  useEffect(() => {
+    if (!isModalVisible)
+      toBeModifiedCollectionIndex.current = NOTHING_BEING_MODIFIED;
+  }, [isModalVisible]);
 
   return {
     collections,
     requiredInputItems,
-    IS_COLLECTION_BEING_MODIFIED,
     registerNewCollection,
     deleteCollection,
-    toggleCollectionModificationModalSecond,
+    toggleCollectionModificationModal,
     modifyCollection,
   };
 };
