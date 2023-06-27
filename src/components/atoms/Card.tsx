@@ -37,7 +37,6 @@ const checkIsVaildElementValue = (
   const elementValue = element[key];
   if (elementValue === null) return false;
   if (key.toLocaleLowerCase().includes("id")) return false;
-  if (Array.isArray(elementValue)) return false;
   return true;
 };
 
@@ -46,7 +45,7 @@ function Image({ src }: { src: string }) {
     <ImageWrapper>
       <LazyLoadImage
         src="https://i.pravatar.cc/300"
-        alt={` img ${src}`}
+        alt={`img ${src}`}
         width={80}
         height={80}
       />
@@ -68,16 +67,20 @@ function JSXElementByKey({
     return (
       <>
         <ColumnKey>{`${elementKey} - `}</ColumnKey>
-        <Link to={elementValue} target="_blank">
+        <a href={elementValue} target="_blank" rel="noreferrer">
           <LinkHrefValue>{elementValue}</LinkHrefValue>
-        </Link>
+        </a>
       </>
     );
   }
   return (
     <Column>
       <ColumnKey>{`${elementKey} - `}</ColumnKey>
-      <ColumnValue>{elementValue}</ColumnValue>
+      <ColumnValue>
+        {Array.isArray(elementValue)
+          ? JSON.stringify(elementValue)
+          : elementValue}
+      </ColumnValue>
     </Column>
   );
 }

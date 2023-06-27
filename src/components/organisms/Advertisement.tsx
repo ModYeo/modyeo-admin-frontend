@@ -1,24 +1,20 @@
 import React from "react";
 import useAdvertisement from "../../hooks/components/useAdvertisement";
-import Modal from "../commons/Modal";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
+
 import SubmitForm from "../molcules/SubmitForm";
 import ListElement from "../molcules/ListElement";
 import { ObjectType } from "../atoms/Card";
-import ModalContent from "../molcules/ModalContent";
+
+import { List, ListContainer } from "../../styles/styles";
 
 function Advertisement() {
   const {
     advertisements,
-    detailedAdvertisement,
     requiredInputItems,
-    IS_ADVERTISEMENT_BEING_MODIFIED,
     registerNewAdvertisement,
     deleteAdvertisement,
     initializeDetailedAdvertisement,
-    hideDetailedAdvertisementModal,
     toggleAdvertisementModificationModal,
-    modifyAdvertisement,
   } = useAdvertisement();
 
   return (
@@ -40,26 +36,6 @@ function Advertisement() {
           />
         </List>
       ))}
-      {/* {detailedAdvertisement && (
-        <ModalBackground onClick={() => hideDetailedAdvertisementModal()}>
-          <Modal>
-            <ModalContent
-              detailedElement={detailedAdvertisement as unknown as ObjectType}
-            />
-          </Modal>
-        </ModalBackground>
-      )}
-      {IS_ADVERTISEMENT_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleAdvertisementModificationModal()}>
-          <Modal>
-            <SubmitForm
-              requiredInputItems={requiredInputItems}
-              registerNewElement={modifyAdvertisement}
-              isModificationAction={true}
-            />
-          </Modal>
-        </ModalBackground>
-      )} */}
     </ListContainer>
   );
 }
