@@ -1,17 +1,25 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useMemo,
   useRef,
   useState,
 } from "react";
+
 import { toast } from "react-toastify";
 
+import { ObjectType } from "../../components/atoms/Card";
+
 import apiManager from "../../modules/apiManager";
-import routes from "../../constants/routes";
-import toastSentences from "../../constants/toastSentences";
+
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+
+import routes from "../../constants/routes";
+import toastSentences from "../../constants/toastSentences";
+
+import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
 const AD_TYPE = "ARTICLE";
 
@@ -43,9 +51,7 @@ interface INewAdvertisement extends Omit<IModifiedAdvertisement, "id"> {}
 
 interface UseAdvertisement {
   advertisements: Array<IAdvertisement>;
-  detailedAdvertisement: IDetailedAdvertisement | null;
   requiredInputItems: RequiredInputItems;
-  IS_ADVERTISEMENT_BEING_MODIFIED: boolean;
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -54,9 +60,7 @@ interface UseAdvertisement {
     targetAdvertisementIndex: number,
   ) => Promise<void>;
   initializeDetailedAdvertisement: (advertisementId: number) => Promise<void>;
-  hideDetailedAdvertisementModal: () => void;
   toggleAdvertisementModificationModal: (targetIndex?: number) => void;
-  modifyAdvertisement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const urlLinkRegex =
@@ -68,15 +72,18 @@ const checkUrlLinkValidation = (urlLink: string) => {
 };
 
 const useAdvertisement = (): UseAdvertisement => {
+  const {
+    isModalVisible,
+    closeModalAndInitializeModificationForm,
+    injectModificationModels,
+    injectDetailedElement,
+  } = useContext(MODAL_CONTEXT);
+
   const [advertisements, setAdvertisements] = useState<Array<IAdvertisement>>(
     [],
   );
 
-  const [detailedAdvertisement, setDetailedAdvertisement] =
-    useState<IDetailedAdvertisement | null>(null);
-
-  const [toBeModifiedAdvertisementIndex, setToBeModifiedAdvertisementIndex] =
-    useState(NOTHING_BEING_MODIFIED);
+  const toBeModifiedAdvertisementIndex = useRef<number>(NOTHING_BEING_MODIFIED);
 
   const advertisementNameInputRef = useRef<HTMLInputElement>(null);
 
@@ -85,38 +92,6 @@ const useAdvertisement = (): UseAdvertisement => {
   const urlLinkInputRef = useRef<HTMLInputElement>(null);
 
   const urlLinkModifyInputRef = useRef<HTMLInputElement>(null);
-
-  const IS_ADVERTISEMENT_BEING_MODIFIED =
-    toBeModifiedAdvertisementIndex !== NOTHING_BEING_MODIFIED;
-
-  const requiredInputItems = useMemo((): RequiredInputItems => {
-    return [
-      {
-        itemName: "ad name",
-        refObject: IS_ADVERTISEMENT_BEING_MODIFIED
-          ? advertisementNameModifyInput
-          : advertisementNameInputRef,
-        elementType: "input",
-        defaultValue: IS_ADVERTISEMENT_BEING_MODIFIED
-          ? advertisements[toBeModifiedAdvertisementIndex].advertisementName
-          : "",
-      },
-      {
-        itemName: "url link",
-        refObject: IS_ADVERTISEMENT_BEING_MODIFIED
-          ? urlLinkModifyInputRef
-          : urlLinkInputRef,
-        elementType: "input",
-        defaultValue: IS_ADVERTISEMENT_BEING_MODIFIED
-          ? advertisements[toBeModifiedAdvertisementIndex].urlLink
-          : "",
-      },
-    ];
-  }, [
-    IS_ADVERTISEMENT_BEING_MODIFIED,
-    advertisements,
-    toBeModifiedAdvertisementIndex,
-  ]);
 
   const fetchAdvertisements = useCallback(() => {
     return apiManager.fetchData<IAdvertisement>(routes.server.advertisement);
@@ -128,7 +103,9 @@ const useAdvertisement = (): UseAdvertisement => {
   }, [fetchAdvertisements]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return IS_ADVERTISEMENT_BEING_MODIFIED
+    const isAdvertisementBeingModified =
+      toBeModifiedAdvertisementIndex.current !== NOTHING_BEING_MODIFIED;
+    return isAdvertisementBeingModified
       ? [
           advertisementNameModifyInput.current?.value,
           urlLinkModifyInputRef.current?.value,
@@ -137,7 +114,7 @@ const useAdvertisement = (): UseAdvertisement => {
           advertisementNameInputRef.current?.value,
           urlLinkInputRef.current?.value,
         ];
-  }, [IS_ADVERTISEMENT_BEING_MODIFIED]);
+  }, []);
 
   const initializeInputValues = useCallback(() => {
     const advertisementNameCurrent = advertisementNameInputRef.current;
@@ -259,37 +236,27 @@ const useAdvertisement = (): UseAdvertisement => {
         advertisementId,
       );
       if (fetchedDetailedAdvertisement)
-        setDetailedAdvertisement(fetchedDetailedAdvertisement);
+        injectDetailedElement(
+          fetchedDetailedAdvertisement as unknown as ObjectType,
+        );
     },
-    [fetchDetailedAdvertisement],
+    [fetchDetailedAdvertisement, injectDetailedElement],
   );
 
-  const hideDetailedAdvertisementModal = useCallback(() => {
-    setDetailedAdvertisement(null);
-  }, []);
-
-  const toggleAdvertisementModificationModal = useCallback(
-    (targetIndex?: number) => {
-      if (targetIndex !== undefined)
-        setToBeModifiedAdvertisementIndex(targetIndex);
-      else setToBeModifiedAdvertisementIndex(NOTHING_BEING_MODIFIED);
+  const sendPatchAdvertisementRequest = useCallback(
+    <T extends object>(modifiedAdvertisement: T) => {
+      return apiManager.modifyData<T>(
+        routes.server.advertisement,
+        modifiedAdvertisement,
+      );
     },
     [],
   );
 
-  const sendPatchAdvertisementRequest = <T extends object>(
-    modifiedAdvertisement: T,
-  ) => {
-    return apiManager.modifyData<T>(
-      routes.server.advertisement,
-      modifiedAdvertisement,
-    );
-  };
-
   const updateTargetAdvertisement = (modifiedAdvertisement: IAdvertisement) => {
     setAdvertisements((advertisementsList) => {
       advertisementsList.splice(
-        toBeModifiedAdvertisementIndex,
+        toBeModifiedAdvertisementIndex.current,
         1,
         modifiedAdvertisement,
       );
@@ -297,61 +264,130 @@ const useAdvertisement = (): UseAdvertisement => {
     });
   };
 
-  const modifyAdvertisement = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const modifyAdvertisement = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
 
-    const [advertisementNameInputValue, urlLinkInputValue] =
-      extractInputValuesFromElementsRef();
+      const [advertisementNameInputValue, urlLinkInputValue] =
+        extractInputValuesFromElementsRef();
 
-    if (advertisementNameInputValue && urlLinkInputValue) {
-      if (!checkUrlLinkValidation(urlLinkInputValue)) {
-        toast.error(toastSentences.advertisement.urlLinkInvalid);
-        return;
+      if (advertisementNameInputValue && urlLinkInputValue) {
+        if (!checkUrlLinkValidation(urlLinkInputValue)) {
+          toast.error(toastSentences.advertisement.urlLinkInvalid);
+          return;
+        }
+        const { advertisementId, type } =
+          advertisements[toBeModifiedAdvertisementIndex.current];
+
+        const modifiedAdvertisement = {
+          id: advertisementId,
+          advertisementName: advertisementNameInputValue,
+          urlLink: urlLinkInputValue,
+          advertisementType: AD_TYPE,
+          imagePath: "",
+        };
+
+        const modifiedAdvertisementId =
+          await sendPatchAdvertisementRequest<IModifiedAdvertisement>(
+            modifiedAdvertisement,
+          );
+
+        if (advertisementId === modifiedAdvertisementId) {
+          updateTargetAdvertisement({
+            ...modifiedAdvertisement,
+            advertisementId: modifiedAdvertisementId,
+            type,
+            useYn: "Y",
+          });
+          closeModalAndInitializeModificationForm();
+        }
       }
-      const { advertisementId, type } =
-        advertisements[toBeModifiedAdvertisementIndex];
+    },
+    [
+      advertisements,
+      extractInputValuesFromElementsRef,
+      sendPatchAdvertisementRequest,
+      closeModalAndInitializeModificationForm,
+    ],
+  );
 
-      const modifiedAdvertisement = {
-        id: advertisementId,
-        advertisementName: advertisementNameInputValue,
-        urlLink: urlLinkInputValue,
-        advertisementType: AD_TYPE,
-        imagePath: "",
-      };
+  const makeRequiredInputElements = useCallback(
+    (targetIndex?: number): RequiredInputItems => {
+      const isAdvertisementBeingModified =
+        targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
+      return [
+        {
+          itemName: "ad name",
+          refObject: isAdvertisementBeingModified
+            ? advertisementNameModifyInput
+            : advertisementNameInputRef,
+          elementType: "input",
+          defaultValue: isAdvertisementBeingModified
+            ? advertisements[toBeModifiedAdvertisementIndex.current]
+                .advertisementName
+            : "",
+        },
+        {
+          itemName: "url link",
+          refObject: isAdvertisementBeingModified
+            ? urlLinkModifyInputRef
+            : urlLinkInputRef,
+          elementType: "input",
+          defaultValue: isAdvertisementBeingModified
+            ? advertisements[toBeModifiedAdvertisementIndex.current].urlLink
+            : "",
+        },
+      ];
+    },
+    [advertisements],
+  );
 
-      const modifiedAdvertisementId =
-        await sendPatchAdvertisementRequest<IModifiedAdvertisement>(
-          modifiedAdvertisement,
-        );
+  const requiredInputItems = useMemo(
+    () => makeRequiredInputElements(),
+    [makeRequiredInputElements],
+  );
 
-      if (advertisementId === modifiedAdvertisementId) {
-        updateTargetAdvertisement({
-          ...modifiedAdvertisement,
-          advertisementId: modifiedAdvertisementId,
-          type,
-          useYn: "Y",
+  const toggleAdvertisementModificationModal = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined) {
+        toBeModifiedAdvertisementIndex.current = targetIndex;
+        const requiredInputElementsParam =
+          makeRequiredInputElements(targetIndex);
+        injectModificationModels({
+          requiredInputElementsParam,
+          elementModificationFunctionParam: modifyAdvertisement,
         });
-        toggleAdvertisementModificationModal();
-        initializeInputValues();
+      } else {
+        toBeModifiedAdvertisementIndex.current = NOTHING_BEING_MODIFIED;
+        closeModalAndInitializeModificationForm();
       }
-    }
-  };
+    },
+    [
+      modifyAdvertisement,
+      makeRequiredInputElements,
+      injectModificationModels,
+      closeModalAndInitializeModificationForm,
+    ],
+  );
 
   useEffect(() => {
     initializeAdvertisementsList();
   }, [initializeAdvertisementsList]);
 
+  useEffect(() => {
+    if (!isModalVisible)
+      toBeModifiedAdvertisementIndex.current = NOTHING_BEING_MODIFIED;
+  }, [isModalVisible]);
+
+  console.log(advertisements);
+
   return {
     advertisements,
-    detailedAdvertisement,
     requiredInputItems,
-    IS_ADVERTISEMENT_BEING_MODIFIED,
     registerNewAdvertisement,
     deleteAdvertisement,
     initializeDetailedAdvertisement,
-    hideDetailedAdvertisementModal,
     toggleAdvertisementModificationModal,
-    modifyAdvertisement,
   };
 };
 

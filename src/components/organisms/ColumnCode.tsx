@@ -1,11 +1,13 @@
 import React from "react";
+
+import { ObjectType } from "../atoms/Card";
+
 import useColumnCode from "../../hooks/components/useColumnCode";
-import Modal from "../commons/Modal";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
+
 import SubmitForm from "../molcules/SubmitForm";
 import ListElement from "../molcules/ListElement";
-import { ObjectType } from "../atoms/Card";
-import ModalContent from "../molcules/ModalContent";
+
+import { List, ListContainer } from "../../styles/styles";
 
 function ColumnCode() {
   const {

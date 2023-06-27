@@ -6,11 +6,13 @@ import {
   useRef,
   useState,
 } from "react";
+
+import { ObjectType } from "../../components/atoms/Card";
+
 import apiManager from "../../modules/apiManager";
 
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
-import { ObjectType } from "../../components/atoms/Card";
 
 import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
