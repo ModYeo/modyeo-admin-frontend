@@ -379,8 +379,6 @@ const useAdvertisement = (): UseAdvertisement => {
       toBeModifiedAdvertisementIndex.current = NOTHING_BEING_MODIFIED;
   }, [isModalVisible]);
 
-  console.log(advertisements);
-
   return {
     advertisements,
     requiredInputItems,

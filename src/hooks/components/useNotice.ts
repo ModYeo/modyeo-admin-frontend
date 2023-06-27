@@ -1,8 +1,21 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import routes from "../../constants/routes";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+
+import { ObjectType } from "../../components/atoms/Card";
+
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+
+import routes from "../../constants/routes";
+
+import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
 interface INotice {
   content: string;
@@ -23,31 +36,24 @@ interface IDetailedNotice extends INotice {
 
 interface UseNotice {
   notices: Array<INotice>;
-  detailedNotice: IDetailedNotice | null;
-  toBeModifiedNoticeIndex: number;
   requiredInputItems: RequiredInputItems;
-  IS_NOTICE_BEING_MODIFIED: boolean;
   registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteNotice: (noticeId: number, targetNoticeIndex: number) => Promise<void>;
   initializeDetailedNotice: (noticeId: number) => Promise<void>;
-  hideDetailedNoticeModal: () => void;
   toggleNoticeModificationModal: (targetNoticeIndex?: number) => void;
-  modifyNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
 }
 
 const useNotice = (): UseNotice => {
+  const {
+    isModalVisible,
+    closeModalAndInitializeModificationForm,
+    injectModificationModels,
+    injectDetailedElement,
+  } = useContext(MODAL_CONTEXT);
+
   const [notices, setNotices] = useState<Array<INotice>>([]);
 
-  const [detailedNotice, setDetailedNotice] = useState<IDetailedNotice | null>(
-    null,
-  );
-
-  const [toBeModifiedNoticeIndex, setToBeModifiedNoticeIndex] = useState(
-    NOTHING_BEING_MODIFIED,
-  );
-
-  const IS_NOTICE_BEING_MODIFIED =
-    toBeModifiedNoticeIndex !== NOTHING_BEING_MODIFIED;
+  const toBeModifiedNoticeIndex = useRef<number>(NOTHING_BEING_MODIFIED);
 
   const titleInputRef = useRef<HTMLInputElement>(null);
 
@@ -56,31 +62,6 @@ const useNotice = (): UseNotice => {
   const contentInputRef = useRef<HTMLInputElement>(null);
 
   const contentModifyInputRef = useRef<HTMLInputElement>(null);
-
-  const requiredInputItems = useMemo((): RequiredInputItems => {
-    return [
-      {
-        itemName: "title",
-        refObject: IS_NOTICE_BEING_MODIFIED
-          ? titleModifyInputRef
-          : titleInputRef,
-        elementType: "input",
-        defaultValue: IS_NOTICE_BEING_MODIFIED
-          ? notices[toBeModifiedNoticeIndex].title
-          : "",
-      },
-      {
-        itemName: "content",
-        refObject: IS_NOTICE_BEING_MODIFIED
-          ? contentModifyInputRef
-          : contentInputRef,
-        elementType: "input",
-        defaultValue: IS_NOTICE_BEING_MODIFIED
-          ? notices[toBeModifiedNoticeIndex].content
-          : "",
-      },
-    ];
-  }, [IS_NOTICE_BEING_MODIFIED, notices, toBeModifiedNoticeIndex]);
 
   const fetchNotices = useCallback(async () => {
     return apiManager.fetchData<INotice>(routes.server.notice);
@@ -92,13 +73,13 @@ const useNotice = (): UseNotice => {
   }, [fetchNotices]);
 
   const extractInputValuesFromElementsRef = useCallback(() => {
-    return IS_NOTICE_BEING_MODIFIED
+    return toBeModifiedNoticeIndex.current !== NOTHING_BEING_MODIFIED
       ? [
           titleModifyInputRef.current?.value,
           contentModifyInputRef.current?.value,
         ]
       : [titleInputRef.current?.value, contentInputRef.current?.value];
-  }, [IS_NOTICE_BEING_MODIFIED]);
+  }, []);
 
   const initializeInputValues = useCallback(() => {
     const noticeTitleCurrent = titleInputRef.current;
@@ -183,14 +164,10 @@ const useNotice = (): UseNotice => {
   const initializeDetailedNotice = useCallback(
     async (noticeId: number) => {
       const fetchedDetailedNotice = await fetchDetailedNotice(noticeId);
-      if (fetchedDetailedNotice) setDetailedNotice(fetchedDetailedNotice);
+      if (fetchedDetailedNotice)
+        injectDetailedElement(fetchedDetailedNotice as unknown as ObjectType);
     },
-    [fetchDetailedNotice],
-  );
-
-  const hideDetailedNoticeModal = useCallback(
-    () => setDetailedNotice(null),
-    [],
+    [fetchDetailedNotice, injectDetailedElement],
   );
 
   const sendNoticePatchRequest = useCallback(
@@ -202,62 +179,118 @@ const useNotice = (): UseNotice => {
 
   const updateNoticesList = (modifiedNotice: INotice) => {
     setNotices((noticesList) => {
-      noticesList.splice(toBeModifiedNoticeIndex, 1, modifiedNotice);
+      noticesList.splice(toBeModifiedNoticeIndex.current, 1, modifiedNotice);
       return [...noticesList];
     });
   };
 
-  const toggleNoticeModificationModal = useCallback(
-    (targetNoticeIndex?: number) => {
-      if (targetNoticeIndex !== undefined)
-        setToBeModifiedNoticeIndex(targetNoticeIndex);
-      else setToBeModifiedNoticeIndex(NOTHING_BEING_MODIFIED);
+  const modifyNotice = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const [titleInputValue, contentInputValue] =
+        extractInputValuesFromElementsRef();
+
+      const { id: targetNoticeId } = notices[toBeModifiedNoticeIndex.current];
+
+      if (titleInputValue && contentInputValue) {
+        const modifiedNotice: INotice = {
+          id: targetNoticeId,
+          title: titleInputValue,
+          content: contentInputValue,
+          imagePath: "",
+        };
+        const modifiedNoticeId = await sendNoticePatchRequest<INotice>(
+          modifiedNotice,
+        );
+        if (targetNoticeId === modifiedNoticeId) {
+          updateNoticesList(modifiedNotice);
+          closeModalAndInitializeModificationForm();
+        }
+      }
     },
-    [],
+    [
+      notices,
+      extractInputValuesFromElementsRef,
+      sendNoticePatchRequest,
+      closeModalAndInitializeModificationForm,
+    ],
   );
 
-  const modifyNotice = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const makeRequiredInputElements = useCallback(
+    (targetIndex?: number): RequiredInputItems => {
+      const isNoticeModifiyAction =
+        targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
+      return [
+        {
+          itemName: "title",
+          refObject: isNoticeModifiyAction
+            ? titleModifyInputRef
+            : titleInputRef,
+          elementType: "input",
+          defaultValue: isNoticeModifiyAction
+            ? notices[toBeModifiedNoticeIndex.current].title
+            : "",
+        },
+        {
+          itemName: "content",
+          refObject: isNoticeModifiyAction
+            ? contentModifyInputRef
+            : contentInputRef,
+          elementType: "input",
+          defaultValue: isNoticeModifiyAction
+            ? notices[toBeModifiedNoticeIndex.current].content
+            : "",
+        },
+      ];
+    },
+    [notices],
+  );
 
-    const [titleInputValue, contentInputValue] =
-      extractInputValuesFromElementsRef();
+  const requiredInputItems = useMemo(
+    () => makeRequiredInputElements(),
+    [makeRequiredInputElements],
+  );
 
-    const { id: targetNoticeId } = notices[toBeModifiedNoticeIndex];
-
-    if (titleInputValue && contentInputValue) {
-      const modifiedNotice: INotice = {
-        id: targetNoticeId,
-        title: titleInputValue,
-        content: contentInputValue,
-        imagePath: "",
-      };
-      const modifiedNoticeId = await sendNoticePatchRequest<INotice>(
-        modifiedNotice,
-      );
-      if (targetNoticeId === modifiedNoticeId) {
-        updateNoticesList(modifiedNotice);
-        toggleNoticeModificationModal();
-        initializeInputValues();
+  const toggleNoticeModificationModal = useCallback(
+    (targetIndex?: number) => {
+      if (targetIndex !== undefined) {
+        toBeModifiedNoticeIndex.current = targetIndex;
+        const requiredInputElementsParam =
+          makeRequiredInputElements(targetIndex);
+        injectModificationModels({
+          requiredInputElementsParam,
+          elementModificationFunctionParam: modifyNotice,
+        });
+      } else {
+        toBeModifiedNoticeIndex.current = NOTHING_BEING_MODIFIED;
+        closeModalAndInitializeModificationForm();
       }
-    }
-  };
+    },
+    [
+      modifyNotice,
+      makeRequiredInputElements,
+      injectModificationModels,
+      closeModalAndInitializeModificationForm,
+    ],
+  );
 
   useEffect(() => {
     initializeNoticesList();
   }, [initializeNoticesList]);
 
+  useEffect(() => {
+    if (!isModalVisible)
+      toBeModifiedNoticeIndex.current = NOTHING_BEING_MODIFIED;
+  }, [isModalVisible]);
+
   return {
     notices,
-    detailedNotice,
-    toBeModifiedNoticeIndex,
     requiredInputItems,
-    IS_NOTICE_BEING_MODIFIED,
     registerNewNotice,
     deleteNotice,
     initializeDetailedNotice,
-    hideDetailedNoticeModal,
     toggleNoticeModificationModal,
-    modifyNotice,
   };
 };
 

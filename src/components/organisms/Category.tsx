@@ -1,24 +1,22 @@
 import React from "react";
-import useCategory from "../../hooks/components/useCategory";
-import Modal from "../commons/Modal";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
-import Card from "../molcules/ListElement";
+
 import { ObjectType } from "../atoms/Card";
+
+import useCategory from "../../hooks/components/useCategory";
+
+import Card from "../molcules/ListElement";
 import SubmitForm from "../molcules/SubmitForm";
-import ModalContent from "../molcules/ModalContent";
+
+import { List, ListContainer, ModalBackground } from "../../styles/styles";
 
 function Category() {
   const {
     categories,
-    detailedCategory,
     requiredInputItems,
-    IS_CATEGORY_BEING_MODIFIED,
     registerNewCategory,
     initializeDetailedCategory,
-    hideDetailedCategoryModal,
     toggleCategoryModificationModal,
     deleteCategory,
-    modifyCategory,
   } = useCategory();
 
   return (
@@ -40,26 +38,6 @@ function Category() {
           />
         </List>
       ))}
-      {/* {detailedCategory && (
-        <ModalBackground onClick={hideDetailedCategoryModal}>
-          <Modal>
-            <ModalContent
-              detailedElement={detailedCategory as unknown as ObjectType}
-            />
-          </Modal>
-        </ModalBackground>
-      )}
-      {IS_CATEGORY_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleCategoryModificationModal()}>
-          <Modal>
-            <SubmitForm
-              requiredInputItems={requiredInputItems}
-              registerNewElement={modifyCategory}
-              isModificationAction={true}
-            />
-          </Modal>
-        </ModalBackground>
-      )} */}
     </ListContainer>
   );
 }

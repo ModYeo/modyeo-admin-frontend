@@ -1,26 +1,22 @@
 import React from "react";
-import useNotice from "../../hooks/components/useNotice";
-import Modal from "../commons/Modal";
-import { List, ListContainer, ModalBackground } from "../../styles/styles";
-
-import ModalContent from "../molcules/ModalContent";
-import SubmitForm from "../molcules/SubmitForm";
 
 import { ObjectType } from "../atoms/Card";
+
+import useNotice from "../../hooks/components/useNotice";
+
+import SubmitForm from "../molcules/SubmitForm";
 import ListElement from "../molcules/ListElement";
+
+import { List, ListContainer } from "../../styles/styles";
 
 function Notice() {
   const {
     notices,
-    detailedNotice,
     requiredInputItems,
-    IS_NOTICE_BEING_MODIFIED,
     registerNewNotice,
     deleteNotice,
     initializeDetailedNotice,
-    hideDetailedNoticeModal,
     toggleNoticeModificationModal,
-    modifyNotice,
   } = useNotice();
 
   return (
@@ -42,26 +38,6 @@ function Notice() {
           />
         </List>
       ))}
-      {/* {detailedNotice && (
-        <ModalBackground onClick={() => hideDetailedNoticeModal()}>
-          <Modal>
-            <ModalContent
-              detailedElement={detailedNotice as unknown as ObjectType}
-            />
-          </Modal>
-        </ModalBackground>
-      )}
-      {IS_NOTICE_BEING_MODIFIED && (
-        <ModalBackground onClick={() => toggleNoticeModificationModal()}>
-          <Modal>
-            <SubmitForm
-              requiredInputItems={requiredInputItems}
-              registerNewElement={modifyNotice}
-              isModificationAction={true}
-            />
-          </Modal>
-        </ModalBackground>
-      )} */}
     </ListContainer>
   );
 }
