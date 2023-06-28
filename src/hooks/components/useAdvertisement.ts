@@ -10,11 +10,11 @@ import React, {
 import { toast } from "react-toastify";
 
 import { ObjectType } from "../../components/atoms/Card";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 import routes from "../../constants/routes";
 import toastSentences from "../../constants/toastSentences";
@@ -51,7 +51,7 @@ interface INewAdvertisement extends Omit<IModifiedAdvertisement, "id"> {}
 
 interface UseAdvertisement {
   advertisements: Array<IAdvertisement>;
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   registerNewAdvertisement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void>;
@@ -312,7 +312,7 @@ const useAdvertisement = (): UseAdvertisement => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       const isAdvertisementBeingModified =
         targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
       return [

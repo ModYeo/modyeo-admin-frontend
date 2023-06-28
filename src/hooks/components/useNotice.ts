@@ -8,10 +8,10 @@ import {
 } from "react";
 
 import { ObjectType } from "../../components/atoms/Card";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 import routes from "../../constants/routes";
 
@@ -36,7 +36,7 @@ interface IDetailedNotice extends INotice {
 
 interface UseNotice {
   notices: Array<INotice>;
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteNotice: (noticeId: number, targetNoticeIndex: number) => Promise<void>;
   initializeDetailedNotice: (noticeId: number) => Promise<void>;
@@ -62,6 +62,10 @@ const useNotice = (): UseNotice => {
   const contentInputRef = useRef<HTMLInputElement>(null);
 
   const contentModifyInputRef = useRef<HTMLInputElement>(null);
+
+  const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const imageModifyInputRef = useRef<HTMLInputElement>(null);
 
   const fetchNotices = useCallback(async () => {
     return apiManager.fetchData<INotice>(routes.server.notice);
@@ -218,7 +222,7 @@ const useNotice = (): UseNotice => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       const isNoticeModifiyAction =
         targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
       return [
@@ -238,6 +242,16 @@ const useNotice = (): UseNotice => {
             ? contentModifyInputRef
             : contentInputRef,
           elementType: "input",
+          defaultValue: isNoticeModifiyAction
+            ? notices[toBeModifiedNoticeIndex.current].content
+            : "",
+        },
+        {
+          itemName: "imagePath",
+          refObject: isNoticeModifiyAction
+            ? imageModifyInputRef
+            : imageInputRef,
+          elementType: "image",
           defaultValue: isNoticeModifiyAction
             ? notices[toBeModifiedNoticeIndex.current].content
             : "",
