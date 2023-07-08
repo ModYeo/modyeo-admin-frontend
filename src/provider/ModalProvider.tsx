@@ -35,6 +35,10 @@ const MODAL_CONTEXT = createContext<ModalContext>({
 function ModalProvider({ children }: { children: React.ReactNode }) {
   const { isModalVisible, showModal, hideModal } = useModal();
 
+  // const {} = useAlert();
+
+  // const {} = useConfirm();
+
   const [detailedElement, setDetailedElement] = useState<ObjectType | null>(
     null,
   );

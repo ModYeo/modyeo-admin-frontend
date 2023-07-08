@@ -26,6 +26,7 @@ const PageWrapper = styled.div`
 
 const ListContentWrapper = styled(PageWrapper)`
   width: 100%;
+  justify-content: center;
 `;
 
 function Admin() {
@@ -57,7 +58,7 @@ function Admin() {
       if (chosenTabMenu === ChosenTabMenuEnum.inquiry) {
         return <Inquiry />;
       }
-      return <Greetings>관리할 항목을 위의 메뉴에서 선택하세요</Greetings>;
+      return <Greetings>관리할 항목을 메뉴에서 선택하세요</Greetings>;
     },
     [],
   );

@@ -23,6 +23,10 @@ export const SignInput = styled.input`
   width: 100%;
   height: 40px;
   padding: 0 10px;
+  &:focus {
+    color: white;
+    background-color: #5476d7;
+  }
 `;
 
 export const TabButton = styled.button<{ isChosenTab?: boolean }>`
