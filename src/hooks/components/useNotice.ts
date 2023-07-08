@@ -16,6 +16,7 @@ import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
 import routes from "../../constants/routes";
 
 import { MODAL_CONTEXT } from "../../provider/ModalProvider";
+import imageSendManager from "../../modules/imageSendManager";
 
 interface INotice {
   content: string;
@@ -37,7 +38,7 @@ interface IDetailedNotice extends INotice {
 interface UseNotice {
   notices: Array<INotice>;
   requiredInputItems: RequiredInputItem[];
-  registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => void;
   deleteNotice: (noticeId: number, targetNoticeIndex: number) => Promise<void>;
   initializeDetailedNotice: (noticeId: number) => Promise<void>;
   toggleNoticeModificationModal: (targetNoticeIndex?: number) => void;
@@ -59,13 +60,13 @@ const useNotice = (): UseNotice => {
 
   const titleModifyInputRef = useRef<HTMLInputElement>(null);
 
-  const contentInputRef = useRef<HTMLInputElement>(null);
+  const contentInputRef = useRef<HTMLInputElement | null>(null);
 
-  const contentModifyInputRef = useRef<HTMLInputElement>(null);
+  const contentModifyInputRef = useRef<HTMLInputElement | null>(null);
 
-  const imageInputRef = useRef<HTMLInputElement>(null);
+  const imageFileRef = useRef<{ file: File | null }>({ file: null });
 
-  const imageModifyInputRef = useRef<HTMLInputElement>(null);
+  const imageModifyFileRef = useRef<{ file: File | null }>({ file: null });
 
   const fetchNotices = useCallback(async () => {
     return apiManager.fetchData<INotice>(routes.server.notice);
@@ -106,23 +107,36 @@ const useNotice = (): UseNotice => {
   );
 
   const registerNewNotice = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       const [titleInputValue, contentInputValue] =
         extractInputValuesFromElementsRef();
 
-      if (titleInputValue && contentInputValue) {
-        const newNotice: INewNotice = {
-          content: contentInputValue,
-          title: titleInputValue,
-          imagePath: "",
-        };
-        const newNoticeId = await sendPostNoticeRequest<INewNotice>(newNotice);
-        if (newNoticeId) {
-          addNewNoticeInList({ ...newNotice, id: newNoticeId });
-          initializeInputValues();
+      const postDataToServer = async (encodedImage?: string) => {
+        if (titleInputValue && contentInputValue) {
+          const newNotice: INewNotice = {
+            content: contentInputValue,
+            title: titleInputValue,
+            imagePath: encodedImage || "",
+          };
+          const newNoticeId = await sendPostNoticeRequest<INewNotice>(
+            newNotice,
+          );
+          if (newNoticeId) {
+            addNewNoticeInList({ ...newNotice, id: newNoticeId });
+            initializeInputValues();
+          }
         }
+      };
+
+      if (imageFileRef.current.file) {
+        imageSendManager.encodeImageFile(
+          imageFileRef.current.file,
+          postDataToServer,
+        );
+      } else {
+        postDataToServer();
       }
     },
     [
@@ -248,9 +262,7 @@ const useNotice = (): UseNotice => {
         },
         {
           itemName: "imagePath",
-          refObject: isNoticeModifiyAction
-            ? imageModifyInputRef
-            : imageInputRef,
+          refObject: isNoticeModifiyAction ? imageModifyFileRef : imageFileRef,
           elementType: "image",
           defaultValue: isNoticeModifiyAction
             ? notices[toBeModifiedNoticeIndex.current].content

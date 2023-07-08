@@ -3,14 +3,14 @@ import toastSentences from "../constants/toastSentences";
 
 const EXTENSION_REGEX = /(.*?)\.(jpg|jpeg|png)$/;
 
-interface IImageSendManager {
+interface IImagePreviewManager {
   convertFileToObjectUrl(
     file: File,
     callback: (width: number, height: number) => void,
   ): string | null;
 }
 
-class ImageSendManager implements IImageSendManager {
+class ImagePreviewManager implements IImagePreviewManager {
   private static URL = window.URL || window.webkitURL;
 
   private static SIZE_LIMIT = 0;
@@ -30,7 +30,7 @@ class ImageSendManager implements IImageSendManager {
   }
 
   private checkUploadedImageSizeValidation(file: File) {
-    return file.size > ImageSendManager.SIZE_LIMIT;
+    return file.size > ImagePreviewManager.SIZE_LIMIT;
   }
 
   private checkIfIsImageTypeFile({ name = "" }: File) {
@@ -48,12 +48,12 @@ class ImageSendManager implements IImageSendManager {
       toast.error(toastSentences.invalidImageExtension);
       return null;
     }
-    this.image.src = ImageSendManager.URL.createObjectURL(file);
+    this.image.src = ImagePreviewManager.URL.createObjectURL(file);
     this.previewUploadedImage = callback;
     return this.image.src;
   }
 }
 
-const imageSendManager = new ImageSendManager();
+const imagePreviewManager = new ImagePreviewManager();
 
-export default imageSendManager;
+export default imagePreviewManager;

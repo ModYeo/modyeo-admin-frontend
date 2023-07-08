@@ -20,7 +20,9 @@ interface RegisterFormInterface {
   title?: string;
   requiredInputItems: RequiredInputItem[];
   isModificationAction?: boolean;
-  registerNewElement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  registerNewElement: (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => Promise<void> | void;
 }
 
 function SubmitForm({

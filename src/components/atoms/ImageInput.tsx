@@ -8,7 +8,7 @@ import React, {
 import styled from "styled-components";
 
 import { Label, RequiredInputItem } from "./Input";
-import imageSendManager from "../../modules/imageSender";
+import imagePreviewManager from "../../modules/imagePreviewManager";
 
 const Header = styled.div`
   margin-bottom: 7px;
@@ -62,7 +62,7 @@ const ImageInputArea = styled.input``;
 const DEFAULT_IMAGE_SIZE = {
   width: 0,
   height: 0,
-};
+} as const;
 
 function ImageInput({
   item,
@@ -71,11 +71,12 @@ function ImageInput({
   item: RequiredInputItem;
   isModificationAction: boolean;
 }) {
-  const { itemName } = item;
-  const elementId = `id-${itemName}`;
-  const labelValue = `* ${itemName}`;
+  const { elementId, labelValue } = useMemo(() => {
+    const { itemName } = item;
+    return { elementId: `id-${itemName}`, labelValue: `* ${itemName}` };
+  }, [item]);
 
-  const imageFile = useRef<File | null>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const previewImageSrc = useRef<string>("");
 
@@ -90,12 +91,16 @@ function ImageInput({
     [setImageSize],
   );
   const deleteUploadedImage = useCallback(() => {
-    imageFile.current = null;
+    if (item.refObject.current && "file" in item.refObject.current) {
+      const {
+        refObject: { current: fileRefCurrent },
+      } = item;
+      fileRefCurrent.file = null;
+    }
     previewImageSrc.current = "";
-    const { current: currentImagePath } = item.refObject;
-    if (currentImagePath) currentImagePath.value = "";
+    if (imageInputRef.current) imageInputRef.current.value = "";
     setImageSize(DEFAULT_IMAGE_SIZE);
-  }, [item.refObject]);
+  }, [item, imageInputRef]);
 
   const handleImageInputOnChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,19 +109,24 @@ function ImageInput({
       } = e;
       if (files) {
         const file = files[0];
-        const uploadedImageSrc = imageSendManager.convertFileToObjectUrl(
+        const uploadedImageSrc = imagePreviewManager.convertFileToObjectUrl(
           file,
           showPreviewImage,
         );
         if (uploadedImageSrc) {
-          imageFile.current = file;
+          if (item.refObject.current && "file" in item.refObject.current) {
+            const {
+              refObject: { current: fileRefCurrent },
+            } = item;
+            fileRefCurrent.file = file;
+          }
           previewImageSrc.current = uploadedImageSrc;
         } else {
           deleteUploadedImage();
         }
       }
     },
-    [showPreviewImage, deleteUploadedImage],
+    [item, showPreviewImage, deleteUploadedImage],
   );
 
   const { previewImageWidth, previewImageHeight } = useMemo(() => {
@@ -134,8 +144,12 @@ function ImageInput({
       <Header>
         <Label htmlFor={elementId}>
           {labelValue}
-          {item.refObject.current?.value && (
-            <span>{` - ${item.refObject.current.value}`}</span>
+          {imageInputRef.current?.value && (
+            <span>{` - ${
+              imageInputRef.current.value.length > 50
+                ? `${imageInputRef.current.value.slice(0, 50)}...`
+                : imageInputRef.current.value
+            }`}</span>
           )}
         </Label>
         {previewImageSrc.current && (
@@ -149,7 +163,7 @@ function ImageInput({
           onChange={handleImageInputOnChange}
           type="file"
           accept="image/*"
-          ref={item.refObject as RefObject<HTMLInputElement>}
+          ref={imageInputRef}
         />
         {previewImageSrc.current ? (
           <img

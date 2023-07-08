@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React, { RefObject, useMemo } from "react";
 import styled from "styled-components";
 
 import { SignInput } from "../../styles/styles";
@@ -14,7 +14,9 @@ const Label = styled.label`
 
 type RequiredInputItem = {
   itemName: string;
-  refObject: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
+  refObject: React.RefObject<
+    HTMLInputElement | HTMLTextAreaElement | { file: File | null }
+  >;
   elementType: "input" | "textarea" | "image";
   defaultValue: string | number;
 };
@@ -26,15 +28,19 @@ function Input({
   item: RequiredInputItem;
   isModificationAction: boolean;
 }) {
-  const { itemName } = item;
-  const elementId = `id-${itemName}`;
-  const labelValue = `* ${itemName}`;
-  const defaultValue = isModificationAction ? item.defaultValue : "";
+  const { elementId, labelValue, defaultValue } = useMemo(() => {
+    const { itemName } = item;
+    return {
+      elementId: `id-${itemName}`,
+      labelValue: `* ${itemName}`,
+      defaultValue: isModificationAction ? item.defaultValue : "",
+    };
+  }, [item, isModificationAction]);
   return (
     <span>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <InputElement
-        placeholder={itemName}
+        placeholder={item.itemName}
         ref={item.refObject as RefObject<HTMLInputElement>}
         defaultValue={defaultValue}
         required
