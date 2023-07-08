@@ -21,8 +21,9 @@ import imageSendManager from "../../modules/imageSendManager";
 interface INotice {
   content: string;
   id: number;
-  imagePath: string;
   title: string;
+  imageData: string;
+  resource: string;
 }
 
 interface INewNotice extends Omit<INotice, "id"> {}
@@ -118,7 +119,8 @@ const useNotice = (): UseNotice => {
           const newNotice: INewNotice = {
             content: contentInputValue,
             title: titleInputValue,
-            imagePath: encodedImage || "",
+            imageData: encodedImage || "",
+            resource: `image/hi.jpg`,
           };
           const newNoticeId = await sendPostNoticeRequest<INewNotice>(
             newNotice,
@@ -216,7 +218,8 @@ const useNotice = (): UseNotice => {
           id: targetNoticeId,
           title: titleInputValue,
           content: contentInputValue,
-          imagePath: "",
+          imageData: "",
+          resource: "",
         };
         const modifiedNoticeId = await sendNoticePatchRequest<INotice>(
           modifiedNotice,
