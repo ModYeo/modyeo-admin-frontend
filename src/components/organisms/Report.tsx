@@ -15,6 +15,26 @@ const ReportWrapper = styled.div`
   justify-content: space-between;
 `;
 
+const ReportTypeSelect = styled.select`
+  border-radius: 5px;
+  color: #5476d7;
+  border: 1px solid #5476d7;
+  appearance: none;
+`;
+
+const ReportTypeSelectHeader = styled(ReportTypeSelect)`
+  padding: 10px 15px;
+`;
+
+const ReportTypeSelectElement = styled(ReportTypeSelect)`
+  padding: 5px 8px;
+`;
+
+const ReportStatusSpan = styled.span`
+  color: #b5b5b5;
+  font-size: 12px;
+`;
+
 function Report() {
   const {
     reports,
@@ -27,12 +47,15 @@ function Report() {
   return (
     <ListContainer>
       <Title>Report Types</Title>
-      <select value={selectedReportType} onChange={onChangeReportType}>
+      <ReportTypeSelectHeader
+        value={selectedReportType}
+        onChange={onChangeReportType}
+      >
         <option disabled>-</option>
         {reportTypesList.map((type) => (
           <option key={type}>{type}</option>
         ))}
-      </select>
+      </ReportTypeSelectHeader>
       {reports.map((report, index) => (
         <List key={report.id}>
           <ReportWrapper>
@@ -43,8 +66,8 @@ function Report() {
               initializeDetailedElement={initializeDetailedReport}
             />
             <div>
-              처리 상태 -
-              <select
+              <ReportStatusSpan>처리 상태 - &nbsp;</ReportStatusSpan>
+              <ReportTypeSelectElement
                 defaultValue={report.reportStatus}
                 onChange={({
                   currentTarget: { value: changedReportStatus },
@@ -58,7 +81,7 @@ function Report() {
                 {Object.values(ReportStatusEnum).map((status) => (
                   <option key={status}>{status}</option>
                 ))}
-              </select>
+              </ReportTypeSelectElement>
             </div>
           </ReportWrapper>
         </List>

@@ -17,6 +17,9 @@ const GlobalStyle = createGlobalStyle`
     text-decoration: none;
     color: #5476d7;
   }
+  button, select {
+    cursor: pointer;
+  }
 `;
 
 export default GlobalStyle;
