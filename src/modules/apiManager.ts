@@ -58,6 +58,8 @@ export class APIManager implements IAPIManager {
   private setupApiAxios() {
     this.apiAxios.interceptors.request.use((config) => {
       const configCopied = { ...config };
+      // configCopied.headers["x-api-key"] =
+      //   "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
       configCopied.headers.Authorization =
         this.authCookieManager.getAccessTokenWithBearer();
       const bodyData = config.data as BodyDataType | undefined;

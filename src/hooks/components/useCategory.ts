@@ -8,11 +8,11 @@ import React, {
 } from "react";
 
 import { ObjectType } from "../../components/atoms/Card";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 import routes from "../../constants/routes";
 
@@ -40,7 +40,7 @@ interface IDetailedCategory {
 
 interface UseCategory {
   categories: Array<ICategory>;
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   registerNewCategory: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCategory: (
     categoryId: number,
@@ -224,7 +224,7 @@ const useCategory = (): UseCategory => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       const isCategoryBeingModified =
         targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
       return [

@@ -8,11 +8,11 @@ import {
 } from "react";
 
 import { ObjectType } from "../../components/atoms/Card";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 import { MODAL_CONTEXT } from "../../provider/ModalProvider";
 
@@ -34,7 +34,7 @@ interface IDetailedColumnCode extends IColumCode {
 
 interface UseColumnCode {
   columnCodes: IColumCode[];
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   registerNewColumnCode: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteColumnCode: (
     columnCodeId: number,
@@ -246,7 +246,7 @@ const useColumnCode = (): UseColumnCode => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       const isColumnCodeModifiyAction =
         targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
       return [

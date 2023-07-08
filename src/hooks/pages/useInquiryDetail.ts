@@ -11,7 +11,7 @@ import dayjs from "dayjs";
 import apiManager from "../../modules/apiManager";
 
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 import routes from "../../constants/routes";
 import DAY_FORMAT from "../../constants/dayFormat";
@@ -47,7 +47,7 @@ interface IDetailedInquiry {
 
 interface UseInquiryDetail {
   inquiry: IDetailedInquiry | null;
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   goBackToInquiryListPage: () => void;
   registerNewAnswer: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteAnswer: (answerId: number, index: number) => Promise<void>;
@@ -245,7 +245,7 @@ const useInquiryDetail = (): UseInquiryDetail => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       const isAnswerModifyAction =
         targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
       return [

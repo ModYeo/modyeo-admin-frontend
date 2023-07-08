@@ -9,8 +9,9 @@ import {
 import dayjs from "dayjs";
 import apiManager from "../../modules/apiManager";
 
+import { RequiredInputItem } from "../../components/atoms/Input";
+
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 import DAY_FORMAT from "../../constants/dayFormat";
 import routes from "../../constants/routes";
@@ -29,7 +30,7 @@ interface ICollection {
 
 interface UseCollection {
   collections: Array<ICollection>;
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   registerNewCollection: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
   deleteCollection: (
     collectionInfoId: number,
@@ -230,7 +231,7 @@ const useCollection = (): UseCollection => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       return targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED
         ? [
             {

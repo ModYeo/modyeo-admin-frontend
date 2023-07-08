@@ -1,44 +1,28 @@
-import React, { RefObject } from "react";
+import React from "react";
 import styled from "styled-components";
-import { Button, SignInput, Title } from "../../styles/styles";
+
+import Input, { RequiredInputItem } from "../atoms/Input";
+import TextArea from "../atoms/TextArea";
+
+import { Button, Title } from "../../styles/styles";
+import ImageInput from "../atoms/ImageInput";
 
 const FormContainer = styled.div`
   width: 100%;
 `;
 
-const Input = styled(SignInput)`
-  width: 100%;
-  margin: 10px 0;
-`;
-
-const TextArea = styled.textarea`
-  width: 100%;
-  height: 120px;
-  margin: 10px 0;
-  padding: 10px;
-  resize: none;
-`;
-
 const ButtonWrapper = styled.div`
   text-align: right;
+  padding: 10px 0;
 `;
-
-const Label = styled.label`
-  font-size: 12px;
-`;
-
-type RequiredInputItems = {
-  itemName: string;
-  refObject: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
-  elementType: "input" | "textarea" | "image";
-  defaultValue: string | number;
-}[];
 
 interface RegisterFormInterface {
   title?: string;
-  requiredInputItems: RequiredInputItems;
+  requiredInputItems: RequiredInputItem[];
   isModificationAction?: boolean;
-  registerNewElement: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  registerNewElement: (
+    e: React.FormEvent<HTMLFormElement>,
+  ) => Promise<void> | void;
 }
 
 function SubmitForm({
@@ -52,48 +36,34 @@ function SubmitForm({
       {isModificationAction || <Title>{title}</Title>}
       <form onSubmit={registerNewElement}>
         {requiredInputItems.map((item) => {
-          const { itemName } = item;
-          const elementId = `id-${itemName}`;
-          const labelValue = `* ${itemName}`;
-          const defaultValue = isModificationAction ? item.defaultValue : "";
           if (item.elementType === "input") {
             return (
-              <span key={itemName}>
-                <Label htmlFor={elementId}>{labelValue}</Label>
-                <Input
-                  id={elementId}
-                  placeholder={itemName}
-                  ref={item.refObject as RefObject<HTMLInputElement>}
-                  defaultValue={defaultValue}
-                  required
-                />
-              </span>
+              <Input
+                key={item.itemName}
+                item={item}
+                isModificationAction={isModificationAction}
+              />
             );
           }
           if (item.elementType === "textarea") {
             return (
-              <span key={itemName}>
-                <Label htmlFor={elementId}>{labelValue}</Label>
-                <TextArea
-                  placeholder={itemName}
-                  ref={item.refObject as RefObject<HTMLTextAreaElement>}
-                  defaultValue={defaultValue}
-                  required
-                />
-              </span>
+              <TextArea
+                key={item.itemName}
+                item={item}
+                isModificationAction={isModificationAction}
+              />
             );
           }
-          return (
-            <span key={itemName}>
-              <Label htmlFor={elementId}>{labelValue}</Label>
-              <input
-                alt="image input"
-                type="image"
-                ref={item.refObject as RefObject<HTMLInputElement>}
-                required
+          if (item.elementType === "image") {
+            return (
+              <ImageInput
+                key={item.itemName}
+                item={item}
+                isModificationAction={isModificationAction}
               />
-            </span>
-          );
+            );
+          }
+          return null;
         })}
         <ButtonWrapper>
           <Button type="submit">{`${
@@ -107,4 +77,4 @@ function SubmitForm({
 }
 
 export default SubmitForm;
-export type { RequiredInputItems };
+export type { RequiredInputItem };

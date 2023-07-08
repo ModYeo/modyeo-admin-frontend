@@ -8,20 +8,22 @@ import {
 } from "react";
 
 import { ObjectType } from "../../components/atoms/Card";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 import NOTHING_BEING_MODIFIED from "../../constants/nothingBeingModified";
-import { RequiredInputItems } from "../../components/molcules/SubmitForm";
 
 import routes from "../../constants/routes";
 
 import { MODAL_CONTEXT } from "../../provider/ModalProvider";
+import imageSendManager from "../../modules/imageSendManager";
 
 interface INotice {
   content: string;
   id: number;
-  imagePath: string;
   title: string;
+  imageData: string;
+  resource: string;
 }
 
 interface INewNotice extends Omit<INotice, "id"> {}
@@ -36,8 +38,8 @@ interface IDetailedNotice extends INotice {
 
 interface UseNotice {
   notices: Array<INotice>;
-  requiredInputItems: RequiredInputItems;
-  registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+  requiredInputItems: RequiredInputItem[];
+  registerNewNotice: (e: React.FormEvent<HTMLFormElement>) => void;
   deleteNotice: (noticeId: number, targetNoticeIndex: number) => Promise<void>;
   initializeDetailedNotice: (noticeId: number) => Promise<void>;
   toggleNoticeModificationModal: (targetNoticeIndex?: number) => void;
@@ -59,9 +61,13 @@ const useNotice = (): UseNotice => {
 
   const titleModifyInputRef = useRef<HTMLInputElement>(null);
 
-  const contentInputRef = useRef<HTMLInputElement>(null);
+  const contentInputRef = useRef<HTMLInputElement | null>(null);
 
-  const contentModifyInputRef = useRef<HTMLInputElement>(null);
+  const contentModifyInputRef = useRef<HTMLInputElement | null>(null);
+
+  const imageFileRef = useRef<{ file: File | null }>({ file: null });
+
+  const imageModifyFileRef = useRef<{ file: File | null }>({ file: null });
 
   const fetchNotices = useCallback(async () => {
     return apiManager.fetchData<INotice>(routes.server.notice);
@@ -102,23 +108,37 @@ const useNotice = (): UseNotice => {
   );
 
   const registerNewNotice = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       const [titleInputValue, contentInputValue] =
         extractInputValuesFromElementsRef();
 
-      if (titleInputValue && contentInputValue) {
-        const newNotice: INewNotice = {
-          content: contentInputValue,
-          title: titleInputValue,
-          imagePath: "",
-        };
-        const newNoticeId = await sendPostNoticeRequest<INewNotice>(newNotice);
-        if (newNoticeId) {
-          addNewNoticeInList({ ...newNotice, id: newNoticeId });
-          initializeInputValues();
+      const postDataToServer = async (encodedImage?: string) => {
+        if (titleInputValue && contentInputValue) {
+          const newNotice: INewNotice = {
+            content: contentInputValue,
+            title: titleInputValue,
+            imageData: encodedImage || "",
+            resource: `image/hi.jpg`,
+          };
+          const newNoticeId = await sendPostNoticeRequest<INewNotice>(
+            newNotice,
+          );
+          if (newNoticeId) {
+            addNewNoticeInList({ ...newNotice, id: newNoticeId });
+            initializeInputValues();
+          }
         }
+      };
+
+      if (imageFileRef.current.file) {
+        imageSendManager.encodeImageFile(
+          imageFileRef.current.file,
+          postDataToServer,
+        );
+      } else {
+        postDataToServer();
       }
     },
     [
@@ -198,7 +218,8 @@ const useNotice = (): UseNotice => {
           id: targetNoticeId,
           title: titleInputValue,
           content: contentInputValue,
-          imagePath: "",
+          imageData: "",
+          resource: "",
         };
         const modifiedNoticeId = await sendNoticePatchRequest<INotice>(
           modifiedNotice,
@@ -218,7 +239,7 @@ const useNotice = (): UseNotice => {
   );
 
   const makeRequiredInputElements = useCallback(
-    (targetIndex?: number): RequiredInputItems => {
+    (targetIndex?: number): RequiredInputItem[] => {
       const isNoticeModifiyAction =
         targetIndex !== undefined && targetIndex !== NOTHING_BEING_MODIFIED;
       return [
@@ -238,6 +259,14 @@ const useNotice = (): UseNotice => {
             ? contentModifyInputRef
             : contentInputRef,
           elementType: "input",
+          defaultValue: isNoticeModifiyAction
+            ? notices[toBeModifiedNoticeIndex.current].content
+            : "",
+        },
+        {
+          itemName: "imagePath",
+          refObject: isNoticeModifiyAction ? imageModifyFileRef : imageFileRef,
+          elementType: "image",
           defaultValue: isNoticeModifiyAction
             ? notices[toBeModifiedNoticeIndex.current].content
             : "",

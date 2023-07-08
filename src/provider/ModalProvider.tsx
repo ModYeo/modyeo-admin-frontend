@@ -4,7 +4,7 @@ import useModal from "../hooks/common/useModal";
 
 import Modal from "../components/commons/Modal";
 import SubmitForm, {
-  RequiredInputItems,
+  RequiredInputItem,
 } from "../components/molcules/SubmitForm";
 import { ObjectType } from "../components/atoms/Card";
 import ModalContent from "../components/molcules/ModalContent";
@@ -20,7 +20,7 @@ interface ModalContext {
   closeModalAndInitializeModificationForm: () => void;
   injectDetailedElement: (detailedElementParam: ObjectType) => void;
   injectModificationModels: (modificationParam?: {
-    requiredInputElementsParam: RequiredInputItems;
+    requiredInputElementsParam: RequiredInputItem[];
     elementModificationFunctionParam: ElementModificationFunction;
   }) => void;
 }
@@ -39,8 +39,9 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
     null,
   );
 
-  const [requiredInputElements, setRequiredInputElements] =
-    useState<RequiredInputItems | null>(null);
+  const [requiredInputElements, setRequiredInputElements] = useState<
+    RequiredInputItem[] | null
+  >(null);
 
   const [elementModificationFunction, setElementModificationFuction] =
     useState<ElementModificationFunction | null>(null);
@@ -62,7 +63,7 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
 
   const injectModificationModels = useCallback(
     (modificationParam?: {
-      requiredInputElementsParam: RequiredInputItems;
+      requiredInputElementsParam: RequiredInputItem[];
       elementModificationFunctionParam: ElementModificationFunction;
     }) => {
       if (modificationParam) {
