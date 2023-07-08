@@ -1,4 +1,4 @@
-import React, { RefObject } from "react";
+import React from "react";
 import styled from "styled-components";
 
 import Input, { RequiredInputItem } from "../atoms/Input";
@@ -13,6 +13,7 @@ const FormContainer = styled.div`
 
 const ButtonWrapper = styled.div`
   text-align: right;
+  padding: 10px 0;
 `;
 
 interface RegisterFormInterface {

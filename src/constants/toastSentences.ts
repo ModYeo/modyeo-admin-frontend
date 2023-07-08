@@ -12,6 +12,7 @@ const toastSentences = {
     modified: "신고 항목의 상태를 변경했습니다.",
   },
   invalidRequest: "올바르지 않은 요청입니다.",
+  invalidImageExtension: "jpg, jpeg, png 파일만 업로드 가능합니다.",
 } as const;
 
 export default toastSentences;

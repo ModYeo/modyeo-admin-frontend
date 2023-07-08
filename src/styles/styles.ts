@@ -48,6 +48,7 @@ export const NavBarContainer = styled.div<{ isWindowScrollOnTop: boolean }>`
     isWindowScrollOnTop ? "2px solid transparent" : "2px solid #5476d7"};
   position: fixed;
   top: 0;
+  z-index: 100;
 `;
 
 export const NavBarSection = styled.section`
