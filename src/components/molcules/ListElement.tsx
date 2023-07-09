@@ -9,6 +9,15 @@ const ListElemInnerWrapper = styled.div`
   & Button {
     opacity: 0;
   }
+  & Button:first-child {
+    transition: all 0.5s;
+  }
+  & Button:nth-child(2) {
+    transition: all 1s;
+  }
+  & Button:last-child {
+    transition: all 1.5s;
+  }
   &:hover {
     & Button {
       opacity: 1;

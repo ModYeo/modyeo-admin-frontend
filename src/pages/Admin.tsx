@@ -14,6 +14,7 @@ import Collection from "../components/organisms/Collection";
 import Inquiry from "../components/organisms/Inquiry";
 import InquiryDetail from "./InquiryDetail";
 import SideNavBar from "../components/commons/SideNavBar";
+import Button from "../components/atoms/Button";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -74,6 +75,9 @@ function Admin() {
     <PageWrapper>
       {isSideNavBarVisible ? <SideNavBar /> : <NavBar />}
       <ListContentWrapper>{currentPage}</ListContentWrapper>
+      <Button size="lg" bgColor="blue" type="button">
+        hi
+      </Button>
     </PageWrapper>
   );
 }
