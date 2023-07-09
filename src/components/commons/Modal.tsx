@@ -6,9 +6,6 @@ const ModalWindow = styled.div`
   padding: 25px 25px;
   border-radius: 25px;
   background-color: #eee;
-  display: flex;
-  justify-content: left;
-  align-items: center;
 `;
 
 function Modal({ children }: { children: React.ReactNode }) {

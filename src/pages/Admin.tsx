@@ -15,18 +15,20 @@ import Inquiry from "../components/organisms/Inquiry";
 import InquiryDetail from "./InquiryDetail";
 import SideNavBar from "../components/commons/SideNavBar";
 
-const Greetings = styled.h1`
-  margin-top: 300px;
-  text-align: center;
-`;
-
 const PageWrapper = styled.div`
   display: flex;
+  min-height: 100vh;
 `;
 
 const ListContentWrapper = styled(PageWrapper)`
   width: 100%;
   justify-content: center;
+`;
+
+const Greetings = styled.h1`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 function Admin() {
@@ -70,16 +72,8 @@ function Admin() {
 
   return (
     <PageWrapper>
-      {isSideNavBarVisible ? (
-        <>
-          <SideNavBar /> <ListContentWrapper>{currentPage}</ListContentWrapper>
-        </>
-      ) : (
-        <>
-          <NavBar />
-          {currentPage}
-        </>
-      )}
+      {isSideNavBarVisible ? <SideNavBar /> : <NavBar />}
+      <ListContentWrapper>{currentPage}</ListContentWrapper>
     </PageWrapper>
   );
 }

@@ -23,9 +23,9 @@ export const SignInput = styled.input`
   width: 100%;
   height: 40px;
   padding: 0 10px;
+  border: 1px solid white;
   &:focus {
-    color: white;
-    background-color: #5476d7;
+    border: 1px solid #5476d7;
   }
 `;
 

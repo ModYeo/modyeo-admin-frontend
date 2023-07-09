@@ -94,18 +94,22 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
     >
       {children}
       <ModalBackground
-        onClick={closeModalAndInitializeModificationForm}
         isModalVisible={isModalVisible}
+        onClick={closeModalAndInitializeModificationForm}
       >
         <Modal>
           {detailedElement && (
-            <ModalContent detailedElement={detailedElement} />
+            <ModalContent
+              detailedElement={detailedElement}
+              hideModal={closeModalAndInitializeModificationForm}
+            />
           )}
           {requiredInputElements && elementModificationFunction && (
             <SubmitForm
+              isModificationAction={true}
               requiredInputItems={requiredInputElements}
               registerNewElement={elementModificationFunction}
-              isModificationAction={true}
+              hideModal={closeModalAndInitializeModificationForm}
             />
           )}
         </Modal>
