@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import authCookieManager from "../../modules/authCookie";
 import routes from "../../constants/routes";
@@ -19,11 +19,13 @@ const MINIMUN_PATH_LENGTH_START = 7;
 interface UseAdmin {
   currentPath: ChosenTabMenuEnum;
   inquiryId?: number;
-  checkTokensExistence: () => void;
+  isSideNavBarVisible: boolean;
 }
 
 const useAdmin = (): UseAdmin => {
   const navigator = useNavigate();
+
+  const [isSideNavBarVisible, setIsSideNavBarVisible] = useState(true);
 
   const { pathname } = useLocation();
 
@@ -56,14 +58,31 @@ const useAdmin = (): UseAdmin => {
     if (!accessToken || !refreshToken) navigator(routes.client.signin);
   }, [navigator]);
 
+  const toggleNavBarByWindowWidth = useCallback(() => {
+    window.addEventListener("resize", () => {
+      if (window.innerWidth < 1220) setIsSideNavBarVisible(false);
+      else setIsSideNavBarVisible(true);
+    });
+  }, []);
+
   useEffect(() => {
     checkTokensExistence();
   }, [checkTokensExistence]);
 
+  useEffect(() => {
+    window.addEventListener("resize", toggleNavBarByWindowWidth);
+  }, [toggleNavBarByWindowWidth]);
+
+  useEffect(() => {
+    return () => {
+      window.removeEventListener("resize", toggleNavBarByWindowWidth);
+    };
+  }, [toggleNavBarByWindowWidth]);
+
   return {
     currentPath,
     inquiryId,
-    checkTokensExistence,
+    isSideNavBarVisible,
   };
 };
 

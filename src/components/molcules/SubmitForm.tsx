@@ -23,6 +23,7 @@ interface RegisterFormInterface {
   registerNewElement: (
     e: React.FormEvent<HTMLFormElement>,
   ) => Promise<void> | void;
+  hideModal?: () => void;
 }
 
 function SubmitForm({
@@ -30,6 +31,7 @@ function SubmitForm({
   requiredInputItems,
   isModificationAction = false,
   registerNewElement,
+  hideModal,
 }: RegisterFormInterface) {
   return (
     <FormContainer>
@@ -66,12 +68,18 @@ function SubmitForm({
           return null;
         })}
         <ButtonWrapper>
-          <Button type="submit">{`${
-            isModificationAction ? "modify" : "register"
-          }`}</Button>
+          {isModificationAction ? (
+            <>
+              <Button>modify</Button>
+              <Button type="button" onClick={hideModal}>
+                cancel
+              </Button>
+            </>
+          ) : (
+            <Button>register</Button>
+          )}
         </ButtonWrapper>
       </form>
-      <br />
     </FormContainer>
   );
 }

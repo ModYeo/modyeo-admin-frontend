@@ -1,7 +1,32 @@
 import React from "react";
 
+import styled from "styled-components";
+
 import Card from "../atoms/Card";
 import { Button } from "../../styles/styles";
+
+const ListElemInnerWrapper = styled.div`
+  & Button {
+    opacity: 0;
+  }
+  & Button:first-child {
+    transition: all 0.5s;
+  }
+  & Button:nth-child(2) {
+    transition: all 1s;
+  }
+  & Button:last-child {
+    transition: all 1.5s;
+  }
+  &:hover {
+    & Button {
+      opacity: 1;
+    }
+  }
+  & > div:last-child {
+    text-align: right;
+  }
+`;
 
 type ObjectType = { [key: string]: string | number };
 
@@ -29,7 +54,7 @@ function ListElement({
   deleteElement,
 }: ListElementInterface) {
   return (
-    <div>
+    <ListElemInnerWrapper>
       <Card element={listElement} />
       <br />
       <div>
@@ -58,7 +83,7 @@ function ListElement({
           </Button>
         )}
       </div>
-    </div>
+    </ListElemInnerWrapper>
   );
 }
 

@@ -23,11 +23,14 @@ export const SignInput = styled.input`
   width: 100%;
   height: 40px;
   padding: 0 10px;
+  border: 1px solid white;
+  &:focus {
+    border: 1px solid #5476d7;
+  }
 `;
 
 export const TabButton = styled.button<{ isChosenTab?: boolean }>`
   height: 50px;
-  cursor: pointer;
   transition: all 0.5s;
   color: ${({ isChosenTab }) => (isChosenTab ? "white" : "black")};
   background-color: ${({ isChosenTab }) =>
@@ -48,7 +51,7 @@ export const NavBarContainer = styled.div<{ isWindowScrollOnTop: boolean }>`
     isWindowScrollOnTop ? "2px solid transparent" : "2px solid #5476d7"};
   position: fixed;
   top: 0;
-  z-index: 100;
+  z-index: 50;
 `;
 
 export const NavBarSection = styled.section`
@@ -59,10 +62,13 @@ export const NavBarSection = styled.section`
 `;
 
 export const ListContainer = styled.ul`
-  width: 600px;
+  width: 850px;
   margin: 100px auto;
   padding: 10px;
   background-color: #eee;
+  @media screen and (max-width: 1002px) {
+    width: 600px;
+  }
 `;
 
 export const List = styled.li`
@@ -83,6 +89,7 @@ export const ModalBackground = styled.div<{ isModalVisible: boolean }>`
   align-items: center;
   background-color: rgba(0, 0, 0, 0.4);
   display: ${({ isModalVisible }) => (isModalVisible ? "display" : "none")};
+  z-index: 100;
 `;
 
 export const Button = styled(TabButton)`
