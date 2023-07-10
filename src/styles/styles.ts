@@ -64,10 +64,21 @@ export const NavBarSection = styled.section`
 export const ListContainer = styled.ul`
   width: 850px;
   margin: 100px auto;
-  padding: 10px;
-  background-color: #eee;
+  border: 2px solid #eee;
+  border-radius: 8px;
   @media screen and (max-width: 1002px) {
     width: 600px;
+  }
+  & > li {
+    min-height: 50px;
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-bottom: 2px solid #eee;
+  }
+  & > li:last-child {
+    border: none;
   }
 `;
 
