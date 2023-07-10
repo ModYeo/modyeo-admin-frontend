@@ -30,7 +30,6 @@ const SideButton = styled.button<{ isChosenTab?: boolean }>`
 
 const SideNavBarWrapper = styled.div`
   width: 200px;
-  height: 100vh;
 `;
 
 function SideNavBar() {

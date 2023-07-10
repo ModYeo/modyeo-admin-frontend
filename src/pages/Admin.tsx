@@ -18,7 +18,6 @@ import Button from "../components/atoms/Button";
 
 const PageWrapper = styled.div`
   display: flex;
-  min-height: 100vh;
 `;
 
 const ListContentWrapper = styled(PageWrapper)`
@@ -75,9 +74,6 @@ function Admin() {
     <PageWrapper>
       {isSideNavBarVisible ? <SideNavBar /> : <NavBar />}
       <ListContentWrapper>{currentPage}</ListContentWrapper>
-      <Button size="lg" bgColor="blue" type="button">
-        hi
-      </Button>
     </PageWrapper>
   );
 }

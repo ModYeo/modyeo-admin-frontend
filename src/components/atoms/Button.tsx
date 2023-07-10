@@ -9,6 +9,7 @@ type BgColors = "blue" | "red" | "grey";
 const StyledButton = styled.button<{
   size: Sizes;
   bgColor: BgColors;
+  isChosen?: boolean;
 }>`
   width: ${({ size }) => {
     switch (size) {
@@ -34,17 +35,36 @@ const StyledButton = styled.button<{
         return "40px";
     }
   }};
-  background-color: ${({ bgColor }) => {
+  background-color: ${({ bgColor, isChosen }) => {
     switch (bgColor) {
       case "blue":
-        return "#5476d7";
+        return `${isChosen ? "white" : "#5476d7"}`;
       case "red":
-        return "#e84b35";
+        return `${isChosen ? "white" : "#e84b35"}`;
       default:
-        return "#b5b5b5";
+        return `${isChosen ? "white" : "#b5b5b5"}`;
     }
   }};
-  color: white;
+  color: ${({ bgColor, isChosen }) => {
+    switch (bgColor) {
+      case "blue":
+        return `${isChosen ? "#5476d7" : "white"}`;
+      case "red":
+        return `${isChosen ? "#e84b35" : "white"}`;
+      default:
+        return `${isChosen ? "#b5b5b5" : "white"}`;
+    }
+  }};
+  border: ${({ bgColor, isChosen }) => {
+    switch (bgColor) {
+      case "blue":
+        return `1px solid ${isChosen ? "#5476d7" : "white"}`;
+      case "red":
+        return `1px solid ${isChosen ? "#e84b35" : "white"}`;
+      default:
+        return `1px solid ${isChosen ? "#b5b5b5" : "white"}`;
+    }
+  }};
   border-radius: 8px;
   &:hover {
     opacity: 0.8;
@@ -56,12 +76,27 @@ interface ButtonInterface {
   type: "button" | "submit";
   bgColor: BgColors;
   size: Sizes;
+  isChosen?: boolean;
   children: React.ReactNode;
+  onClick?: (...args: any) => void;
 }
 
-function Button({ type, bgColor, size, children }: ButtonInterface) {
+function Button({
+  type,
+  bgColor,
+  size,
+  isChosen,
+  children,
+  onClick,
+}: ButtonInterface) {
   return (
-    <StyledButton type={type} bgColor={bgColor} size={size}>
+    <StyledButton
+      type={type}
+      bgColor={bgColor}
+      size={size}
+      isChosen={isChosen}
+      onClick={onClick}
+    >
       {children}
     </StyledButton>
   );
