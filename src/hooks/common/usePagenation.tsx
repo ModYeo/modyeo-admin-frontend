@@ -11,13 +11,30 @@ const usePagenation = (listLength: number, reqUrl: string) => {
 
   const offsetParam = Number(searchParams.get("offset"));
 
+  const checkOffsetValidation = useCallback(
+    (offset: number) => {
+      return offset === 10 ||
+        offset === 20 ||
+        offset === 50 ||
+        offset === listLength
+        ? offset
+        : 10;
+    },
+    [listLength],
+  );
+
   const currentPage = Number.isInteger(pageParam) ? pageParam || 1 : 1;
 
-  const currentOffset = Number.isInteger(offsetParam) ? offsetParam || 10 : 10;
+  const currentOffset = Number.isInteger(offsetParam)
+    ? checkOffsetValidation(offsetParam)
+    : 10;
 
   const pagenationButtonValues = useMemo(() => {
     const pagenationLimit = Math.ceil(listLength / currentOffset);
-    return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
+    if (pagenationLimit <= 5)
+      return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
+
+    return [];
   }, [listLength, currentOffset]);
 
   const [slicePoint, endOfSlice] = useMemo(() => {
