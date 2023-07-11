@@ -12,6 +12,8 @@ import Button from "../atoms/Button";
 import SlicePagePerValButtons from "../molcules/SlicePagePerValButtons";
 import usePagenation from "../../hooks/common/usePagenation";
 
+import routes from "../../constants/routes";
+
 function Category() {
   const {
     categories,
@@ -23,21 +25,21 @@ function Category() {
   } = useCategory();
 
   const {
-    pagenation,
-    offsetValue,
+    currentPage,
+    currentOffset,
     pagenationButtonValues,
     slicePoint,
     endOfSlice,
-    chosePagenation,
-    choseSlicePagePerValue,
-  } = usePagenation(categories.length);
+    changePagenation,
+    changeOffsetValue,
+  } = usePagenation(categories.length, routes.client.category);
 
   return (
     <ListContainer>
       <SlicePagePerValButtons
         listLength={categories.length}
-        slicePagePerValue={offsetValue}
-        choseSlicePagePerValue={choseSlicePagePerValue}
+        currentOffset={currentOffset}
+        changeOffsetValue={changeOffsetValue}
       />
       {categories.slice(slicePoint, endOfSlice).map((category, index) => (
         <ListElement
@@ -47,15 +49,15 @@ function Category() {
           title="name"
         />
       ))}
-      {categories.length > offsetValue &&
-        pagenationButtonValues.map((value, index) => (
+      {categories.length > currentOffset &&
+        pagenationButtonValues.map((value) => (
           <Button
             key={value}
             bgColor="blue"
             size="sm"
             type="button"
-            isChosen={pagenation === index}
-            onClick={() => chosePagenation(value - 1)}
+            isChosen={currentPage === value}
+            onClick={() => changePagenation(value)}
           >
             {value}
           </Button>
