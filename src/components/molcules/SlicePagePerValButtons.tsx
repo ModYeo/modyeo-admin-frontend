@@ -3,12 +3,12 @@ import Button from "../atoms/Button";
 
 function SlicePagePerValButtons({
   listLength,
-  slicePagePerValue,
-  choseSlicePagePerValue,
+  currentOffset,
+  changeOffsetValue,
 }: {
   listLength: number;
-  slicePagePerValue: number;
-  choseSlicePagePerValue: (sliceValue: number) => void;
+  currentOffset: number;
+  changeOffsetValue: (value: number) => void;
 }) {
   return (
     <>
@@ -16,8 +16,8 @@ function SlicePagePerValButtons({
         bgColor="blue"
         size="sm"
         type="button"
-        isChosen={slicePagePerValue === 10}
-        onClick={() => choseSlicePagePerValue(10)}
+        isChosen={!currentOffset || currentOffset === 10}
+        onClick={() => changeOffsetValue(10)}
       >
         10
       </Button>
@@ -25,8 +25,8 @@ function SlicePagePerValButtons({
         bgColor="blue"
         size="sm"
         type="button"
-        isChosen={slicePagePerValue === 20}
-        onClick={() => choseSlicePagePerValue(20)}
+        isChosen={currentOffset === 20}
+        onClick={() => changeOffsetValue(20)}
       >
         20
       </Button>
@@ -34,8 +34,8 @@ function SlicePagePerValButtons({
         bgColor="blue"
         size="sm"
         type="button"
-        isChosen={slicePagePerValue === 50}
-        onClick={() => choseSlicePagePerValue(50)}
+        isChosen={currentOffset === 50}
+        onClick={() => changeOffsetValue(50)}
       >
         50
       </Button>
@@ -43,8 +43,8 @@ function SlicePagePerValButtons({
         bgColor="blue"
         size="sm"
         type="button"
-        isChosen={slicePagePerValue === listLength}
-        onClick={() => choseSlicePagePerValue(listLength)}
+        isChosen={currentOffset === listLength}
+        onClick={() => changeOffsetValue(listLength)}
       >
         all
       </Button>
