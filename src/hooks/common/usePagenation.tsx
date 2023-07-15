@@ -11,6 +11,8 @@ const usePagenation = (listLength: number, reqUrl: string) => {
 
   const offsetParam = Number(searchParams.get("offset"));
 
+  const searchParam = searchParams.get("search");
+
   const checkOffsetValidation = useCallback(
     (offset: number) => {
       return offset === 10 ||
@@ -45,22 +47,29 @@ const usePagenation = (listLength: number, reqUrl: string) => {
     (value: number) => {
       const isFirstPage = value === 1;
       navigator(
-        `${reqUrl}?${!isFirstPage ? `page=${value}` : ""}${
+        `${reqUrl}?${searchParam ? `search=${searchParam}` : ""}${
+          !isFirstPage ? `page=${value}` : ""
+        }${
           currentOffset > 10
             ? `${!isFirstPage ? "&" : ""}offset=${currentOffset}`
             : ""
         }`,
       );
     },
-    [currentOffset, reqUrl, navigator],
+    [reqUrl, currentOffset, searchParam, navigator],
   );
 
   const changeOffsetValue = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
       const offset = Number(value);
-      navigator(`${reqUrl}${offset !== 10 ? `?offset=${offset}` : ""}`);
+      // TODO: offset validation check
+      navigator(
+        `${reqUrl}?${searchParam ? `search=${searchParam}` : ""}${
+          searchParam && offset !== 10 ? "&" : ""
+        }${offset !== 10 ? `offset=${offset}` : ""}`,
+      );
     },
-    [reqUrl, navigator],
+    [reqUrl, searchParam, navigator],
   );
 
   return {

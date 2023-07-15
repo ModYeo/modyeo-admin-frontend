@@ -13,7 +13,11 @@ function SlicePagePerValButtons({
   }: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   return (
-    <select onChange={changeOffsetValue} value={currentOffset}>
+    <select
+      onChange={changeOffsetValue}
+      value={currentOffset}
+      disabled={listLength <= 10}
+    >
       <option value={10}>10</option>
       <option value={20}>20</option>
       <option value={50}>50</option>

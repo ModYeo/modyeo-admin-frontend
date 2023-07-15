@@ -26,6 +26,19 @@ function Category() {
   } = useCategory();
 
   const {
+    filteredList,
+    searchedValue,
+    searchInputRef,
+    onChangeSearchedValue,
+    onSubmitSearchForm,
+    resetFilteredList,
+  } = useSearch(
+    "name",
+    routes.client.category,
+    categories as unknown as ObjectType[],
+  );
+
+  const {
     currentPage,
     currentOffset,
     pagenationButtonValues,
@@ -33,46 +46,56 @@ function Category() {
     endOfSlice,
     changePagenation,
     changeOffsetValue,
-  } = usePagenation(categories.length, routes.client.category);
+  } = usePagenation(filteredList.length, routes.client.category);
+  // TODO: 폼만 따로 커스텀 훅 처리?
 
-  const { searchedValue, onChangeSearchedValue } = useSearch();
-
-  const list = useMemo(() => {
-    return categories.filter((item) => item.name.includes(searchedValue));
-  }, [categories, searchedValue]);
+  const slicedList = useMemo(() => {
+    return filteredList.slice(slicePoint, endOfSlice);
+  }, [filteredList, slicePoint, endOfSlice]);
 
   return (
     <>
       <div>
-        <form>
-          <input
-            style={{ border: "1px solid red" }}
-            onChange={onChangeSearchedValue}
-          />
-          <Button bgColor="blue" size="sm" type="button">
+        <form onSubmit={onSubmitSearchForm}>
+          <input style={{ border: "1px solid red" }} ref={searchInputRef} />
+          <Button bgColor="blue" size="sm" type="submit">
             search
+          </Button>
+          <Button
+            bgColor="blue"
+            size="sm"
+            type="button"
+            onClick={resetFilteredList}
+          >
+            reset
           </Button>
         </form>
       </div>
       <div>
         <SlicePagePerValButtons
-          listLength={list.length}
+          listLength={filteredList.length}
           currentOffset={currentOffset}
           changeOffsetValue={changeOffsetValue}
         />
       </div>
       <ListContainer>
-        {list.slice(slicePoint, endOfSlice).map((category, index) => (
-          <ListElement
-            key={category.id}
-            object={category as unknown as ObjectType}
-            index={slicePoint + index}
-            title="name"
-          />
-        ))}
+        {slicedList.length === 0 ? (
+          <>표시할 컨텐츠가 없습니다.</>
+        ) : (
+          <>
+            {slicedList.map((category, index) => (
+              <ListElement
+                key={category.id}
+                title="name"
+                object={category as unknown as ObjectType}
+                index={slicePoint + index}
+              />
+            ))}
+          </>
+        )}
       </ListContainer>
       <div>
-        {list.length > currentOffset &&
+        {filteredList.length > currentOffset &&
           pagenationButtonValues.map((value) => (
             <Button
               key={value}
