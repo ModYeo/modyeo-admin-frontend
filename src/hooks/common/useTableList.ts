@@ -1,20 +1,23 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import apiManager from "../../modules/apiManager";
-import useSearch from "./useSearch";
+
 import { ObjectType } from "../../components/atoms/Card";
+
+import useSearch from "./useSearch";
 import usePagenation from "./usePagenation";
 
-const useTableList = <ListElementType>({
+import apiManager from "../../modules/apiManager";
+
+const useTableList = ({
   requestUrl,
   elementTitleKey,
 }: {
   requestUrl: string;
   elementTitleKey: string;
 }) => {
-  const [list, setList] = useState<Array<ListElementType>>([]);
+  const [list, setList] = useState<Array<ObjectType>>([]);
 
   const fetchList = useCallback(() => {
-    return apiManager.fetchData<ListElementType>(requestUrl);
+    return apiManager.fetchData<ObjectType>(requestUrl);
   }, [requestUrl]);
 
   const initializeCategoriesList = useCallback(async () => {

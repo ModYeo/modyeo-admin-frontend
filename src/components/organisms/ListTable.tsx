@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 
 import { ObjectType } from "../atoms/Card";
 
@@ -51,11 +51,11 @@ function ListTable({ requestUrl, elementTitleKey }: ListTableType) {
           <>표시할 컨텐츠가 없습니다.</>
         ) : (
           <>
-            {slicedList.map((category, index) => (
+            {slicedList.map((element, index) => (
               <ListElement
-                key={category.id}
-                title="name"
-                object={category as unknown as ObjectType}
+                key={element.id}
+                title={elementTitleKey}
+                object={element as unknown as ObjectType}
                 index={slicePoint + index}
               />
             ))}
