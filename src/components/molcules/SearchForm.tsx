@@ -6,13 +6,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Button from "../atoms/Button";
 import COLOR_CONST from "../../constants/colorConst";
 
-const StyledSearchForm = styled.form`
-  input,
-  button {
-    margin: 0 2px;
-  }
-`;
-
 const SearchInput = styled.input`
   width: 200px;
   padding: 3px 6px;
@@ -37,7 +30,7 @@ function SearchForm({
   }, [location, navigator]);
 
   return (
-    <StyledSearchForm onSubmit={onSubmitSearchForm}>
+    <form onSubmit={onSubmitSearchForm}>
       <SearchInput ref={searchInputRef} placeholder="search" />
       <Button bgColor="blue" size="sm" type="submit">
         search
@@ -50,7 +43,7 @@ function SearchForm({
       >
         reset
       </Button>
-    </StyledSearchForm>
+    </form>
   );
 }
 

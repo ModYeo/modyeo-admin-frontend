@@ -1,40 +1,14 @@
 import React from "react";
-import useCollection from "../../hooks/components/useCollection";
-
-import SubmitForm from "../molcules/SubmitForm";
-import ListElement from "../molcules/ListElement";
-import { ObjectType } from "../atoms/Card";
-
-import { List, ListContainer } from "../../styles/styles";
+import ListTable from "./ListTable";
+import routes from "../../constants/routes";
 
 function Collection() {
-  const {
-    collections,
-    requiredInputItems,
-    registerNewCollection,
-    deleteCollection,
-    toggleCollectionModificationModal,
-  } = useCollection();
-
   return (
-    <ListContainer>
-      <SubmitForm
-        title="Collections List"
-        requiredInputItems={requiredInputItems}
-        registerNewElement={registerNewCollection}
-      />
-      {collections.map((collection, index) => (
-        <List key={collection.collectionInfoId}>
-          <ListElement
-            listElement={collection as unknown as ObjectType}
-            elementId={collection.collectionInfoId}
-            elementIndex={index}
-            toggleModificationModal={toggleCollectionModificationModal}
-            deleteElement={deleteCollection}
-          />
-        </List>
-      ))}
-    </ListContainer>
+    <ListTable
+      requestUrl={routes.server.collection}
+      elementKey="collectionInfoId"
+      elementTitleKey="collectionInfoName"
+    />
   );
 }
 

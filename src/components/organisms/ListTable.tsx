@@ -1,4 +1,5 @@
 import React from "react";
+import styled from "styled-components";
 
 import { ObjectType } from "../atoms/Card";
 
@@ -11,12 +12,26 @@ import Button from "../atoms/Button";
 
 import { FormTopArea, ListContainer } from "../../styles/styles";
 
+const Layout = styled.section`
+  button,
+  select,
+  input {
+    margin: 0 2px;
+  }
+`;
+
+const ListWrapper = styled.div`
+  min-height: 505px;
+  margin: 20px 0;
+`;
+
 interface ListTableType {
   requestUrl: string;
+  elementKey: string;
   elementTitleKey: string;
 }
 
-function ListTable({ requestUrl, elementTitleKey }: ListTableType) {
+function ListTable({ requestUrl, elementKey, elementTitleKey }: ListTableType) {
   const {
     slicedList,
     filteredListLength,
@@ -34,7 +49,7 @@ function ListTable({ requestUrl, elementTitleKey }: ListTableType) {
   });
 
   return (
-    <>
+    <Layout>
       <FormTopArea>
         <SearchForm
           searchInputRef={searchInputRef}
@@ -46,22 +61,24 @@ function ListTable({ requestUrl, elementTitleKey }: ListTableType) {
           changeOffsetValue={changeOffsetValue}
         />
       </FormTopArea>
-      <ListContainer>
-        {slicedList.length === 0 ? (
-          <>표시할 컨텐츠가 없습니다.</>
-        ) : (
-          <>
-            {slicedList.map((element, index) => (
-              <ListElement
-                key={element.id}
-                title={elementTitleKey}
-                object={element as unknown as ObjectType}
-                index={slicePoint + index}
-              />
-            ))}
-          </>
-        )}
-      </ListContainer>
+      <ListWrapper>
+        <ListContainer>
+          {slicedList.length === 0 ? (
+            <>표시할 컨텐츠가 없습니다.</>
+          ) : (
+            <>
+              {slicedList.map((element, index) => (
+                <ListElement
+                  key={element[elementKey]}
+                  title={elementTitleKey}
+                  object={element as unknown as ObjectType}
+                  index={slicePoint + index}
+                />
+              ))}
+            </>
+          )}
+        </ListContainer>
+      </ListWrapper>
       <div>
         {filteredListLength > currentOffset &&
           pagenationButtonValues.map((value) => (
@@ -77,7 +94,13 @@ function ListTable({ requestUrl, elementTitleKey }: ListTableType) {
             </Button>
           ))}
       </div>
-    </>
+      <br />
+      <div>
+        <Button type="button" bgColor="red" size="lg">
+          write
+        </Button>
+      </div>
+    </Layout>
   );
 }
 
