@@ -33,7 +33,6 @@ const usePagenation = (listLength: number, reqUrl: string) => {
     const pagenationLimit = Math.ceil(listLength / currentOffset);
     if (pagenationLimit <= 5)
       return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
-
     return [];
   }, [listLength, currentOffset]);
 
@@ -57,8 +56,9 @@ const usePagenation = (listLength: number, reqUrl: string) => {
   );
 
   const changeOffsetValue = useCallback(
-    (value: number) => {
-      navigator(`${reqUrl}${value !== 10 ? `?offset=${value}` : ""}`);
+    ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+      const offset = Number(value);
+      navigator(`${reqUrl}${offset !== 10 ? `?offset=${offset}` : ""}`);
     },
     [reqUrl, navigator],
   );

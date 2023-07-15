@@ -8,47 +8,17 @@ function SlicePagePerValButtons({
 }: {
   listLength: number;
   currentOffset: number;
-  changeOffsetValue: (value: number) => void;
+  changeOffsetValue: ({
+    target: { value },
+  }: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   return (
-    <>
-      <Button
-        bgColor="blue"
-        size="sm"
-        type="button"
-        isChosen={!currentOffset || currentOffset === 10}
-        onClick={() => changeOffsetValue(10)}
-      >
-        10
-      </Button>
-      <Button
-        bgColor="blue"
-        size="sm"
-        type="button"
-        isChosen={currentOffset === 20}
-        onClick={() => changeOffsetValue(20)}
-      >
-        20
-      </Button>
-      <Button
-        bgColor="blue"
-        size="sm"
-        type="button"
-        isChosen={currentOffset === 50}
-        onClick={() => changeOffsetValue(50)}
-      >
-        50
-      </Button>
-      <Button
-        bgColor="blue"
-        size="sm"
-        type="button"
-        isChosen={currentOffset === listLength}
-        onClick={() => changeOffsetValue(listLength)}
-      >
-        all
-      </Button>
-    </>
+    <select onChange={changeOffsetValue} value={currentOffset}>
+      <option value={10}>10</option>
+      <option value={20}>20</option>
+      <option value={50}>50</option>
+      <option value={listLength}>all</option>
+    </select>
   );
 }
 

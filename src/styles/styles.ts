@@ -62,8 +62,6 @@ export const NavBarSection = styled.section`
 `;
 
 export const ListContainer = styled.ul`
-  width: 850px;
-  margin: 100px auto;
   border: 2px solid #eee;
   border-radius: 8px;
   @media screen and (max-width: 1002px) {

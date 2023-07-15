@@ -21,8 +21,12 @@ const PageWrapper = styled.div`
 `;
 
 const ListContentWrapper = styled(PageWrapper)`
-  width: 100%;
-  justify-content: center;
+  width: 850px;
+  margin: 100px auto;
+  display: block;
+  div {
+    text-align: right;
+  }
 `;
 
 const Greetings = styled.h1`
