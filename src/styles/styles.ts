@@ -118,3 +118,8 @@ export const Title = styled.h2`
   text-align: center;
   color: #b5b5b5;
 `;
+
+export const FormTopArea = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;

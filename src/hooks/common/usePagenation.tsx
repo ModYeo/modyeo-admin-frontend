@@ -1,9 +1,11 @@
 import { useCallback, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import routes from "../../constants/routes";
 
-const usePagenation = (listLength: number, reqUrl: string) => {
+const usePagenation = (listLength: number) => {
   const navigator = useNavigate();
+
+  const { pathname } = useLocation();
 
   const [searchParams] = useSearchParams();
 
@@ -47,7 +49,7 @@ const usePagenation = (listLength: number, reqUrl: string) => {
     (value: number) => {
       const isFirstPage = value === 1;
       navigator(
-        `${reqUrl}?${searchParam ? `search=${searchParam}` : ""}${
+        `${pathname}?${searchParam ? `search=${searchParam}` : ""}${
           !isFirstPage ? `page=${value}` : ""
         }${
           currentOffset > 10
@@ -56,7 +58,7 @@ const usePagenation = (listLength: number, reqUrl: string) => {
         }`,
       );
     },
-    [reqUrl, currentOffset, searchParam, navigator],
+    [pathname, currentOffset, searchParam, navigator],
   );
 
   const changeOffsetValue = useCallback(
@@ -64,12 +66,12 @@ const usePagenation = (listLength: number, reqUrl: string) => {
       const offset = Number(value);
       // TODO: offset validation check
       navigator(
-        `${reqUrl}?${searchParam ? `search=${searchParam}` : ""}${
+        `${pathname}?${searchParam ? `search=${searchParam}` : ""}${
           searchParam && offset !== 10 ? "&" : ""
         }${offset !== 10 ? `offset=${offset}` : ""}`,
       );
     },
-    [reqUrl, searchParam, navigator],
+    [pathname, searchParam, navigator],
   );
 
   return {

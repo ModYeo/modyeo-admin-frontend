@@ -2,25 +2,10 @@ import { useCallback, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { ObjectType } from "../../components/atoms/Card";
 
-const useSearch = (
-  targetKey: string,
-  reqUrl: string,
-  list: ObjectType[] = [],
-) => {
-  const location = useLocation();
-
+const useSearch = (targetKey: string, list: ObjectType[] = []) => {
   const navigator = useNavigate();
 
-  const [searchedValue, setSearchedValue] = useState("");
-
-  const onChangeSearchedValue = useCallback(
-    ({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => {
-      const { pathname } = location;
-      if (pathname) navigator(pathname);
-      setSearchedValue(value);
-    },
-    [location, navigator],
-  );
+  const { pathname } = useLocation();
 
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,25 +29,18 @@ const useSearch = (
       const { current: searchInputRefCurrent } = searchInputRef;
       if (searchInputRefCurrent?.value) {
         const { value } = searchInputRefCurrent;
-        navigator(`${reqUrl}?search=${value}`);
+        navigator(`${pathname}?search=${value}`);
       } else {
-        navigator(reqUrl);
+        navigator(pathname);
       }
     },
-    [reqUrl, navigator],
+    [pathname, navigator],
   );
-
-  const resetFilteredList = useCallback(() => {
-    navigator(reqUrl);
-  }, [reqUrl, navigator]);
 
   return {
     filteredList,
-    searchedValue,
     searchInputRef,
-    onChangeSearchedValue,
     onSubmitSearchForm,
-    resetFilteredList,
   };
 };
 

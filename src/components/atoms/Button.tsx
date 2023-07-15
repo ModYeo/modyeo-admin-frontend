@@ -1,6 +1,7 @@
 /* eslint-disable react/button-has-type */
 import React from "react";
 import styled from "styled-components";
+import COLOR_CONST from "../../constants/colorConst";
 
 type Sizes = "sm" | "md" | "lg";
 
@@ -38,31 +39,31 @@ const StyledButton = styled.button<{
   background-color: ${({ bgColor, isChosen }) => {
     switch (bgColor) {
       case "blue":
-        return `${isChosen ? "white" : "#5476d7"}`;
+        return `${isChosen ? "white" : COLOR_CONST.BLUE}`;
       case "red":
-        return `${isChosen ? "white" : "#e84b35"}`;
+        return `${isChosen ? "white" : COLOR_CONST.RED}`;
       default:
-        return `${isChosen ? "white" : "#b5b5b5"}`;
+        return `${isChosen ? "white" : COLOR_CONST.GRAY}`;
     }
   }};
   color: ${({ bgColor, isChosen }) => {
     switch (bgColor) {
       case "blue":
-        return `${isChosen ? "#5476d7" : "white"}`;
+        return `${isChosen ? COLOR_CONST.BLUE : "white"}`;
       case "red":
-        return `${isChosen ? "#e84b35" : "white"}`;
+        return `${isChosen ? COLOR_CONST.RED : "white"}`;
       default:
-        return `${isChosen ? "#b5b5b5" : "white"}`;
+        return `${isChosen ? COLOR_CONST.GRAY : "white"}`;
     }
   }};
   border: ${({ bgColor, isChosen }) => {
     switch (bgColor) {
       case "blue":
-        return `1px solid ${isChosen ? "#5476d7" : "white"}`;
+        return `1px solid ${isChosen ? COLOR_CONST.BLUE : "white"}`;
       case "red":
-        return `1px solid ${isChosen ? "#e84b35" : "white"}`;
+        return `1px solid ${isChosen ? COLOR_CONST.RED : "white"}`;
       default:
-        return `1px solid ${isChosen ? "#b5b5b5" : "white"}`;
+        return `1px solid ${isChosen ? COLOR_CONST.GRAY : "white"}`;
     }
   }};
   border-radius: 8px;

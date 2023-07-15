@@ -1,7 +1,17 @@
 import React from "react";
+import styled from "styled-components";
+
 import Button from "../atoms/Button";
 
-function SlicePagePerValButtons({
+import COLOR_CONST from "../../constants/colorConst";
+
+const Select = styled.select`
+  padding: 3px 6px;
+  border: 1px solid ${COLOR_CONST.BLUE};
+  border-radius: 6px;
+`;
+
+function OffsetSelectOptions({
   listLength,
   currentOffset,
   changeOffsetValue,
@@ -13,7 +23,7 @@ function SlicePagePerValButtons({
   }: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   return (
-    <select
+    <Select
       onChange={changeOffsetValue}
       value={currentOffset}
       disabled={listLength <= 10}
@@ -22,8 +32,8 @@ function SlicePagePerValButtons({
       <option value={20}>20</option>
       <option value={50}>50</option>
       <option value={listLength}>all</option>
-    </select>
+    </Select>
   );
 }
 
-export default SlicePagePerValButtons;
+export default OffsetSelectOptions;
