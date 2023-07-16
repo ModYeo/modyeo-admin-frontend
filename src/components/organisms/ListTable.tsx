@@ -25,13 +25,17 @@ const ListWrapper = styled.div`
   margin: 20px 0;
 `;
 
-interface ListTableType {
+interface ListTableProps {
   requestUrl: string;
   elementKey: string;
   elementTitleKey: string;
 }
 
-function ListTable({ requestUrl, elementKey, elementTitleKey }: ListTableType) {
+function ListTable({
+  requestUrl,
+  elementKey,
+  elementTitleKey,
+}: ListTableProps) {
   const {
     slicedList,
     filteredListLength,
@@ -43,6 +47,7 @@ function ListTable({ requestUrl, elementKey, elementTitleKey }: ListTableType) {
     onSubmitSearchForm,
     changeOffsetValue,
     changePagenation,
+    goToWritePage,
   } = useTableList({
     requestUrl,
     elementTitleKey,
@@ -79,7 +84,7 @@ function ListTable({ requestUrl, elementKey, elementTitleKey }: ListTableType) {
           )}
         </ListContainer>
       </ListWrapper>
-      <div>
+      <div style={{ textAlign: "right" }}>
         {filteredListLength > currentOffset &&
           pagenationButtonValues.map((value) => (
             <Button
@@ -95,8 +100,12 @@ function ListTable({ requestUrl, elementKey, elementTitleKey }: ListTableType) {
           ))}
       </div>
       <br />
-      <div>
-        <Button type="button" bgColor="red" size="lg">
+      <div
+        style={{
+          textAlign: "right",
+        }}
+      >
+        <Button type="button" bgColor="red" size="lg" onClick={goToWritePage}>
           write
         </Button>
       </div>

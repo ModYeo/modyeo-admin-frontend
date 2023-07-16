@@ -19,8 +19,11 @@ const useSingnIn = (): UseSignIn => {
 
   const checkTokensValidation = useCallback(async () => {
     const isAllTokensValid = await signAPIManager.checkTokensValidation();
-    if (isAllTokensValid) navigator(routes.client.admin);
-    else authCookieManager.deleteAccessAndRefreshToken();
+    if (isAllTokensValid) navigator("/");
+    else {
+      authCookieManager.deleteAccessAndRefreshToken();
+      navigator("/signin");
+    }
   }, [navigator]);
 
   const signinAdminService = useCallback(
@@ -33,7 +36,7 @@ const useSingnIn = (): UseSignIn => {
           idCurrent.value,
           pwCurrent.value,
         );
-        if (isSignInSuccessful) navigator(routes.client.admin);
+        if (isSignInSuccessful) navigator("/");
       }
     },
     [navigator],

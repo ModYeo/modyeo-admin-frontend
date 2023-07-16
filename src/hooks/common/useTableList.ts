@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ObjectType } from "../../components/atoms/Card";
 
@@ -6,6 +7,7 @@ import useSearch from "./useSearch";
 import usePagenation from "./usePagenation";
 
 import apiManager from "../../modules/apiManager";
+import routes from "../../constants/routes";
 
 const useTableList = ({
   requestUrl,
@@ -14,6 +16,10 @@ const useTableList = ({
   requestUrl: string;
   elementTitleKey: string;
 }) => {
+  const navigator = useNavigate();
+
+  const { pathname } = useLocation();
+
   const [list, setList] = useState<Array<ObjectType>>([]);
 
   const fetchList = useCallback(() => {
@@ -44,6 +50,10 @@ const useTableList = ({
     return filteredList.slice(slicePoint, endOfSlice);
   }, [filteredList, slicePoint, endOfSlice]);
 
+  const goToWritePage = useCallback(() => {
+    navigator(`${pathname}/write`);
+  }, [pathname, navigator]);
+
   useEffect(() => {
     initializeCategoriesList();
   }, [initializeCategoriesList]);
@@ -59,6 +69,7 @@ const useTableList = ({
     onSubmitSearchForm,
     changeOffsetValue,
     changePagenation,
+    goToWritePage,
   };
 };
 

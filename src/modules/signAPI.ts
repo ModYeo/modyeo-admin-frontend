@@ -97,6 +97,7 @@ class SignAPIManager implements ISignAPIManager {
       refreshToken,
     );
     if (isTokensValid) return true;
+    this.authCookieManager.deleteAccessAndRefreshToken();
     return false;
   }
 
