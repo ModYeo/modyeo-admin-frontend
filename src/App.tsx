@@ -15,6 +15,7 @@ import Advertisement from "./pages/list/Advertisement";
 import Collection from "./pages/list/Collection";
 import ColumnCode from "./pages/list/ColumnCode";
 import Inquiry from "./pages/list/Inquiry";
+import CategoryForm from "./pages/create/CategoryForm";
 
 const router = createBrowserRouter([
   {
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/category/write",
-        element: <>category write</>,
+        element: <CategoryForm />,
       },
       {
         path: "/category",
