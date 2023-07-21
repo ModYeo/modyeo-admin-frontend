@@ -3,49 +3,48 @@ import styled from "styled-components";
 
 import { SignInput } from "../../styles/styles";
 
+const Wrapper = styled.div`
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 4px 8px;
+`;
+
 const InputElement = styled(SignInput)`
   width: 100%;
-  margin: 10px 0;
+  margin: 10px 0 0 0;
 `;
 
 const Label = styled.label`
   font-size: 12px;
 `;
 
+// TODO: get rid of key name optional
 type RequiredInputItem = {
   itemName: string;
-  refObject: React.RefObject<
-    HTMLInputElement | HTMLTextAreaElement | { file: File | null }
-  >;
+  name?: string;
+  refObject: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
   elementType: "input" | "textarea" | "image";
   defaultValue: string | number;
 };
 
-function Input({
-  item,
-  isModificationAction,
-}: {
-  item: RequiredInputItem;
-  isModificationAction: boolean;
-}) {
-  const { elementId, labelValue, defaultValue } = useMemo(() => {
+function Input({ item }: { item: RequiredInputItem }) {
+  const { elementId, labelValue } = useMemo(() => {
     const { itemName } = item;
     return {
       elementId: `id-${itemName}`,
       labelValue: `* ${itemName}`,
-      defaultValue: isModificationAction ? item.defaultValue : "",
     };
-  }, [item, isModificationAction]);
+  }, [item]);
   return (
-    <span>
+    <Wrapper>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <InputElement
         placeholder={item.itemName}
         ref={item.refObject as RefObject<HTMLInputElement>}
-        defaultValue={defaultValue}
+        defaultValue={item.defaultValue}
         required
       />
-    </span>
+    </Wrapper>
   );
 }
 

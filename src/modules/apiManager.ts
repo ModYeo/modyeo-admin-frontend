@@ -209,7 +209,7 @@ export class APIManager implements IAPIManager {
     }
   }
 
-  async postNewDataElem<T extends object>(path: string, obj: T) {
+  async postNewDataElem<T extends object>(path: string, obj: T | FormData) {
     try {
       const {
         data: { data: newElemId },

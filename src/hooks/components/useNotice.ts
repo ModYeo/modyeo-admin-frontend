@@ -265,7 +265,8 @@ const useNotice = (): UseNotice => {
         },
         {
           itemName: "imagePath",
-          refObject: isNoticeModifiyAction ? imageModifyFileRef : imageFileRef,
+          // refObject: isNoticeModifiyAction ? imageModifyFileRef : imageFileRef,
+          refObject: contentModifyInputRef,
           elementType: "image",
           defaultValue: isNoticeModifiyAction
             ? notices[toBeModifiedNoticeIndex.current].content

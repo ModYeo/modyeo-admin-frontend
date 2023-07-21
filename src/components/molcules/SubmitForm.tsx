@@ -36,34 +36,16 @@ function SubmitForm({
   return (
     <FormContainer>
       {isModificationAction || <Title>{title}</Title>}
-      <form onSubmit={registerNewElement}>
+      {/* <form onSubmit={registerNewElement}>
         {requiredInputItems.map((item) => {
           if (item.elementType === "input") {
-            return (
-              <Input
-                key={item.itemName}
-                item={item}
-                isModificationAction={isModificationAction}
-              />
-            );
+            return <Input key={item.itemName} item={item} />;
           }
           if (item.elementType === "textarea") {
-            return (
-              <TextArea
-                key={item.itemName}
-                item={item}
-                isModificationAction={isModificationAction}
-              />
-            );
+            return <TextArea key={item.itemName} item={item} />;
           }
           if (item.elementType === "image") {
-            return (
-              <ImageInput
-                key={item.itemName}
-                item={item}
-                isModificationAction={isModificationAction}
-              />
-            );
+            return <ImageInput key={item.itemName} item={item} />;
           }
           return null;
         })}
@@ -79,7 +61,7 @@ function SubmitForm({
             <Button>register</Button>
           )}
         </ButtonWrapper>
-      </form>
+      </form> */}
     </FormContainer>
   );
 }
