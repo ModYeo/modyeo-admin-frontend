@@ -10,6 +10,13 @@ import styled from "styled-components";
 import { Label, RequiredInputItem } from "./Input";
 import imagePreviewManager from "../../modules/imagePreviewManager";
 
+const Wrapper = styled.div`
+  margin: 20px 0;
+  padding: 10px;
+  background-color: #eee;
+  border-radius: 6px;
+`;
+
 const Header = styled.div`
   margin-bottom: 7px;
   display: flex;
@@ -21,7 +28,7 @@ const Header = styled.div`
 `;
 
 const ImageFileDiv = styled.div<{ isImageLoaded: boolean }>`
-  height: 200px;
+  height: 290px;
   background-color: ${({ isImageLoaded }) =>
     isImageLoaded ? "#e8e8e8" : "#dbdbdb"};
   cursor: pointer;
@@ -64,13 +71,7 @@ const DEFAULT_IMAGE_SIZE = {
   height: 0,
 } as const;
 
-function ImageInput({
-  item,
-  isModificationAction,
-}: {
-  item: RequiredInputItem;
-  isModificationAction: boolean;
-}) {
+function ImageInput({ item }: { item: RequiredInputItem }) {
   const { elementId, labelValue } = useMemo(() => {
     const { itemName } = item;
     return { elementId: `id-${itemName}`, labelValue: `* ${itemName}` };
@@ -90,6 +91,7 @@ function ImageInput({
     },
     [setImageSize],
   );
+
   const deleteUploadedImage = useCallback(() => {
     if (item.refObject.current && "file" in item.refObject.current) {
       const {
@@ -140,7 +142,7 @@ function ImageInput({
   }, [imageSize]);
 
   return (
-    <>
+    <Wrapper>
       <Header>
         <Label htmlFor={elementId}>
           {labelValue}
@@ -176,7 +178,7 @@ function ImageInput({
           <span>업로드할 이미지 선택</span>
         )}
       </ImageFileDiv>
-    </>
+    </Wrapper>
   );
 }
 

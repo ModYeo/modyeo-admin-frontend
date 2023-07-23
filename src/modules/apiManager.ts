@@ -38,6 +38,8 @@ export class APIManager implements IAPIManager {
 
   private useYn = "Y";
 
+  private static X_API_KEY: "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
+
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.authCookieManager = authCookieManagerParam;
     this.setupApiAxios();
@@ -224,14 +226,28 @@ export class APIManager implements IAPIManager {
     }
   }
 
-  async postData(path: string, obj: object) {
+  async postData(
+    path: string,
+    obj: object,
+    option?: { isXapiKeyNeeded: boolean },
+  ) {
     try {
       const {
         data: { data: newElemId },
-      } = await this.apiAxios.post<{ data: number }>(path, {
-        ...obj,
-        useYn: this.useYn,
-      });
+      } = await this.apiAxios.post<{ data: number }>(
+        path,
+        {
+          ...obj,
+          useYn: this.useYn,
+        },
+        option?.isXapiKeyNeeded
+          ? {
+              headers: {
+                "x-api-key": APIManager.X_API_KEY,
+              },
+            }
+          : {},
+      );
       return newElemId;
     } catch (e) {
       return null;

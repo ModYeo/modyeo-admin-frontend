@@ -6,7 +6,7 @@ import routes from "../../constants/routes";
 function CategoryForm() {
   const categoryNameInputRef = useRef<HTMLInputElement>(null);
 
-  const imagePathInputRef = useRef<HTMLInputElement>(null);
+  const imagePathInputRef = useRef<{ file: File | null }>({ file: null });
 
   const requiredInputItems: RequiredInputItem[] = useMemo(() => {
     return [

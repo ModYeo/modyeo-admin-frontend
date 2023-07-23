@@ -8,6 +8,7 @@ import useSubmitForm from "../../hooks/common/useSubmitForm";
 
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
+import ImageInput from "../atoms/ImageInput";
 
 const ButtonWrapper = styled.div`
   text-align: right;
@@ -29,7 +30,7 @@ function Form({
           return <Input key={item.itemName} item={item} />;
         }
         if (item.elementType === "image") {
-          return <Input key={item.itemName} item={item} />;
+          return <ImageInput key={item.itemName} item={item} />;
         }
         return null;
       })}
@@ -37,6 +38,7 @@ function Form({
         <Button type="submit" size="lg" bgColor="blue">
           submit
         </Button>
+        &ensp;
         <Button type="button" size="lg" bgColor="red">
           back
         </Button>

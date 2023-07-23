@@ -23,7 +23,9 @@ const Label = styled.label`
 type RequiredInputItem = {
   itemName: string;
   name?: string;
-  refObject: React.RefObject<HTMLInputElement | HTMLTextAreaElement>;
+  refObject: React.RefObject<
+    HTMLInputElement | HTMLTextAreaElement | { file: File | null }
+  >;
   elementType: "input" | "textarea" | "image";
   defaultValue: string | number;
 };
