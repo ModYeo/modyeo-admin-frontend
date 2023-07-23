@@ -1,10 +1,17 @@
 import React, { useCallback } from "react";
+
+import styled from "styled-components";
+
 import { RequiredInputItem } from "../molcules/SubmitForm";
 
 import useSubmitForm from "../../hooks/common/useSubmitForm";
 
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
+
+const ButtonWrapper = styled.div`
+  text-align: right;
+`;
 
 function Form({
   path,
@@ -16,21 +23,25 @@ function Form({
   const { handleOnSubmit } = useSubmitForm(path, requiredInputItems);
 
   return (
-    <>
-      <form onSubmit={handleOnSubmit}>
-        {requiredInputItems.map((item, idx) => {
-          if (item.elementType === "input") {
-            return <Input key={item.itemName} item={item} />;
-          }
-          return null;
-        })}
-      </form>
-      <div>
+    <form onSubmit={handleOnSubmit}>
+      {requiredInputItems.map((item, idx) => {
+        if (item.elementType === "input") {
+          return <Input key={item.itemName} item={item} />;
+        }
+        if (item.elementType === "image") {
+          return <Input key={item.itemName} item={item} />;
+        }
+        return null;
+      })}
+      <ButtonWrapper>
+        <Button type="submit" size="lg" bgColor="blue">
+          submit
+        </Button>
         <Button type="button" size="lg" bgColor="red">
           back
         </Button>
-      </div>
-    </>
+      </ButtonWrapper>
+    </form>
   );
 }
 

@@ -4,9 +4,10 @@ import styled from "styled-components";
 import { SignInput } from "../../styles/styles";
 
 const Wrapper = styled.div`
+  margin: 20px 0;
   padding: 10px;
   background-color: #eee;
-  border-radius: 4px 8px;
+  border-radius: 6px;
 `;
 
 const InputElement = styled(SignInput)`

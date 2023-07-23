@@ -209,7 +209,22 @@ export class APIManager implements IAPIManager {
     }
   }
 
-  async postNewDataElem<T extends object>(path: string, obj: T | FormData) {
+  // TODO: delete this func
+  async postNewDataElem<T>(path: string, obj: object) {
+    try {
+      const {
+        data: { data: newElemId },
+      } = await this.apiAxios.post<{ data: number }>(path, {
+        ...obj,
+        useYn: this.useYn,
+      });
+      return newElemId;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async postData(path: string, obj: object) {
     try {
       const {
         data: { data: newElemId },

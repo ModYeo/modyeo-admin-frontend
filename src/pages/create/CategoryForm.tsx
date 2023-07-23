@@ -4,15 +4,24 @@ import Form from "../../components/organisms/Form";
 import routes from "../../constants/routes";
 
 function CategoryForm() {
-  const categoryInputRef = useRef<HTMLInputElement>(null);
+  const categoryNameInputRef = useRef<HTMLInputElement>(null);
+
+  const imagePathInputRef = useRef<HTMLInputElement>(null);
 
   const requiredInputItems: RequiredInputItem[] = useMemo(() => {
     return [
       {
         itemName: "category name",
         name: "name",
-        refObject: categoryInputRef,
+        refObject: categoryNameInputRef,
         elementType: "input",
+        defaultValue: "",
+      },
+      {
+        itemName: "imagePath",
+        name: "imagePath",
+        refObject: imagePathInputRef,
+        elementType: "image",
         defaultValue: "",
       },
     ];

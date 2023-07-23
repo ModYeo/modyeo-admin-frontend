@@ -89,9 +89,7 @@ const useCategory = (): UseCategory => {
 
   const sendPostCategoryRequest = useCallback(
     (inputNewCategoryName: string) => {
-      return apiManager.postNewDataElem<{
-        name: string;
-      }>(routes.server.category, {
+      return apiManager.postNewDataElem(routes.server.category, {
         name: inputNewCategoryName,
       });
     },

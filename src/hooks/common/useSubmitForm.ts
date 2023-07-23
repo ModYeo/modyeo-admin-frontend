@@ -7,8 +7,8 @@ const useSubmitForm = (
   requiredInputItems: RequiredInputItem[],
 ) => {
   const sendPostRequest = useCallback(
-    (formData: FormData) => {
-      return apiManager.postNewDataElem(path, formData);
+    async (data: object) => {
+      return apiManager.postData(path, data);
     },
     [path],
   );
@@ -24,18 +24,20 @@ const useSubmitForm = (
   }, []);
 
   const handleOnSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      const formData = new FormData();
+
+      const data: Record<string, any> = {};
 
       requiredInputItems.forEach((item) => {
         if (item.elementType === "input") {
-          if (item.name && item.refObject.current)
-            formData.append(item.name, item.refObject.current.value);
+          if (item.name && item.refObject.current) {
+            data[item.name] = item.refObject.current.value;
+          }
         }
       });
 
-      const newElemId = sendPostRequest(formData);
+      const newElemId = await sendPostRequest(data);
       if (typeof newElemId === "number") handlePostSuccess();
       else handlePostFailure();
     },
