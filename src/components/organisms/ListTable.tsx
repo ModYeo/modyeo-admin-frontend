@@ -29,6 +29,9 @@ const ButtonWrapper = styled.div`
   text-align: right;
 `;
 
+// TODO: add spinner url as background: url()
+const ListSkeleton = styled(ListWrapper)``;
+
 interface ListTableProps {
   requestUrl: string;
   elementKey: string;
@@ -72,20 +75,22 @@ function ListTable({
       </FormTopArea>
       <ListWrapper>
         <ListContainer>
-          {slicedList.length === 0 ? (
-            <>표시할 컨텐츠가 없습니다.</>
-          ) : (
-            <>
-              {slicedList.map((element, index) => (
-                <ListElement
-                  key={element[elementKey]}
-                  title={elementTitleKey}
-                  object={element as unknown as ObjectType}
-                  index={slicePoint + index}
-                />
-              ))}
-            </>
-          )}
+          {slicedList &&
+            (slicedList.length === 0 ? (
+              <>표시할 컨텐츠가 없습니다.</>
+            ) : (
+              <>
+                {slicedList.map((element, index) => (
+                  <ListElement
+                    key={element[elementKey]}
+                    title={elementTitleKey}
+                    object={element as unknown as ObjectType}
+                    index={slicePoint + index}
+                  />
+                ))}
+              </>
+            ))}
+          {!slicedList && <ListSkeleton />}
         </ListContainer>
       </ListWrapper>
       <ButtonWrapper>

@@ -15,7 +15,7 @@ const useSearch = (targetKey: string, list: ObjectType[] = []) => {
 
   const filteredList = useMemo(() => {
     if (searchParam) {
-      return list.filter((el) => {
+      return list?.filter((el) => {
         const target = el[targetKey] as string;
         return target.includes(searchParam);
       });
