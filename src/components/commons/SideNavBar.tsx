@@ -46,13 +46,13 @@ function SideNavBar() {
           </SideButton>
           <SideButton
             isChosenTab={pathname === routes.client.notice}
-            onClick={() => navigator(routes.client.notice)}
+            onClick={() => navigator("/notice")}
           >
             공지 관리
           </SideButton>
           <SideButton
             isChosenTab={pathname === routes.client.category}
-            onClick={() => navigator(routes.client.category)}
+            onClick={() => navigator("/category")}
           >
             카테고리 생성
           </SideButton>

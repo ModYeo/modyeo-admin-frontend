@@ -22,7 +22,7 @@ interface UseAdmin {
   isSideNavBarVisible: boolean;
 }
 
-const useAdmin = (): UseAdmin => {
+const useMain = (): UseAdmin => {
   const navigator = useNavigate();
 
   const [isSideNavBarVisible, setIsSideNavBarVisible] = useState(true);
@@ -86,4 +86,4 @@ const useAdmin = (): UseAdmin => {
   };
 };
 
-export default useAdmin;
+export default useMain;

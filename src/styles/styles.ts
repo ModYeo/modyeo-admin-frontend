@@ -62,13 +62,8 @@ export const NavBarSection = styled.section`
 `;
 
 export const ListContainer = styled.ul`
-  width: 850px;
-  margin: 100px auto;
   border: 2px solid #eee;
   border-radius: 8px;
-  @media screen and (max-width: 1002px) {
-    width: 600px;
-  }
   & > li {
     min-height: 50px;
     padding: 12px 20px;
@@ -119,4 +114,9 @@ export const Title = styled.h2`
   margin: 8px 0;
   text-align: center;
   color: #b5b5b5;
+`;
+
+export const FormTopArea = styled.div`
+  display: flex;
+  justify-content: flex-end;
 `;

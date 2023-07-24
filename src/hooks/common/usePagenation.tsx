@@ -1,15 +1,18 @@
 import { useCallback, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import routes from "../../constants/routes";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
-const usePagenation = (listLength: number, reqUrl: string) => {
+const usePagenation = (listLength: number) => {
   const navigator = useNavigate();
+
+  const { pathname } = useLocation();
 
   const [searchParams] = useSearchParams();
 
   const pageParam = Number(searchParams.get("page"));
 
   const offsetParam = Number(searchParams.get("offset"));
+
+  const searchParam = searchParams.get("search");
 
   const checkOffsetValidation = useCallback(
     (offset: number) => {
@@ -33,7 +36,6 @@ const usePagenation = (listLength: number, reqUrl: string) => {
     const pagenationLimit = Math.ceil(listLength / currentOffset);
     if (pagenationLimit <= 5)
       return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
-
     return [];
   }, [listLength, currentOffset]);
 
@@ -46,21 +48,29 @@ const usePagenation = (listLength: number, reqUrl: string) => {
     (value: number) => {
       const isFirstPage = value === 1;
       navigator(
-        `${reqUrl}?${!isFirstPage ? `page=${value}` : ""}${
+        `${pathname}?${searchParam ? `search=${searchParam}` : ""}${
+          !isFirstPage ? `page=${value}` : ""
+        }${
           currentOffset > 10
             ? `${!isFirstPage ? "&" : ""}offset=${currentOffset}`
             : ""
         }`,
       );
     },
-    [currentOffset, reqUrl, navigator],
+    [pathname, currentOffset, searchParam, navigator],
   );
 
   const changeOffsetValue = useCallback(
-    (value: number) => {
-      navigator(`${reqUrl}${value !== 10 ? `?offset=${value}` : ""}`);
+    ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
+      const offset = Number(value);
+      // TODO: offset validation check
+      navigator(
+        `${pathname}?${searchParam ? `search=${searchParam}` : ""}${
+          searchParam && offset !== 10 ? "&" : ""
+        }${offset !== 10 ? `offset=${offset}` : ""}`,
+      );
     },
-    [reqUrl, navigator],
+    [pathname, searchParam, navigator],
   );
 
   return {

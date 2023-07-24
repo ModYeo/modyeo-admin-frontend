@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import apiManager from "../../modules/apiManager";
 import routes from "../../constants/routes";
-import { ChosenTabMenuEnum } from "../pages/useAdmin";
+import { ChosenTabMenuEnum } from "../pages/useMain";
 
 enum AuthorityEnum {
   ROLE_USER = "ROLE_USER",

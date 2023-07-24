@@ -20,7 +20,7 @@ const useNavBar = (): UseNavBar => {
 
   const handleSignOut = useCallback(async () => {
     const isSignOutSuccessful = await signAPIManager.requestSignOut();
-    if (isSignOutSuccessful) navigator(routes.client.signin);
+    if (isSignOutSuccessful) navigator("/signin");
   }, [navigator]);
 
   const checkIsWindowOnTop = useCallback(() => {
