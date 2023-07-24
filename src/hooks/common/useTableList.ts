@@ -7,7 +7,6 @@ import useSearch from "./useSearch";
 import usePagenation from "./usePagenation";
 
 import apiManager from "../../modules/apiManager";
-import routes from "../../constants/routes";
 
 const useTableList = ({
   requestUrl,

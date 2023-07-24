@@ -25,6 +25,10 @@ const ListWrapper = styled.div`
   margin: 20px 0;
 `;
 
+const ButtonWrapper = styled.div`
+  text-align: right;
+`;
+
 interface ListTableProps {
   requestUrl: string;
   elementKey: string;
@@ -84,7 +88,7 @@ function ListTable({
           )}
         </ListContainer>
       </ListWrapper>
-      <div style={{ textAlign: "right" }}>
+      <ButtonWrapper>
         {filteredListLength > currentOffset &&
           pagenationButtonValues.map((value) => (
             <Button
@@ -98,17 +102,13 @@ function ListTable({
               {value}
             </Button>
           ))}
-      </div>
+      </ButtonWrapper>
       <br />
-      <div
-        style={{
-          textAlign: "right",
-        }}
-      >
+      <ButtonWrapper>
         <Button type="button" bgColor="red" size="lg" onClick={goToWritePage}>
           write
         </Button>
-      </div>
+      </ButtonWrapper>
     </Layout>
   );
 }

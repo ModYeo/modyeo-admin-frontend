@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 
 import { RequiredInputItem } from "../molcules/SubmitForm";
@@ -32,6 +32,9 @@ function Form({
         if (item.elementType === "image") {
           return <ImageInput key={item.itemName} item={item} />;
         }
+        if (item.elementType === "textarea") {
+          return <ImageInput key={item.itemName} item={item} />;
+        }
         return null;
       })}
       <ButtonWrapper>
@@ -39,9 +42,11 @@ function Form({
           submit
         </Button>
         &ensp;
-        <Button type="button" size="lg" bgColor="red">
-          back
-        </Button>
+        <Link to="/category">
+          <Button type="button" size="lg" bgColor="red">
+            back
+          </Button>
+        </Link>
       </ButtonWrapper>
     </form>
   );
