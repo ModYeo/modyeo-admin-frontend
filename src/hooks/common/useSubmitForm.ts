@@ -13,8 +13,8 @@ const useSubmitForm = (
   const navigator = useNavigate();
 
   const sendPostRequest = useCallback(
-    async (data: object) => {
-      return apiManager.postData(path, data, { isXapiKeyNeeded: true });
+    async (data: object, option: { isXapiKeyNeeded: boolean }) => {
+      return apiManager.postData(path, data, option);
     },
     [path],
   );
@@ -25,8 +25,8 @@ const useSubmitForm = (
   }, [navigator]);
 
   const processWithPostData = useCallback(
-    async (data: object) => {
-      const newElemId = await sendPostRequest(data);
+    async (data: object, option: { isXapiKeyNeeded: boolean }) => {
+      const newElemId = await sendPostRequest(data, option);
       if (typeof newElemId === "number") handlePostSuccess();
     },
     [sendPostRequest, handlePostSuccess],
@@ -39,7 +39,7 @@ const useSubmitForm = (
         const encodedResult = fileReader.result;
         data.imageData = encodedResult;
         data.resource = "image/test.jpg";
-        processWithPostData(data);
+        processWithPostData(data, { isXapiKeyNeeded: true });
       };
       return fileReader;
     },
@@ -54,9 +54,16 @@ const useSubmitForm = (
         value: boolean;
       },
     ) => {
-      // TODO: delete property key optional
+      // TODO: delete name property key optional
       if (
         item.elementType === "input" &&
+        item.name &&
+        item.refObject.current &&
+        "value" in item.refObject.current
+      ) {
+        data[item.name] = item.refObject.current.value;
+      } else if (
+        item.elementType === "textarea" &&
         item.name &&
         item.refObject.current &&
         "value" in item.refObject.current
@@ -89,7 +96,8 @@ const useSubmitForm = (
         assemblePostData(item, data, isPostReqAlreadySent),
       );
 
-      if (!isPostReqAlreadySent.value) await processWithPostData(data);
+      if (!isPostReqAlreadySent.value)
+        await processWithPostData(data, { isXapiKeyNeeded: false });
     },
     [requiredInputItems, assemblePostData, processWithPostData],
   );

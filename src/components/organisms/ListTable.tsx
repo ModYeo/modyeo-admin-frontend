@@ -26,11 +26,14 @@ const ListWrapper = styled.div`
 `;
 
 const ButtonWrapper = styled.div`
+  min-height: 30px;
   text-align: right;
 `;
 
 // TODO: add spinner url as background: url()
-const ListSkeleton = styled(ListWrapper)``;
+const ListSkeleton = styled(ListWrapper)`
+  min-height: 370px;
+`;
 
 interface ListTableProps {
   requestUrl: string;
@@ -75,6 +78,7 @@ function ListTable({
       </FormTopArea>
       <ListWrapper>
         <ListContainer>
+          {!slicedList && <ListSkeleton />}
           {slicedList &&
             (slicedList.length === 0 ? (
               <>표시할 컨텐츠가 없습니다.</>
@@ -90,7 +94,6 @@ function ListTable({
                 ))}
               </>
             ))}
-          {!slicedList && <ListSkeleton />}
         </ListContainer>
       </ListWrapper>
       <ButtonWrapper>

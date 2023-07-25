@@ -28,6 +28,7 @@ type RequiredInputItem = {
   >;
   elementType: "input" | "textarea" | "image";
   defaultValue: string | number;
+  disabled?: boolean;
 };
 
 function Input({ item }: { item: RequiredInputItem }) {
@@ -46,11 +47,12 @@ function Input({ item }: { item: RequiredInputItem }) {
         ref={item.refObject as RefObject<HTMLInputElement>}
         defaultValue={item.defaultValue}
         required
+        disabled={item?.disabled}
       />
     </Wrapper>
   );
 }
 
 export default Input;
-export { Label };
+export { Wrapper, Label };
 export type { RequiredInputItem };

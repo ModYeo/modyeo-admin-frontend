@@ -16,6 +16,10 @@ import Collection from "./pages/list/Collection";
 import ColumnCode from "./pages/list/ColumnCode";
 import Inquiry from "./pages/list/Inquiry";
 import CategoryForm from "./pages/create/CategoryForm";
+import AdvertisementForm from "./pages/create/AdvertisementForm";
+import CollectionForm from "./pages/create/CollectionForm";
+import ColumnCodeForm from "./pages/create/ColumnCodeForm";
+import NoticeForm from "./pages/create/NoticeForm";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +32,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/notice/write",
-        element: <>notice write</>,
+        element: <NoticeForm />,
       },
       {
         path: "/notice",
@@ -44,7 +48,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/advertisement/write",
-        element: <>advertisement write</>,
+        element: <AdvertisementForm />,
       },
       {
         path: "/advertisement",
@@ -52,7 +56,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/collection/write",
-        element: <>collection write</>,
+        element: <CollectionForm />,
       },
       {
         path: "/collection",
@@ -60,7 +64,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/columnCode/write",
-        element: <>collection write</>,
+        element: <ColumnCodeForm />,
       },
       {
         path: "/columnCode",

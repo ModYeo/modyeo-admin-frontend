@@ -38,8 +38,6 @@ export class APIManager implements IAPIManager {
 
   private useYn = "Y";
 
-  private static X_API_KEY: "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
-
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.authCookieManager = authCookieManagerParam;
     this.setupApiAxios();
@@ -243,7 +241,7 @@ export class APIManager implements IAPIManager {
         option?.isXapiKeyNeeded
           ? {
               headers: {
-                "x-api-key": APIManager.X_API_KEY,
+                "x-api-key": "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1",
               },
             }
           : {},

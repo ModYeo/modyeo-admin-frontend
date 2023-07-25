@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -9,6 +9,7 @@ import useSubmitForm from "../../hooks/common/useSubmitForm";
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
 import ImageInput from "../atoms/ImageInput";
+import TextArea from "../atoms/TextArea";
 
 const ButtonWrapper = styled.div`
   text-align: right;
@@ -33,7 +34,7 @@ function Form({
           return <ImageInput key={item.itemName} item={item} />;
         }
         if (item.elementType === "textarea") {
-          return <ImageInput key={item.itemName} item={item} />;
+          return <TextArea key={item.itemName} item={item} />;
         }
         return null;
       })}
