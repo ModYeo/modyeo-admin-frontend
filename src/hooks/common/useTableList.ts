@@ -7,7 +7,6 @@ import useSearch from "./useSearch";
 import usePagenation from "./usePagenation";
 
 import apiManager from "../../modules/apiManager";
-import routes from "../../constants/routes";
 
 const useTableList = ({
   requestUrl,
@@ -20,7 +19,7 @@ const useTableList = ({
 
   const { pathname } = useLocation();
 
-  const [list, setList] = useState<Array<ObjectType>>([]);
+  const [list, setList] = useState<Array<ObjectType> | null>(null);
 
   const fetchList = useCallback(() => {
     return apiManager.fetchData<ObjectType>(requestUrl);
@@ -44,10 +43,10 @@ const useTableList = ({
     endOfSlice,
     changePagenation,
     changeOffsetValue,
-  } = usePagenation(filteredList.length);
+  } = usePagenation(filteredList?.length);
 
   const slicedList = useMemo(() => {
-    return filteredList.slice(slicePoint, endOfSlice);
+    return filteredList?.slice(slicePoint, endOfSlice);
   }, [filteredList, slicePoint, endOfSlice]);
 
   const goToWritePage = useCallback(() => {
@@ -60,7 +59,7 @@ const useTableList = ({
 
   return {
     slicedList,
-    filteredListLength: filteredList.length,
+    filteredListLength: filteredList?.length,
     slicePoint,
     currentPage,
     currentOffset,

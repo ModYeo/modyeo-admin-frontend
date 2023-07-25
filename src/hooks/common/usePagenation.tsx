@@ -1,5 +1,11 @@
 import { useCallback, useMemo } from "react";
-import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  URLSearchParamsInit,
+  createSearchParams,
+  useLocation,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 
 const usePagenation = (listLength: number) => {
   const navigator = useNavigate();
@@ -34,9 +40,7 @@ const usePagenation = (listLength: number) => {
 
   const pagenationButtonValues = useMemo(() => {
     const pagenationLimit = Math.ceil(listLength / currentOffset);
-    if (pagenationLimit <= 5)
-      return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
-    return [];
+    return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
   }, [listLength, currentOffset]);
 
   const [slicePoint, endOfSlice] = useMemo(() => {
@@ -47,15 +51,16 @@ const usePagenation = (listLength: number) => {
   const changePagenation = useCallback(
     (value: number) => {
       const isFirstPage = value === 1;
-      navigator(
-        `${pathname}?${searchParam ? `search=${searchParam}` : ""}${
-          !isFirstPage ? `page=${value}` : ""
-        }${
-          currentOffset > 10
-            ? `${!isFirstPage ? "&" : ""}offset=${currentOffset}`
-            : ""
-        }`,
-      );
+      const params: Record<string, string | number> = {};
+      if (!isFirstPage) params["page"] = value;
+      if (searchParam) params["search"] = searchParam;
+      if (currentOffset > 10) params["offset"] = currentOffset;
+      navigator({
+        pathname,
+        search: `${createSearchParams(
+          params as unknown as URLSearchParamsInit,
+        ).toString()}`,
+      });
     },
     [pathname, currentOffset, searchParam, navigator],
   );
@@ -63,12 +68,18 @@ const usePagenation = (listLength: number) => {
   const changeOffsetValue = useCallback(
     ({ target: { value } }: React.ChangeEvent<HTMLSelectElement>) => {
       const offset = Number(value);
+
+      const params: Record<string, string | number> = {};
+      if (searchParam) params["search"] = searchParam;
+
       // TODO: offset validation check
-      navigator(
-        `${pathname}?${searchParam ? `search=${searchParam}` : ""}${
-          searchParam && offset !== 10 ? "&" : ""
-        }${offset !== 10 ? `offset=${offset}` : ""}`,
-      );
+      if (offset !== 10) params["offset"] = offset;
+      navigator({
+        pathname,
+        search: `${createSearchParams(
+          params as unknown as URLSearchParamsInit,
+        ).toString()}`,
+      });
     },
     [pathname, searchParam, navigator],
   );

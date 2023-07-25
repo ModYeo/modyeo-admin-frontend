@@ -11,24 +11,17 @@ const TextAreaElement = styled.textarea`
   resize: none;
 `;
 
-function TextArea({
-  item,
-  isModificationAction,
-}: {
-  item: RequiredInputItem;
-  isModificationAction: boolean;
-}) {
+function TextArea({ item }: { item: RequiredInputItem }) {
   const { itemName } = item;
   const elementId = `id-${itemName}`;
   const labelValue = `* ${itemName}`;
-  const defaultValue = isModificationAction ? item.defaultValue : "";
   return (
     <span>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <TextAreaElement
         placeholder={itemName}
         ref={item.refObject as RefObject<HTMLTextAreaElement>}
-        defaultValue={defaultValue}
+        defaultValue={item.defaultValue}
         required
       />
     </span>
