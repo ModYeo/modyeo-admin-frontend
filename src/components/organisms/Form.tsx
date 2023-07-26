@@ -1,6 +1,6 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 import { RequiredInputItem } from "../molcules/SubmitForm";
 
@@ -22,6 +22,8 @@ function Form({
   path: string;
   requiredInputItems: RequiredInputItem[];
 }) {
+  const navigator = useNavigate();
+
   const { handleOnSubmit } = useSubmitForm(path, requiredInputItems);
 
   return (
@@ -43,11 +45,14 @@ function Form({
           submit
         </Button>
         &ensp;
-        <Link to="/category">
-          <Button type="button" size="lg" bgColor="red">
-            back
-          </Button>
-        </Link>
+        <Button
+          type="button"
+          size="lg"
+          bgColor="red"
+          onClick={() => navigator(-1)}
+        >
+          back
+        </Button>
       </ButtonWrapper>
     </form>
   );

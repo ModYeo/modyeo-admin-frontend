@@ -53,6 +53,13 @@ const useTableList = ({
     navigator(`${pathname}/write`);
   }, [pathname, navigator]);
 
+  const goToDetailedPage = useCallback(
+    (value: string | number) => {
+      navigator(`${pathname}/${value}`);
+    },
+    [pathname, navigator],
+  );
+
   useEffect(() => {
     initializeCategoriesList();
   }, [initializeCategoriesList]);
@@ -69,6 +76,7 @@ const useTableList = ({
     changeOffsetValue,
     changePagenation,
     goToWritePage,
+    goToDetailedPage,
   };
 };
 

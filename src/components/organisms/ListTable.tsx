@@ -58,6 +58,7 @@ function ListTable({
     changeOffsetValue,
     changePagenation,
     goToWritePage,
+    goToDetailedPage,
   } = useTableList({
     requestUrl,
     elementTitleKey,
@@ -90,6 +91,9 @@ function ListTable({
                     title={elementTitleKey}
                     object={element as unknown as ObjectType}
                     index={slicePoint + index}
+                    goToDetailedPage={() =>
+                      goToDetailedPage(element[elementKey])
+                    }
                   />
                 ))}
               </>
