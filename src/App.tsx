@@ -20,6 +20,7 @@ import AdvertisementForm from "./pages/create/AdvertisementForm";
 import CollectionForm from "./pages/create/CollectionForm";
 import ColumnCodeForm from "./pages/create/ColumnCodeForm";
 import NoticeForm from "./pages/create/NoticeForm";
+import CategoryDetail from "./pages/detailed/CategoryDetail";
 
 const router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const router = createBrowserRouter([
       {
         path: "/category/write",
         element: <CategoryForm />,
+      },
+      {
+        path: "/category/*",
+        element: <CategoryDetail />,
       },
       {
         path: "/category",

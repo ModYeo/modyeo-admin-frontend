@@ -15,6 +15,7 @@ const toastSentences = {
   invalidImageExtension: "jpg, jpeg, png 파일만 업로드 가능합니다.",
   imageEncodingFailure:
     "이미지 인코딩에 실패했습니다. 다른 사진을 사용하거나 잠시 후에, 다시 시도해주세요.",
+  FORM_NOT_FULLFILLED: "양식을 완성해주세요.",
 } as const;
 
 export default toastSentences;

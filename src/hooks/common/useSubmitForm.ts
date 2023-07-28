@@ -1,10 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
+import toastSentences from "../../constants/toastSentences";
 
 const useSubmitForm = (
   path: string,
@@ -24,12 +26,22 @@ const useSubmitForm = (
     navigator("/");
   }, [navigator]);
 
+  const checkInvalidDataValue = useCallback((data: object) => {
+    return Object.entries(data).some(
+      ([key, value]) => key !== "imageData" && !value,
+    );
+  }, []);
+
   const processWithPostData = useCallback(
     async (data: object, option: { isXapiKeyNeeded: boolean }) => {
+      if (checkInvalidDataValue(data)) {
+        toast.warn(toastSentences.FORM_NOT_FULLFILLED);
+        return;
+      }
       const newElemId = await sendPostRequest(data, option);
       if (typeof newElemId === "number") handlePostSuccess();
     },
-    [sendPostRequest, handlePostSuccess],
+    [checkInvalidDataValue, sendPostRequest, handlePostSuccess],
   );
 
   const generateFileReader = useCallback(
@@ -91,7 +103,6 @@ const useSubmitForm = (
 
       const isPostReqAlreadySent = { value: false };
 
-      // TODO: check required element
       requiredInputItems.forEach((item) =>
         assemblePostData(item, data, isPostReqAlreadySent),
       );
