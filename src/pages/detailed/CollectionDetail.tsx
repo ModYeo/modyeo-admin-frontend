@@ -15,46 +15,46 @@ interface IDetailedCategory {
   updatedTime: string;
 }
 
-function CategoryDetail() {
-  const categoryIdInputRef = useRef<HTMLInputElement>(null);
+function CollectionDetail() {
+  const collectionInfoIdInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const categoryNameInputRef = useRef<HTMLInputElement>(null);
+  const collectionInfoNameInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const imagePathInputRef = useRef<{ file: File | null }>({ file: null });
+  const descriptionInputRef = useRef<HTMLTextAreaElement>(null);
 
   const requiredInputItems: RequiredInputItem[] = useMemo(() => {
     return [
       {
-        itemName: "category id",
-        name: "categoryId",
-        refObject: categoryIdInputRef,
+        itemName: "collection info id",
+        name: "collectionInfoId",
+        refObject: collectionInfoIdInputRef,
         elementType: "input",
         defaultValue: "",
         disabled: true,
       },
       {
-        itemName: "category name",
-        name: "name",
-        refObject: categoryNameInputRef,
-        elementType: "input",
+        itemName: "collection info name",
+        name: "collectionInfoName",
+        refObject: collectionInfoNameInputRef,
+        elementType: "textarea",
         defaultValue: "",
       },
       {
-        itemName: "image path",
-        name: "imagePath",
-        refObject: imagePathInputRef,
-        elementType: "image",
+        itemName: "description",
+        name: "description",
+        refObject: descriptionInputRef,
+        elementType: "textarea",
         defaultValue: "",
       },
     ];
   }, []);
 
   return (
-    <DetailedForm<IDetailedCategory>
-      path={routes.server.category}
+    <DetailedForm
+      path={routes.server.collection}
       requiredInputItems={requiredInputItems}
     />
   );
 }
 
-export default CategoryDetail;
+export default CollectionDetail;

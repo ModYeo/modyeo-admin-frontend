@@ -21,6 +21,7 @@ import CollectionForm from "./pages/create/CollectionForm";
 import ColumnCodeForm from "./pages/create/ColumnCodeForm";
 import NoticeForm from "./pages/create/NoticeForm";
 import CategoryDetail from "./pages/detailed/CategoryDetail";
+import CollectionDetail from "./pages/detailed/CollectionDetail";
 
 const router = createBrowserRouter([
   {
@@ -62,6 +63,10 @@ const router = createBrowserRouter([
       {
         path: "/collection/write",
         element: <CollectionForm />,
+      },
+      {
+        path: "/collection/*",
+        element: <CollectionDetail />,
       },
       {
         path: "/collection",

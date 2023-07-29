@@ -48,6 +48,7 @@ function Input({ item }: { item: RequiredInputItem }) {
         defaultValue={item.defaultValue}
         required
         disabled={item?.disabled}
+        readOnly={item?.disabled}
       />
     </Wrapper>
   );
