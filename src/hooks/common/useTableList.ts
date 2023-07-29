@@ -25,7 +25,7 @@ const useTableList = ({
     return apiManager.fetchData<ObjectType>(requestUrl);
   }, [requestUrl]);
 
-  const initializeCategoriesList = useCallback(async () => {
+  const initializeElementList = useCallback(async () => {
     const fetchedList = await fetchList();
     if (fetchedList) setList(fetchedList.reverse());
   }, [fetchList]);
@@ -61,8 +61,8 @@ const useTableList = ({
   );
 
   useEffect(() => {
-    initializeCategoriesList();
-  }, [initializeCategoriesList]);
+    initializeElementList();
+  }, [initializeElementList]);
 
   return {
     slicedList,
