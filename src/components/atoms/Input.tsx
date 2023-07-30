@@ -36,6 +36,7 @@ type RequiredInputItem = {
   elementType: "input" | "textarea" | "image";
   defaultValue: string | number;
   isPrimary?: boolean;
+  disabled?: boolean;
 };
 
 function Input({ item }: { item: RequiredInputItem }) {
@@ -47,14 +48,14 @@ function Input({ item }: { item: RequiredInputItem }) {
     };
   }, [item]);
   return (
-    <Wrapper isReadOnly={item?.isPrimary}>
+    <Wrapper isReadOnly={item?.isPrimary || item?.disabled}>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <InputElement
         placeholder={item.itemName}
         ref={item.refObject as RefObject<HTMLInputElement>}
         defaultValue={item.defaultValue}
         required
-        disabled={item?.isPrimary}
+        disabled={item?.disabled || item?.isPrimary}
         readOnly={item?.isPrimary}
       />
     </Wrapper>

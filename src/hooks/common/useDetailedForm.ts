@@ -8,6 +8,7 @@ import { RequiredInputItem } from "../../components/atoms/Input";
 import apiManager from "../../modules/apiManager";
 
 import toastSentences from "../../constants/toastSentences";
+import useSubmitForm from "./useSubmitForm";
 
 const useDetailedForm = <T>(
   path: string,
@@ -16,6 +17,8 @@ const useDetailedForm = <T>(
   const { pathname } = useLocation();
 
   const navigator = useNavigate();
+
+  const { handleOnSubmit } = useSubmitForm(path, requiredInputItems, "patch");
 
   const [detailedData, setDetailedData] = useState<T | null>(null);
 
@@ -40,17 +43,13 @@ const useDetailedForm = <T>(
       const isElementIdNotModified = checkElementIdIntegrity();
 
       if (isElementIdNotModified) {
-        //
+        handleOnSubmit(e);
       } else {
         toast.warn(toastSentences.DATA_ID_CANNOT_BE_MODIFIED);
       }
     },
-    [checkElementIdIntegrity],
+    [checkElementIdIntegrity, handleOnSubmit],
   );
-
-  const resetAllItems = useCallback(() => {
-    setDetailedData(null);
-  }, []);
 
   const deleteThisData = useCallback(() => {
     return apiManager.deleteData(path, elementId);
@@ -119,6 +118,26 @@ const useDetailedForm = <T>(
     makeBlankAheadOfUpperCase,
   ]);
 
+  const resetAllItems = useCallback(() => {
+    requiredInputItems?.forEach((item) => {
+      const originalItemName = transformToOriginalItemName(item.itemName);
+
+      if (detailedData) {
+        const copied = { ...detailedData } as Record<string, string | number>;
+        Object.keys(copied).forEach((detailedDataKey) => {
+          if (detailedDataKey === originalItemName) {
+            const {
+              refObject: { current: refObjCurrent },
+            } = item;
+
+            if (refObjCurrent && "value" in refObjCurrent)
+              refObjCurrent.value = copied[detailedDataKey] as string;
+          }
+        });
+      }
+    });
+  }, [requiredInputItems, detailedData, transformToOriginalItemName]);
+
   const fetchDetailedData = useCallback(() => {
     return apiManager.fetchDetailedData<T>(path, elementId);
   }, [path, elementId]);
@@ -126,6 +145,10 @@ const useDetailedForm = <T>(
   const initializeDetailedData = useCallback(async () => {
     const fetchedDetailedData = await fetchDetailedData();
     if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
+    else {
+      // TODO: 예외처리하기
+      toast.error("데이터를 찾을 수 없습니다.");
+    }
   }, [fetchDetailedData]);
 
   useEffect(() => {
@@ -138,7 +161,6 @@ const useDetailedForm = <T>(
   }, [elementId, initializeDetailedData]);
 
   return {
-    detailedData,
     readOnlyItems,
     resetAllItems,
     handleOnClickDeleteBtn,

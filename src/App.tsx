@@ -1,6 +1,5 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import styled from "styled-components";
 import "react-toastify/dist/ReactToastify.css";
 
 import { ToastContainer } from "react-toastify";
@@ -22,6 +21,9 @@ import ColumnCodeForm from "./pages/create/ColumnCodeForm";
 import NoticeForm from "./pages/create/NoticeForm";
 import CategoryDetail from "./pages/detailed/CategoryDetail";
 import CollectionDetail from "./pages/detailed/CollectionDetail";
+import AdvertisementDetail from "./pages/detailed/AdvertisementDetail";
+import NoticeDetail from "./pages/detailed/NoticeDetail";
+import ColumnCodeDetail from "./pages/detailed/ColumnCodeDetail";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "/notice/write",
         element: <NoticeForm />,
+      },
+      {
+        path: "/notice/*",
+        element: <NoticeDetail />,
       },
       {
         path: "/notice",
@@ -57,6 +63,10 @@ const router = createBrowserRouter([
         element: <AdvertisementForm />,
       },
       {
+        path: "/advertisement/*",
+        element: <AdvertisementDetail />,
+      },
+      {
         path: "/advertisement",
         element: <Advertisement />,
       },
@@ -75,6 +85,10 @@ const router = createBrowserRouter([
       {
         path: "/columnCode/write",
         element: <ColumnCodeForm />,
+      },
+      {
+        path: "/columnCode/*",
+        element: <ColumnCodeDetail />,
       },
       {
         path: "/columnCode",

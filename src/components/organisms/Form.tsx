@@ -24,7 +24,7 @@ function Form({
 }) {
   const navigator = useNavigate();
 
-  const { handleOnSubmit } = useSubmitForm(path, requiredInputItems);
+  const { handleOnSubmit } = useSubmitForm(path, requiredInputItems, "post");
 
   return (
     <form onSubmit={handleOnSubmit}>

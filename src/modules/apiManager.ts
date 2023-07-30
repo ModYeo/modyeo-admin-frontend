@@ -36,6 +36,8 @@ export class APIManager implements IAPIManager {
 
   private authCookieManager: AuthCookieManager;
 
+  private xApiKey = "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
+
   private useYn = "Y";
 
   constructor(authCookieManagerParam: AuthCookieManager) {
@@ -243,7 +245,7 @@ export class APIManager implements IAPIManager {
         option?.isXapiKeyNeeded
           ? {
               headers: {
-                "x-api-key": "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1",
+                "x-api-key": this.xApiKey,
               },
             }
           : {},
@@ -267,6 +269,7 @@ export class APIManager implements IAPIManager {
     }
   }
 
+  // TODO: delete this func
   async modifyData<T extends object>(path: string, obj?: T) {
     try {
       const {
@@ -275,6 +278,34 @@ export class APIManager implements IAPIManager {
         ...obj,
         useYn: this.useYn,
       });
+      return modifieElemId;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async patchData(
+    path: string,
+    obj?: object,
+    option?: { isXapiKeyNeeded: boolean },
+  ) {
+    try {
+      const {
+        data: { data: modifieElemId },
+      } = await this.apiAxios.patch<{ data: number }>(
+        path,
+        {
+          ...obj,
+          useYn: this.useYn,
+        },
+        option?.isXapiKeyNeeded
+          ? {
+              headers: {
+                "x-api-key": this.xApiKey,
+              },
+            }
+          : {},
+      );
       return modifieElemId;
     } catch (e) {
       return null;

@@ -11,6 +11,7 @@ import toastSentences from "../../constants/toastSentences";
 const useSubmitForm = (
   path: string,
   requiredInputItems: RequiredInputItem[],
+  method: "post" | "patch",
 ) => {
   const navigator = useNavigate();
 
@@ -21,10 +22,17 @@ const useSubmitForm = (
     [path],
   );
 
+  const sendPatchRequest = useCallback(
+    async (data: object, option: { isXapiKeyNeeded: boolean }) => {
+      return apiManager.patchData(path, data, option);
+    },
+    [path],
+  );
+
   const handlePostSuccess = useCallback(() => {
-    // go to detailed page that just posted.
-    navigator("/");
-  }, [navigator]);
+    if (method === "post") navigator(-1);
+    if (method === "patch") toast.info(toastSentences.MODIFICATION_SUCCESS);
+  }, [method, navigator]);
 
   const checkInvalidDataValue = useCallback((data: object) => {
     return Object.entries(data).some(
@@ -38,10 +46,21 @@ const useSubmitForm = (
         toast.warn(toastSentences.FORM_NOT_FULLFILLED);
         return;
       }
-      const newElemId = await sendPostRequest(data, option);
-      if (typeof newElemId === "number") handlePostSuccess();
+      if (method === "post") {
+        const newElemId = await sendPostRequest(data, option);
+        if (typeof newElemId === "number") handlePostSuccess();
+      } else if (method === "patch") {
+        const modifieElemId = await sendPatchRequest(data, option);
+        if (typeof modifieElemId === "number") handlePostSuccess();
+      }
     },
-    [checkInvalidDataValue, sendPostRequest, handlePostSuccess],
+    [
+      method,
+      checkInvalidDataValue,
+      sendPostRequest,
+      sendPatchRequest,
+      handlePostSuccess,
+    ],
   );
 
   const generateFileReader = useCallback(

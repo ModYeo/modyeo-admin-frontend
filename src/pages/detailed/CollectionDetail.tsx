@@ -31,6 +31,7 @@ function CollectionDetail() {
         elementType: "input",
         defaultValue: "",
         disabled: true,
+        isPrimary: true,
       },
       {
         itemName: "collection info name",

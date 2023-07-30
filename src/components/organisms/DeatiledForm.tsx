@@ -26,14 +26,11 @@ function DetailedForm<T>({
   const navigator = useNavigate();
 
   const {
-    detailedData,
     readOnlyItems,
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
   } = useDetailedForm<T>(path, requiredInputItems);
-
-  console.log(detailedData);
 
   return (
     <form onSubmit={submitModifiedData}>
