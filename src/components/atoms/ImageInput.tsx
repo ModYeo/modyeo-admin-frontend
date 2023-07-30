@@ -10,11 +10,18 @@ import styled from "styled-components";
 import { Label, RequiredInputItem } from "./Input";
 import imagePreviewManager from "../../modules/imagePreviewManager";
 
+import COLOR_CONST from "../../constants/colorConst";
+
 const Wrapper = styled.div`
   margin: 20px 0;
   padding: 10px;
   background-color: #eee;
+  border: 2px solid #eee;
   border-radius: 6px;
+  transition: all 0.4s;
+  &:hover {
+    border: 2px solid ${COLOR_CONST.BLUE};
+  }
 `;
 
 const Header = styled.div`

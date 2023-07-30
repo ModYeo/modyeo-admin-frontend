@@ -2,12 +2,19 @@ import React, { RefObject, useMemo } from "react";
 import styled from "styled-components";
 
 import { SignInput } from "../../styles/styles";
+import COLOR_CONST from "../../constants/colorConst";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isReadOnly?: boolean }>`
   margin: 20px 0;
   padding: 10px;
   background-color: #eee;
+  border: 2px solid #eee;
   border-radius: 6px;
+  transition: all 0.4s;
+  &:hover {
+    border: 2px solid
+      ${({ isReadOnly }) => (isReadOnly ? "#eee" : COLOR_CONST.BLUE)};
+  }
 `;
 
 const InputElement = styled(SignInput)`
@@ -40,7 +47,7 @@ function Input({ item }: { item: RequiredInputItem }) {
     };
   }, [item]);
   return (
-    <Wrapper>
+    <Wrapper isReadOnly={item?.isPrimary}>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <InputElement
         placeholder={item.itemName}
