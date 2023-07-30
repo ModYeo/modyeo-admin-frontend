@@ -6,14 +6,6 @@ import ListElement from "../atoms/ListElement";
 
 import { ListContainer } from "../../styles/styles";
 
-const Layout = styled.section`
-  button,
-  select,
-  input {
-    margin: 0 2px;
-  }
-`;
-
 const ListWrapper = styled.div`
   min-height: 505px;
   margin: 20px 0;

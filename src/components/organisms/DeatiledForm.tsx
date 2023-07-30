@@ -25,19 +25,20 @@ function DetailedForm<T>({
 }) {
   const navigator = useNavigate();
 
-  const { detailedData, readOnlyItems } = useDetailedForm<T>(
-    path,
-    requiredInputItems,
-  );
+  const {
+    detailedData,
+    readOnlyItems,
+    resetAllItems,
+    handleOnClickDeleteBtn,
+    submitModifiedData,
+  } = useDetailedForm<T>(path, requiredInputItems);
+
+  console.log(detailedData);
 
   return (
-    <form>
+    <form onSubmit={submitModifiedData}>
       {readOnlyItems?.map(([itemName, value]) => (
-        <ReadOnlyInput
-          key={itemName as string}
-          itemName={itemName as string}
-          itemValue={value as string}
-        />
+        <ReadOnlyInput key={itemName} itemName={itemName} itemValue={value} />
       ))}
       {requiredInputItems.map((item) => {
         if (item.elementType === "input") {
@@ -56,8 +57,17 @@ function DetailedForm<T>({
           submit
         </Button>
         &ensp;
-        <Button type="button" size="lg" bgColor="red">
+        <Button
+          type="button"
+          size="lg"
+          bgColor="red"
+          onClick={handleOnClickDeleteBtn}
+        >
           delete
+        </Button>
+        &ensp;
+        <Button type="button" size="lg" bgColor="grey" onClick={resetAllItems}>
+          reset
         </Button>
         &ensp;
         <Button

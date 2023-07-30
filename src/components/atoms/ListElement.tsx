@@ -52,7 +52,7 @@ function ListElement({
   goToDetailedPage: () => void;
 }) {
   const tmpTitle = String(object[title]);
-  const previewTitle =
+  const titlePreview =
     tmpTitle.length > 50 ? `${tmpTitle.slice(0, 50)}...` : tmpTitle;
   return (
     <ListElementWrapper>
@@ -60,7 +60,7 @@ function ListElement({
         <div>
           <span>{index + 1}</span>
           &nbsp; - &nbsp;
-          <span>{previewTitle}</span>
+          <span>{titlePreview}</span>
         </div>
         <div>&rarr;</div>
       </button>

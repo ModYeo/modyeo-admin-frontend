@@ -1,11 +1,13 @@
 /* eslint-disable no-param-reassign */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
+
+import toastSentences from "../../constants/toastSentences";
 
 const useDetailedForm = <T>(
   path: string,
@@ -13,12 +15,56 @@ const useDetailedForm = <T>(
 ) => {
   const { pathname } = useLocation();
 
+  const navigator = useNavigate();
+
   const [detailedData, setDetailedData] = useState<T | null>(null);
 
   const elementId = useMemo(
     () => pathname.split("/")[2],
     [pathname],
   ) as unknown as number;
+
+  const checkElementIdIntegrity = useCallback(() => {
+    return requiredInputItems.some(
+      (item) =>
+        item.isPrimary &&
+        item.refObject.current instanceof HTMLInputElement &&
+        item.refObject.current.value === String(elementId),
+    );
+  }, [requiredInputItems, elementId]);
+
+  const submitModifiedData = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+
+      const isElementIdNotModified = checkElementIdIntegrity();
+
+      if (isElementIdNotModified) {
+        //
+      } else {
+        toast.warn(toastSentences.DATA_ID_CANNOT_BE_MODIFIED);
+      }
+    },
+    [checkElementIdIntegrity],
+  );
+
+  const resetAllItems = useCallback(() => {
+    setDetailedData(null);
+  }, []);
+
+  const deleteThisData = useCallback(() => {
+    return apiManager.deleteData(path, elementId);
+  }, [path, elementId]);
+
+  const handleOnClickDeleteBtn = useCallback(async () => {
+    // TODO: 자체 모달로 교체
+    const isDeleteConfirmed = window.confirm(
+      "정말 이 데이터를 삭제하시겠습니까?",
+    );
+    if (!isDeleteConfirmed) return;
+    const isDataDeleteSuccessful = await deleteThisData();
+    if (isDataDeleteSuccessful) navigator(-1);
+  }, [deleteThisData, navigator]);
 
   const transformToOriginalItemName = useCallback((itemName: string) => {
     const splitedItemNameChars = itemName.split("");
@@ -56,7 +102,6 @@ const useDetailedForm = <T>(
             const originalItemName = transformToOriginalItemName(itemName);
 
             if (key === originalItemName) {
-              console.log(originalItemName, key);
               inputItem.defaultValue = value as string;
               return true;
             }
@@ -95,6 +140,9 @@ const useDetailedForm = <T>(
   return {
     detailedData,
     readOnlyItems,
+    resetAllItems,
+    handleOnClickDeleteBtn,
+    submitModifiedData,
   };
 };
 

@@ -30,7 +30,7 @@ function CategoryDetail() {
         refObject: categoryIdInputRef,
         elementType: "input",
         defaultValue: "",
-        disabled: true,
+        isPrimary: true,
       },
       {
         itemName: "category name",
