@@ -1,21 +1,22 @@
 import React from "react";
-import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 
 import { RequiredInputItem } from "../molcules/SubmitForm";
 
-import useSubmitForm from "../../hooks/common/useSubmitForm";
+import useDetailedForm from "../../hooks/common/useDetailedForm";
 
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
 import ImageInput from "../atoms/ImageInput";
 import TextArea from "../atoms/TextArea";
+import ReadOnlyInput from "../atoms/ReadOnlyInput";
 
 const ButtonWrapper = styled.div`
   text-align: right;
 `;
 
-function Form({
+function DetailedForm<T>({
   path,
   requiredInputItems,
 }: {
@@ -24,11 +25,19 @@ function Form({
 }) {
   const navigator = useNavigate();
 
-  const { handleOnSubmit } = useSubmitForm(path, requiredInputItems, "post");
+  const {
+    readOnlyItems,
+    resetAllItems,
+    handleOnClickDeleteBtn,
+    submitModifiedData,
+  } = useDetailedForm<T>(path, requiredInputItems);
 
   return (
-    <form onSubmit={handleOnSubmit}>
-      {requiredInputItems.map((item, idx) => {
+    <form onSubmit={submitModifiedData}>
+      {readOnlyItems?.map(([itemName, value]) => (
+        <ReadOnlyInput key={itemName} itemName={itemName} itemValue={value} />
+      ))}
+      {requiredInputItems.map((item) => {
         if (item.elementType === "input") {
           return <Input key={item.itemName} item={item} />;
         }
@@ -49,6 +58,19 @@ function Form({
           type="button"
           size="lg"
           bgColor="red"
+          onClick={handleOnClickDeleteBtn}
+        >
+          delete
+        </Button>
+        &ensp;
+        <Button type="button" size="lg" bgColor="grey" onClick={resetAllItems}>
+          reset
+        </Button>
+        &ensp;
+        <Button
+          type="button"
+          size="lg"
+          bgColor="grey"
           onClick={() => navigator(-1)}
         >
           back
@@ -58,4 +80,4 @@ function Form({
   );
 }
 
-export default Form;
+export default DetailedForm;

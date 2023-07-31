@@ -1,16 +1,15 @@
 import React from "react";
 import styled from "styled-components";
 
-import { ObjectType } from "../atoms/Card";
-
 import useTableList from "../../hooks/common/useTableList";
 
 import OffsetSelectOptions from "../molcules/OffsetSelectOptions";
 import SearchForm from "../molcules/SearchForm";
-import ListElement from "../atoms/ListElement";
+import List from "../molcules/\bList";
+import Pagenation from "../molcules/Pagenation";
 import Button from "../atoms/Button";
 
-import { FormTopArea, ListContainer } from "../../styles/styles";
+import { FormTopArea } from "../../styles/styles";
 
 const Layout = styled.section`
   button,
@@ -20,17 +19,10 @@ const Layout = styled.section`
   }
 `;
 
-const ListWrapper = styled.div`
-  min-height: 505px;
-  margin: 20px 0;
-`;
-
 const ButtonWrapper = styled.div`
+  min-height: 30px;
   text-align: right;
 `;
-
-// TODO: add spinner url as background: url()
-const ListSkeleton = styled(ListWrapper)``;
 
 interface ListTableProps {
   requestUrl: string;
@@ -55,6 +47,7 @@ function ListTable({
     changeOffsetValue,
     changePagenation,
     goToWritePage,
+    goToDetailedPage,
   } = useTableList({
     requestUrl,
     elementTitleKey,
@@ -73,41 +66,20 @@ function ListTable({
           changeOffsetValue={changeOffsetValue}
         />
       </FormTopArea>
-      <ListWrapper>
-        <ListContainer>
-          {slicedList &&
-            (slicedList.length === 0 ? (
-              <>표시할 컨텐츠가 없습니다.</>
-            ) : (
-              <>
-                {slicedList.map((element, index) => (
-                  <ListElement
-                    key={element[elementKey]}
-                    title={elementTitleKey}
-                    object={element as unknown as ObjectType}
-                    index={slicePoint + index}
-                  />
-                ))}
-              </>
-            ))}
-          {!slicedList && <ListSkeleton />}
-        </ListContainer>
-      </ListWrapper>
-      <ButtonWrapper>
-        {filteredListLength > currentOffset &&
-          pagenationButtonValues.map((value) => (
-            <Button
-              key={value}
-              bgColor="blue"
-              size="sm"
-              type="button"
-              isChosen={currentPage === value}
-              onClick={() => changePagenation(value)}
-            >
-              {value}
-            </Button>
-          ))}
-      </ButtonWrapper>
+      <List
+        slicedList={slicedList}
+        elementKey={elementKey}
+        elementTitleKey={elementTitleKey}
+        slicePoint={slicePoint}
+        goToDetailedPage={goToDetailedPage}
+      />
+      <Pagenation
+        filteredListLength={filteredListLength}
+        pagenationButtonValues={pagenationButtonValues}
+        currentPage={currentPage}
+        currentOffset={currentOffset}
+        changePagenation={changePagenation}
+      />
       <br />
       <ButtonWrapper>
         <Button type="button" bgColor="red" size="lg" onClick={goToWritePage}>

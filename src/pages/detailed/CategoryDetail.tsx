@@ -1,15 +1,37 @@
 import React, { useMemo, useRef } from "react";
+
 import { RequiredInputItem } from "../../components/atoms/Input";
-import Form from "../../components/organisms/Form";
+import DetailedForm from "../../components/organisms/DeatiledForm";
+
 import routes from "../../constants/routes";
 
-function CategoryForm() {
+interface IDetailedCategory {
+  categoryId: number;
+  categoryName: string;
+  useYn: "Y" | "N";
+  createdBy: null;
+  createdTime: string;
+  updatedBy: null;
+  updatedTime: string;
+}
+
+function CategoryDetail() {
+  const categoryIdInputRef = useRef<HTMLInputElement>(null);
+
   const categoryNameInputRef = useRef<HTMLInputElement>(null);
 
   const imagePathInputRef = useRef<{ file: File | null }>({ file: null });
 
   const requiredInputItems: RequiredInputItem[] = useMemo(() => {
     return [
+      {
+        itemName: "category id",
+        name: "categoryId",
+        refObject: categoryIdInputRef,
+        elementType: "input",
+        defaultValue: "",
+        isPrimary: true,
+      },
       {
         itemName: "category name",
         name: "name",
@@ -28,11 +50,11 @@ function CategoryForm() {
   }, []);
 
   return (
-    <Form
+    <DetailedForm<IDetailedCategory>
       path={routes.server.category}
       requiredInputItems={requiredInputItems}
     />
   );
 }
 
-export default CategoryForm;
+export default CategoryDetail;

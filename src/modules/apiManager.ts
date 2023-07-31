@@ -36,9 +36,9 @@ export class APIManager implements IAPIManager {
 
   private authCookieManager: AuthCookieManager;
 
-  private useYn = "Y";
+  private xApiKey = "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
 
-  private static X_API_KEY: "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
+  private useYn = "Y";
 
   constructor(authCookieManagerParam: AuthCookieManager) {
     this.authCookieManager = authCookieManagerParam;
@@ -60,11 +60,13 @@ export class APIManager implements IAPIManager {
   private setupApiAxios() {
     this.apiAxios.interceptors.request.use((config) => {
       const configCopied = { ...config };
-      // configCopied.headers["x-api-key"] =
-      //   "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
-      configCopied.headers.Authorization =
-        this.authCookieManager.getAccessTokenWithBearer();
+
+      const { headers } = configCopied;
+
+      headers.Authorization = this.authCookieManager.getAccessTokenWithBearer();
+
       const bodyData = config.data as BodyDataType | undefined;
+
       if (bodyData && this.includesXSS(bodyData))
         throw new AxiosError(toastSentences.includeXSS);
       return configCopied;
@@ -243,7 +245,7 @@ export class APIManager implements IAPIManager {
         option?.isXapiKeyNeeded
           ? {
               headers: {
-                "x-api-key": APIManager.X_API_KEY,
+                "x-api-key": this.xApiKey,
               },
             }
           : {},
@@ -267,6 +269,7 @@ export class APIManager implements IAPIManager {
     }
   }
 
+  // TODO: delete this func
   async modifyData<T extends object>(path: string, obj?: T) {
     try {
       const {
@@ -275,6 +278,34 @@ export class APIManager implements IAPIManager {
         ...obj,
         useYn: this.useYn,
       });
+      return modifieElemId;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  async patchData(
+    path: string,
+    obj?: object,
+    option?: { isXapiKeyNeeded: boolean },
+  ) {
+    try {
+      const {
+        data: { data: modifieElemId },
+      } = await this.apiAxios.patch<{ data: number }>(
+        path,
+        {
+          ...obj,
+          useYn: this.useYn,
+        },
+        option?.isXapiKeyNeeded
+          ? {
+              headers: {
+                "x-api-key": this.xApiKey,
+              },
+            }
+          : {},
+      );
       return modifieElemId;
     } catch (e) {
       return null;

@@ -2,12 +2,19 @@ import React, { RefObject, useMemo } from "react";
 import styled from "styled-components";
 
 import { SignInput } from "../../styles/styles";
+import COLOR_CONST from "../../constants/colorConst";
 
-const Wrapper = styled.div`
+const Wrapper = styled.div<{ isReadOnly?: boolean }>`
   margin: 20px 0;
   padding: 10px;
   background-color: #eee;
+  border: 2px solid #eee;
   border-radius: 6px;
+  transition: all 0.4s;
+  &:hover {
+    border: 2px solid
+      ${({ isReadOnly }) => (isReadOnly ? "#eee" : COLOR_CONST.BLUE)};
+  }
 `;
 
 const InputElement = styled(SignInput)`
@@ -28,6 +35,8 @@ type RequiredInputItem = {
   >;
   elementType: "input" | "textarea" | "image";
   defaultValue: string | number;
+  isPrimary?: boolean;
+  disabled?: boolean;
 };
 
 function Input({ item }: { item: RequiredInputItem }) {
@@ -39,18 +48,20 @@ function Input({ item }: { item: RequiredInputItem }) {
     };
   }, [item]);
   return (
-    <Wrapper>
+    <Wrapper isReadOnly={item?.isPrimary || item?.disabled}>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <InputElement
         placeholder={item.itemName}
         ref={item.refObject as RefObject<HTMLInputElement>}
         defaultValue={item.defaultValue}
         required
+        disabled={item?.disabled || item?.isPrimary}
+        readOnly={item?.isPrimary}
       />
     </Wrapper>
   );
 }
 
 export default Input;
-export { Label };
+export { Wrapper, Label };
 export type { RequiredInputItem };

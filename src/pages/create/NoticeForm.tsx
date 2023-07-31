@@ -3,17 +3,19 @@ import { RequiredInputItem } from "../../components/atoms/Input";
 import Form from "../../components/organisms/Form";
 import routes from "../../constants/routes";
 
-function CategoryForm() {
-  const categoryNameInputRef = useRef<HTMLInputElement>(null);
+function NoticeForm() {
+  const contentInputRef = useRef<HTMLInputElement>(null);
 
   const imagePathInputRef = useRef<{ file: File | null }>({ file: null });
+
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const requiredInputItems: RequiredInputItem[] = useMemo(() => {
     return [
       {
-        itemName: "category name",
-        name: "name",
-        refObject: categoryNameInputRef,
+        itemName: "content",
+        name: "content",
+        refObject: contentInputRef,
         elementType: "input",
         defaultValue: "",
       },
@@ -24,15 +26,19 @@ function CategoryForm() {
         elementType: "image",
         defaultValue: "",
       },
+      {
+        itemName: "title",
+        name: "title",
+        refObject: titleInputRef,
+        elementType: "input",
+        defaultValue: "",
+      },
     ];
   }, []);
 
   return (
-    <Form
-      path={routes.server.category}
-      requiredInputItems={requiredInputItems}
-    />
+    <Form path={routes.server.notice} requiredInputItems={requiredInputItems} />
   );
 }
 
-export default CategoryForm;
+export default NoticeForm;

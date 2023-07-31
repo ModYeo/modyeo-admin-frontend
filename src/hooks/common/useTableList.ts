@@ -25,7 +25,7 @@ const useTableList = ({
     return apiManager.fetchData<ObjectType>(requestUrl);
   }, [requestUrl]);
 
-  const initializeCategoriesList = useCallback(async () => {
+  const initializeElementList = useCallback(async () => {
     const fetchedList = await fetchList();
     if (fetchedList) setList(fetchedList.reverse());
   }, [fetchList]);
@@ -53,9 +53,16 @@ const useTableList = ({
     navigator(`${pathname}/write`);
   }, [pathname, navigator]);
 
+  const goToDetailedPage = useCallback(
+    (value: string | number) => {
+      navigator(`${pathname}/${value}`);
+    },
+    [pathname, navigator],
+  );
+
   useEffect(() => {
-    initializeCategoriesList();
-  }, [initializeCategoriesList]);
+    initializeElementList();
+  }, [initializeElementList]);
 
   return {
     slicedList,
@@ -69,6 +76,7 @@ const useTableList = ({
     changeOffsetValue,
     changePagenation,
     goToWritePage,
+    goToDetailedPage,
   };
 };
 

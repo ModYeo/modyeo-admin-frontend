@@ -1,12 +1,12 @@
 import React, { RefObject } from "react";
 import styled from "styled-components";
 
-import { Label, RequiredInputItem } from "./Input";
+import { RequiredInputItem, Label, Wrapper } from "./Input";
 
 const TextAreaElement = styled.textarea`
   width: 100%;
-  height: 120px;
-  margin: 10px 0;
+  height: 200px;
+  margin: 10px 0 0 0;
   padding: 10px;
   resize: none;
 `;
@@ -16,7 +16,7 @@ function TextArea({ item }: { item: RequiredInputItem }) {
   const elementId = `id-${itemName}`;
   const labelValue = `* ${itemName}`;
   return (
-    <span>
+    <Wrapper>
       <Label htmlFor={elementId}>{labelValue}</Label>
       <TextAreaElement
         placeholder={itemName}
@@ -24,7 +24,7 @@ function TextArea({ item }: { item: RequiredInputItem }) {
         defaultValue={item.defaultValue}
         required
       />
-    </span>
+    </Wrapper>
   );
 }
 
