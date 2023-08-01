@@ -57,9 +57,7 @@ const useDetailedForm = <T>(
 
   const handleOnClickDeleteBtn = useCallback(async () => {
     // TODO: 자체 모달로 교체
-    const isDeleteConfirmed = window.confirm(
-      "정말 이 데이터를 삭제하시겠습니까?",
-    );
+    const isDeleteConfirmed = window.confirm("이 데이터를 삭제하시겠습니까?");
     if (!isDeleteConfirmed) return;
     const isDataDeleteSuccessful = await deleteThisData();
     if (isDataDeleteSuccessful) navigator(-1);
@@ -76,7 +74,7 @@ const useDetailedForm = <T>(
   }, []);
 
   const makeBlankAheadOfUpperCase = useCallback(
-    ([key, value]: [string, unknown]): [string, string] => {
+    ([key, value]: [string, unknown]): [string, unknown] => {
       const blankedKey = key.split("");
 
       blankedKey.forEach((char, idx) => {
@@ -86,7 +84,7 @@ const useDetailedForm = <T>(
         }
       });
 
-      return [blankedKey.join(""), String(value)];
+      return [blankedKey.join(""), value];
     },
     [],
   );
@@ -101,7 +99,7 @@ const useDetailedForm = <T>(
             const originalItemName = transformToOriginalItemName(itemName);
 
             if (key === originalItemName) {
-              inputItem.defaultValue = value as string;
+              inputItem.defaultValue = value as string | number;
               return true;
             }
             return false;
@@ -123,7 +121,7 @@ const useDetailedForm = <T>(
       const originalItemName = transformToOriginalItemName(item.itemName);
 
       if (detailedData) {
-        const copied = { ...detailedData } as Record<string, string | number>;
+        const copied = { ...detailedData } as Record<string, unknown>;
         Object.keys(copied).forEach((detailedDataKey) => {
           if (detailedDataKey === originalItemName) {
             const {
