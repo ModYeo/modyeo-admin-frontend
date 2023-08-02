@@ -11,6 +11,7 @@ const StyledButton = styled.button<{
   size: Sizes;
   bgColor: BgColors;
   isChosen?: boolean;
+  disabled?: boolean;
 }>`
   width: ${({ size }) => {
     switch (size) {
@@ -66,11 +67,19 @@ const StyledButton = styled.button<{
         return `1px solid ${isChosen ? COLOR_CONST.GRAY : "white"}`;
     }
   }};
+  opacity: ${({ disabled }) => {
+    return disabled ? "0.35" : "1";
+  }};
+  cursor: ${({ disabled }) => {
+    return disabled ? "not-allowed" : "pointer";
+  }};
   border-radius: 8px;
-  &:hover {
-    opacity: 0.8;
-  }
   transition: all 1s;
+  &:hover {
+    opacity: ${({ disabled }) => {
+      return disabled ? "0.35" : "0.8";
+    }};
+  }
 `;
 
 interface ButtonInterface {
@@ -79,6 +88,7 @@ interface ButtonInterface {
   size: Sizes;
   isChosen?: boolean;
   children: React.ReactNode;
+  disabled?: boolean;
   onClick?: (...args: any) => void;
 }
 
@@ -87,6 +97,7 @@ function Button({
   bgColor,
   size,
   isChosen,
+  disabled,
   children,
   onClick,
 }: ButtonInterface) {
@@ -96,6 +107,7 @@ function Button({
       bgColor={bgColor}
       size={size}
       isChosen={isChosen}
+      disabled={disabled}
       onClick={onClick}
     >
       {children}

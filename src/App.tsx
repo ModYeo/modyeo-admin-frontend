@@ -24,6 +24,8 @@ import CollectionDetail from "./pages/detailed/CollectionDetail";
 import AdvertisementDetail from "./pages/detailed/AdvertisementDetail";
 import NoticeDetail from "./pages/detailed/NoticeDetail";
 import ColumnCodeDetail from "./pages/detailed/ColumnCodeDetail";
+import InquiryDetail from "./pages/detailed/InquiryDetail";
+import Report from "./pages/list/Report";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +36,10 @@ const router = createBrowserRouter([
     path: "/",
     element: <Main />,
     children: [
+      {
+        path: "/report",
+        element: <Report />,
+      },
       {
         path: "/notice/write",
         element: <NoticeForm />,
@@ -95,8 +101,8 @@ const router = createBrowserRouter([
         element: <ColumnCode />,
       },
       {
-        path: "/inquiry/write",
-        element: <>inquiry write</>,
+        path: "/inquiry/*",
+        element: <InquiryDetail />,
       },
       {
         path: "/inquiry",

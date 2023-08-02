@@ -2,7 +2,7 @@ import React, { useMemo, useRef } from "react";
 import { RequiredInputItem } from "../../components/atoms/Input";
 import Form from "../../components/organisms/Form";
 import routes from "../../constants/routes";
-import DetailedForm from "../../components/organisms/DeatiledForm";
+import DetailedForm from "../../components/organisms/DetailedForm";
 
 function ColumnCodeDetail() {
   const codeIdInputRef = useRef<HTMLInputElement>(null);

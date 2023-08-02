@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from "react";
 import { RequiredInputItem } from "../../components/atoms/Input";
-import DetailedForm from "../../components/organisms/DeatiledForm";
+import DetailedForm from "../../components/organisms/DetailedForm";
 import routes from "../../constants/routes";
 
 function NoticeDetail() {
@@ -23,10 +23,17 @@ function NoticeDetail() {
         isPrimary: true,
       },
       {
+        itemName: "title",
+        name: "title",
+        refObject: titleInputRef,
+        elementType: "input",
+        defaultValue: "",
+      },
+      {
         itemName: "content",
         name: "content",
         refObject: contentInputRef,
-        elementType: "input",
+        elementType: "textarea",
         defaultValue: "",
       },
       {
@@ -34,13 +41,6 @@ function NoticeDetail() {
         name: "imagePath",
         refObject: imagePathInputRef,
         elementType: "image",
-        defaultValue: "",
-      },
-      {
-        itemName: "title",
-        name: "title",
-        refObject: titleInputRef,
-        elementType: "input",
         defaultValue: "",
       },
     ];
