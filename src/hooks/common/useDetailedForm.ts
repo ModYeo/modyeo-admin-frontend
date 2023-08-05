@@ -13,12 +13,17 @@ import useSubmitForm from "./useSubmitForm";
 const useDetailedForm = <T>(
   path: string,
   requiredInputItems: RequiredInputItem[],
+  method?: "post" | "patch",
 ) => {
   const { pathname } = useLocation();
 
   const navigator = useNavigate();
 
-  const { handleOnSubmit } = useSubmitForm(path, requiredInputItems, "patch");
+  const { handleOnSubmit } = useSubmitForm(
+    path,
+    requiredInputItems,
+    method || "patch",
+  );
 
   const [detailedData, setDetailedData] = useState<T | null>(null);
 

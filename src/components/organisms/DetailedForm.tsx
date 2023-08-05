@@ -22,9 +22,11 @@ const ButtonWrapper = styled.div`
 function DetailedForm<T>({
   path,
   requiredInputItems,
+  method = "patch",
 }: {
   path: string;
   requiredInputItems: RequiredInputItem[];
+  method?: "post" | "patch";
 }) {
   const navigator = useNavigate();
 
@@ -35,7 +37,7 @@ function DetailedForm<T>({
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
-  } = useDetailedForm<T>(path, requiredInputItems);
+  } = useDetailedForm<T>(path, requiredInputItems, method);
 
   return (
     <>
@@ -62,44 +64,42 @@ function DetailedForm<T>({
           }
           return null;
         })}
-        {pathname.includes("inquiry") || (
-          <ButtonWrapper>
-            <Button type="submit" size="lg" bgColor="blue">
-              submit
-            </Button>
-            &ensp;
-            <Button
-              type="button"
-              size="lg"
-              bgColor="red"
-              disabled={
-                pathname.includes(routes.client.inquiry) ||
-                pathname.includes(routes.client.report)
-              }
-              onClick={handleOnClickDeleteBtn}
-            >
-              delete
-            </Button>
-            &ensp;
-            <Button
-              type="button"
-              size="lg"
-              bgColor="grey"
-              onClick={resetAllItems}
-            >
-              reset
-            </Button>
-            &ensp;
-            <Button
-              type="button"
-              size="lg"
-              bgColor="grey"
-              onClick={() => navigator(-1)}
-            >
-              back
-            </Button>
-          </ButtonWrapper>
-        )}
+        <ButtonWrapper>
+          <Button type="submit" size="lg" bgColor="blue">
+            submit
+          </Button>
+          &ensp;
+          <Button
+            type="button"
+            size="lg"
+            bgColor="red"
+            disabled={
+              pathname.includes(routes.client.inquiry) ||
+              pathname.includes(routes.client.report)
+            }
+            onClick={handleOnClickDeleteBtn}
+          >
+            delete
+          </Button>
+          &ensp;
+          <Button
+            type="button"
+            size="lg"
+            bgColor="grey"
+            onClick={resetAllItems}
+          >
+            reset
+          </Button>
+          &ensp;
+          <Button
+            type="button"
+            size="lg"
+            bgColor="grey"
+            onClick={() => navigator(-1)}
+          >
+            back
+          </Button>
+        </ButtonWrapper>
       </form>
       {/* TODO: 아래 컴포넌트화 */}
       {readOnlyItems?.map(([itemName, value]) => {

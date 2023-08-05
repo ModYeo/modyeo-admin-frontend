@@ -39,6 +39,11 @@ function AnswerDetail({ answer }: { answer: Record<string, string | number> }) {
     ];
   }, []);
 
+  const isAdminAnswer = useMemo(
+    () => answer["authority"] === "ROLE_ADMIN",
+    [answer],
+  );
+
   console.log(answer);
 
   return (
@@ -66,10 +71,14 @@ function AnswerDetail({ answer }: { answer: Record<string, string | number> }) {
         <Button type="submit" size="md" bgColor="blue">
           submit
         </Button>
-        &ensp;
-        <Button type="button" size="md" bgColor="red">
-          delete
-        </Button>
+        {isAdminAnswer && (
+          <>
+            &ensp;
+            <Button type="button" size="md" bgColor="red">
+              delete
+            </Button>
+          </>
+        )}
         &ensp;
         <Button type="button" size="md" bgColor="grey">
           reset
