@@ -6,6 +6,7 @@ import { ToastContainer } from "react-toastify";
 
 import GlobalStyle from "./styles/globalStyles";
 
+import Report from "./pages/list/Report";
 import Category from "./pages/list/Category";
 import Notice from "./pages/list/Notice";
 import SignIn from "./pages/SignIn";
@@ -25,7 +26,7 @@ import AdvertisementDetail from "./pages/detailed/AdvertisementDetail";
 import NoticeDetail from "./pages/detailed/NoticeDetail";
 import ColumnCodeDetail from "./pages/detailed/ColumnCodeDetail";
 import InquiryDetail from "./pages/detailed/InquiryDetail";
-import Report from "./pages/list/Report";
+import ReportDetail from "./pages/detailed/ReportDetail";
 
 const router = createBrowserRouter([
   {
@@ -37,8 +38,12 @@ const router = createBrowserRouter([
     element: <Main />,
     children: [
       {
-        path: "/report",
+        path: "/report/type/*",
         element: <Report />,
+      },
+      {
+        path: "/report/*",
+        element: <ReportDetail />,
       },
       {
         path: "/notice/write",

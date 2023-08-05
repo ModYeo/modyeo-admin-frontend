@@ -7,6 +7,7 @@ import useSearch from "./useSearch";
 import usePagenation from "./usePagenation";
 
 import apiManager from "../../modules/apiManager";
+import routes from "../../constants/routes";
 
 const useTableList = ({
   requestUrl,
@@ -55,7 +56,9 @@ const useTableList = ({
 
   const goToDetailedPage = useCallback(
     (value: string | number) => {
-      navigator(`${pathname}/${value}`);
+      if (pathname.includes("report"))
+        navigator(`${routes.client.REPORT_DETAIL}/${value}`);
+      else navigator(`${pathname}/${value}`);
     },
     [pathname, navigator],
   );

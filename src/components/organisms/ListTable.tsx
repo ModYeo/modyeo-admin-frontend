@@ -1,4 +1,5 @@
 import React from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 import useTableList from "../../hooks/common/useTableList";
@@ -35,6 +36,8 @@ function ListTable({
   elementKey,
   elementTitleKey,
 }: ListTableProps) {
+  const { pathname } = useLocation();
+
   const {
     slicedList,
     filteredListLength,
@@ -82,7 +85,13 @@ function ListTable({
       />
       <br />
       <ButtonWrapper>
-        <Button type="button" bgColor="red" size="lg" onClick={goToWritePage}>
+        <Button
+          type="button"
+          bgColor="red"
+          size="lg"
+          onClick={goToWritePage}
+          disabled={pathname.includes("report")}
+        >
           write
         </Button>
       </ButtonWrapper>

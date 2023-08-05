@@ -31,9 +31,12 @@ type RequiredInputItem = {
   itemName: string;
   name?: string;
   refObject: React.RefObject<
-    HTMLInputElement | HTMLTextAreaElement | { file: File | null }
+    | HTMLInputElement
+    | HTMLTextAreaElement
+    | HTMLSelectElement
+    | { file: File | null }
   >;
-  elementType: "input" | "textarea" | "image";
+  elementType: "input" | "textarea" | "image" | "select";
   defaultValue: string | number;
   isPrimary?: boolean;
   disabled?: boolean;

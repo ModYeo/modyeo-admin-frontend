@@ -56,6 +56,9 @@ function DetailedForm<T>({
           if (item.elementType === "textarea") {
             return <TextArea key={item.itemName} item={item} />;
           }
+          if (item.elementType === "select") {
+            return <Input key={item.itemName} item={item} />;
+          }
           return null;
         })}
         <ButtonsWrapper

@@ -27,8 +27,6 @@ enum ReportStatusEnum {
 
 type ReportTypeType = (typeof reportTypesList)[number];
 
-const REPORT_STATUS_LIST = Object.values(ReportStatusEnum);
-
 interface IReport {
   contents: string;
   id: number;
@@ -39,14 +37,6 @@ interface IReport {
   title: string;
 }
 
-interface IDetailedReport extends IReport {
-  createdBy: number;
-  createdTime: Array<number>;
-  reportType: ReportTypeType;
-  updatedBy: number;
-  updatedTime: Array<number>;
-}
-
 function contains<T extends string>(
   list: ReadonlyArray<T>,
   value: string,
@@ -55,19 +45,11 @@ function contains<T extends string>(
 }
 
 interface UseReport {
-  reports: Array<IReport>;
   selectedReportType: string;
   onChangeReportType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onChangeTargetReportStatus: (
-    changedReportStatus: ReportStatusEnum,
-    reportId: number,
-  ) => Promise<void>;
-  initializeDetailedReport: (reportId: number) => Promise<void>;
 }
 
 const useReport = (): UseReport => {
-  const { isModalVisible, injectDetailedElement } = useContext(MODAL_CONTEXT);
-
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
@@ -87,18 +69,6 @@ const useReport = (): UseReport => {
   const selectedReportType = useMemo(() => {
     return isValidReportType ? reportTypePathParam : "-";
   }, [isValidReportType, reportTypePathParam]);
-
-  const fetchReports = useCallback(() => {
-    return apiManager.fetchData<IReport>(
-      routes.server.report.type,
-      reportTypePathParam,
-    );
-  }, [reportTypePathParam]);
-
-  const initializaReportsList = useCallback(async () => {
-    const fetchedReport = await fetchReports();
-    if (fetchedReport) setReports(fetchedReport.reverse());
-  }, [fetchReports]);
 
   const setReportsListAsDefault = useCallback(() => {
     setReports((reportsList) => {
@@ -122,59 +92,9 @@ const useReport = (): UseReport => {
     [navigator, setReportsListAsDefault],
   );
 
-  const sendPatchReportRequest = useCallback(
-    (changedReportStatus: ReportStatusEnum, reportId: number) => {
-      return apiManager.modifyData(
-        `${routes.server.report.index}/${reportId}/${changedReportStatus}`,
-      );
-    },
-    [],
-  );
-
-  const onChangeTargetReportStatus = useCallback(
-    async (changedReportStatus: ReportStatusEnum, reportId: number) => {
-      if (REPORT_STATUS_LIST.includes(changedReportStatus)) {
-        const modifiedReportId = await sendPatchReportRequest(
-          changedReportStatus,
-          reportId,
-        );
-        if (modifiedReportId) toast.info(toastSentences.report.modified);
-      } else toast.error(toastSentences.invalidRequest);
-    },
-    [sendPatchReportRequest],
-  );
-
-  const fetchDetailedReport = useCallback((reportId: number) => {
-    return apiManager.fetchDetailedData<IDetailedReport>(
-      `${routes.server.report.index}/${reportId}`,
-    );
-  }, []);
-
-  const initializeDetailedReport = useCallback(
-    async (reportId: number) => {
-      const fetchedDetailedReport = await fetchDetailedReport(reportId);
-      if (fetchedDetailedReport)
-        injectDetailedElement(fetchedDetailedReport as unknown as ObjectType);
-    },
-    [fetchDetailedReport, injectDetailedElement],
-  );
-
-  useEffect(() => {
-    if (isValidReportType) initializaReportsList();
-    else setReportsListAsDefault();
-  }, [
-    reportTypePathParam,
-    isValidReportType,
-    initializaReportsList,
-    setReportsListAsDefault,
-  ]);
-
   return {
-    reports,
     selectedReportType,
     onChangeReportType,
-    onChangeTargetReportStatus,
-    initializeDetailedReport,
   };
 };
 

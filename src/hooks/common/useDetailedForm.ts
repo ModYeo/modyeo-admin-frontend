@@ -1,4 +1,3 @@
-/* eslint-disable no-param-reassign */
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { toast } from "react-toastify";

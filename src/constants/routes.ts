@@ -2,7 +2,8 @@ const routes = {
   client: {
     signin: "/",
     admin: "/admin",
-    report: "/report",
+    report: "/report/type",
+    REPORT_DETAIL: "/report",
     notice: "/notice",
     category: "/category",
     advertisement: "/advertisement",
