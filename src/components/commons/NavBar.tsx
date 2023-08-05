@@ -28,7 +28,7 @@ function NavBar() {
             isChosenTab={pathname.includes(routes.client.category)}
             onClick={() => navigator(routes.client.category)}
           >
-            카테고리 생성
+            카테고리
           </TabButton>
           <TabButton
             isChosenTab={pathname.includes(routes.client.advertisement)}
