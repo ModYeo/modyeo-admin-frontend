@@ -1,12 +1,10 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 
 import { RequiredInputItem } from "../molcules/SubmitForm";
 
 import useDetailedForm from "../../hooks/common/useDetailedForm";
 
-import Button from "../atoms/Button";
 import Input from "../atoms/Input";
 import ImageInput from "../atoms/ImageInput";
 import TextArea from "../atoms/TextArea";
@@ -14,10 +12,7 @@ import ReadOnlyInput from "../atoms/ReadOnlyInput";
 
 import routes from "../../constants/routes";
 import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
-
-const ButtonWrapper = styled.div`
-  text-align: right;
-`;
+import ButtonsWrapper from "../molcules/ButtonsWrapper";
 
 function DetailedForm<T>({
   path,
@@ -28,8 +23,6 @@ function DetailedForm<T>({
   requiredInputItems: RequiredInputItem[];
   method?: "post" | "patch";
 }) {
-  const navigator = useNavigate();
-
   const { pathname } = useLocation();
 
   const {
@@ -37,6 +30,7 @@ function DetailedForm<T>({
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
+    deleteElementInTheDataArray,
   } = useDetailedForm<T>(path, requiredInputItems, method);
 
   return (
@@ -64,42 +58,14 @@ function DetailedForm<T>({
           }
           return null;
         })}
-        <ButtonWrapper>
-          <Button type="submit" size="lg" bgColor="blue">
-            submit
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="red"
-            disabled={
-              pathname.includes(routes.client.inquiry) ||
-              pathname.includes(routes.client.report)
-            }
-            onClick={handleOnClickDeleteBtn}
-          >
-            delete
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="grey"
-            onClick={resetAllItems}
-          >
-            reset
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="grey"
-            onClick={() => navigator(-1)}
-          >
-            back
-          </Button>
-        </ButtonWrapper>
+        <ButtonsWrapper
+          isDisabled={
+            pathname.includes(routes.client.inquiry) ||
+            pathname.includes(routes.client.report)
+          }
+          deleteElement={handleOnClickDeleteBtn}
+          resetAllItems={resetAllItems}
+        />
       </form>
       {/* TODO: 아래 컴포넌트화 */}
       {readOnlyItems?.map(([itemName, value]) => {
@@ -108,7 +74,11 @@ function DetailedForm<T>({
           return (
             <div key={itemName}>
               {answerList.map((answer) => (
-                <AnswerDetail key={answer["answerId"]} answer={answer} />
+                <AnswerDetail
+                  key={answer["answerId"]}
+                  answer={answer}
+                  deleteElementInTheDataArray={deleteElementInTheDataArray}
+                />
               ))}
             </div>
           );

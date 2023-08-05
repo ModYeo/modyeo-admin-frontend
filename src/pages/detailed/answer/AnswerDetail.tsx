@@ -1,10 +1,17 @@
-import React, { useMemo, useRef } from "react";
+/* eslint-disable no-param-reassign */
+import React, { useCallback, useMemo, useRef } from "react";
 import styled from "styled-components";
+
+import useSubmitForm from "../../../hooks/common/useSubmitForm";
+import useReadOnlyItems from "../../../hooks/detailed/useReadOnlyItems";
 
 import ReadOnlyInput from "../../../components/atoms/ReadOnlyInput";
 import Input, { RequiredInputItem } from "../../../components/atoms/Input";
 import Button from "../../../components/atoms/Button";
 import TextArea from "../../../components/atoms/TextArea";
+
+import routes from "../../../constants/routes";
+import useDeleteItem from "../../../hooks/detailed/useDeleteItem";
 
 const AnswerForm = styled.form`
   background-color: #eee;
@@ -14,7 +21,13 @@ const ButtonWrapper = styled.div`
   text-align: right;
 `;
 
-function AnswerDetail({ answer }: { answer: Record<string, string | number> }) {
+function AnswerDetail({
+  answer,
+  deleteElementInTheDataArray,
+}: {
+  answer: Record<string, string | number>;
+  deleteElementInTheDataArray: (targetAnswerId: number) => void;
+}) {
   const answerIdInputRef = useRef<HTMLInputElement>(null);
 
   const contentInputRef = useRef<HTMLInputElement>(null);
@@ -39,22 +52,43 @@ function AnswerDetail({ answer }: { answer: Record<string, string | number> }) {
     ];
   }, []);
 
+  const answerId = useMemo(() => answer["answerId"] as number, [answer]);
+
   const isAdminAnswer = useMemo(
     () => answer["authority"] === "ROLE_ADMIN",
     [answer],
   );
 
-  console.log(answer);
+  const { handleOnSubmit } = useSubmitForm(
+    routes.server.answer,
+    requiredInputItems,
+    "patch",
+  );
+
+  const { readOnlyItems, resetAllItems } = useReadOnlyItems(
+    answer,
+    requiredInputItems,
+  );
+
+  const { handleOnClickDeleteBtn } = useDeleteItem(
+    routes.server.answer,
+    answerId,
+    { willKeepURLAfterDelete: true },
+  );
+
+  const deleteAndClearAnswer = useCallback(async () => {
+    const isDataDeleteSuccessful = await handleOnClickDeleteBtn();
+    if (isDataDeleteSuccessful) deleteElementInTheDataArray(answerId);
+  }, [answerId, handleOnClickDeleteBtn, deleteElementInTheDataArray]);
 
   return (
-    <AnswerForm>
-      {Object.keys(answer).map((key) => {
-        if (key === "answerId" || key === "content") return null;
+    <AnswerForm onSubmit={handleOnSubmit}>
+      {readOnlyItems?.map(([itemName, value]) => {
         return (
           <ReadOnlyInput
-            key={key}
-            itemName={key}
-            itemValue={String(answer[key])}
+            key={itemName}
+            itemName={itemName}
+            itemValue={String(value)}
           />
         );
       })}
@@ -68,25 +102,31 @@ function AnswerDetail({ answer }: { answer: Record<string, string | number> }) {
         return null;
       })}
       <ButtonWrapper>
-        <Button type="submit" size="md" bgColor="blue">
-          submit
-        </Button>
         {isAdminAnswer && (
           <>
+            <Button type="submit" size="md" bgColor="blue">
+              submit
+            </Button>
             &ensp;
-            <Button type="button" size="md" bgColor="red">
+            <Button
+              type="button"
+              size="md"
+              bgColor="red"
+              onClick={deleteAndClearAnswer}
+            >
               delete
+            </Button>
+            &ensp;
+            <Button
+              type="button"
+              size="md"
+              bgColor="grey"
+              onClick={resetAllItems}
+            >
+              reset
             </Button>
           </>
         )}
-        &ensp;
-        <Button type="button" size="md" bgColor="grey">
-          reset
-        </Button>
-        &ensp;
-        <Button type="button" size="md" bgColor="grey">
-          back
-        </Button>
       </ButtonWrapper>
     </AnswerForm>
   );
