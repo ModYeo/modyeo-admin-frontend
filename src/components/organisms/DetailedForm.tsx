@@ -62,42 +62,44 @@ function DetailedForm<T>({
           }
           return null;
         })}
-        <ButtonWrapper>
-          <Button type="submit" size="lg" bgColor="blue">
-            submit
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="red"
-            disabled={
-              pathname.includes(routes.client.inquiry) ||
-              pathname.includes(routes.client.report)
-            }
-            onClick={handleOnClickDeleteBtn}
-          >
-            delete
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="grey"
-            onClick={resetAllItems}
-          >
-            reset
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="grey"
-            onClick={() => navigator(-1)}
-          >
-            back
-          </Button>
-        </ButtonWrapper>
+        {pathname.includes("inquiry") || (
+          <ButtonWrapper>
+            <Button type="submit" size="lg" bgColor="blue">
+              submit
+            </Button>
+            &ensp;
+            <Button
+              type="button"
+              size="lg"
+              bgColor="red"
+              disabled={
+                pathname.includes(routes.client.inquiry) ||
+                pathname.includes(routes.client.report)
+              }
+              onClick={handleOnClickDeleteBtn}
+            >
+              delete
+            </Button>
+            &ensp;
+            <Button
+              type="button"
+              size="lg"
+              bgColor="grey"
+              onClick={resetAllItems}
+            >
+              reset
+            </Button>
+            &ensp;
+            <Button
+              type="button"
+              size="lg"
+              bgColor="grey"
+              onClick={() => navigator(-1)}
+            >
+              back
+            </Button>
+          </ButtonWrapper>
+        )}
       </form>
       {/* TODO: 아래 컴포넌트화 */}
       {readOnlyItems?.map(([itemName, value]) => {
