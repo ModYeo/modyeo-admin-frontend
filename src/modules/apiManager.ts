@@ -8,15 +8,21 @@ import { IAuth } from "./signAPI";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
-  postNewDataElem: <T extends object>(
+  postData(
     path: string,
-    obj: T,
-  ) => Promise<number | null>;
+    obj: object,
+    option?: {
+      isXapiKeyNeeded: boolean;
+    },
+  ): Promise<number | null>;
   deleteData: (path: string, objectId: number) => Promise<boolean>;
-  modifyData: <T extends object>(
+  patchData(
     path: string,
-    obj?: T,
-  ) => Promise<number | null>;
+    obj?: object,
+    option?: {
+      isXapiKeyNeeded: boolean;
+    },
+  ): Promise<number | null>;
   fetchDetailedData: <T>(path: string, elemId?: number) => Promise<T | null>;
 }
 
@@ -213,21 +219,6 @@ export class APIManager implements IAPIManager {
     }
   }
 
-  // TODO: delete this func
-  async postNewDataElem<T>(path: string, obj: object) {
-    try {
-      const {
-        data: { data: newElemId },
-      } = await this.apiAxios.post<{ data: number }>(path, {
-        ...obj,
-        useYn: this.useYn,
-      });
-      return newElemId;
-    } catch (e) {
-      return null;
-    }
-  }
-
   async postData(
     path: string,
     obj: object,
@@ -266,21 +257,6 @@ export class APIManager implements IAPIManager {
       throw new Error();
     } catch (e) {
       return false;
-    }
-  }
-
-  // TODO: delete this func
-  async modifyData<T extends object>(path: string, obj?: T) {
-    try {
-      const {
-        data: { data: modifieElemId },
-      } = await this.apiAxios.patch<{ data: number }>(path, {
-        ...obj,
-        useYn: this.useYn,
-      });
-      return modifieElemId;
-    } catch (e) {
-      return null;
     }
   }
 
