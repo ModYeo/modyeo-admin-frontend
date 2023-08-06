@@ -1,21 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 
-import TOAST_SENTENCES from "../../constants/toastSentences";
 import useSubmitForm from "./useSubmitForm";
 import useReadOnlyItems from "../detailed/useReadOnlyItems";
 import useDeleteItem from "../detailed/useDeleteItem";
+
+import TOAST_SENTENCES from "../../constants/toastSentences";
+import routes from "../../constants/routes";
 
 const useDetailedForm = <T>(
   path: string,
   requiredInputItems: RequiredInputItem[],
   method?: "post" | "patch",
 ) => {
+  const navigator = useNavigate();
+
   const { pathname } = useLocation();
 
   const { handleOnSubmit } = useSubmitForm(
@@ -91,19 +95,16 @@ const useDetailedForm = <T>(
   const initializeDetailedData = useCallback(async () => {
     const fetchedDetailedData = await fetchDetailedData();
     if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
-    else {
-      // TODO: 예외처리하기 ex) not fount 컴포넌트 보여주기 등
-      toast.error(TOAST_SENTENCES.DATA_NOT_FOUNT);
-    }
-  }, [fetchDetailedData]);
+    else navigator(routes.client.noData);
+  }, [navigator, fetchDetailedData]);
 
   useEffect(() => {
     if (Number.isNaN(Number(elementId))) {
-      toast.error(TOAST_SENTENCES.NOT_VALID_ID);
+      navigator(routes.client.noData);
     } else {
       initializeDetailedData();
     }
-  }, [elementId, initializeDetailedData]);
+  }, [elementId, navigator, initializeDetailedData]);
 
   return {
     readOnlyItems,

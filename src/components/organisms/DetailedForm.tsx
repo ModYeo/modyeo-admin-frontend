@@ -76,7 +76,6 @@ function DetailedForm<T>({
           resetAllItems={resetAllItems}
         />
       </form>
-      {/* TODO: 아래 컴포넌트화 */}
       {readOnlyItems?.map(([itemName, value]) => {
         if (itemName === "answer list") {
           const answerList = value as Record<string, string | number>[];

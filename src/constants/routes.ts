@@ -10,6 +10,7 @@ const routes = {
     columnCode: "/columnCode",
     collection: "/collection",
     inquiry: "/inquiry",
+    noData: "/no-data",
   },
   server: {
     signin: "/api/auth/login",

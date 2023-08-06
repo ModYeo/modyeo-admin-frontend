@@ -27,6 +27,7 @@ import NoticeDetail from "./pages/detailed/NoticeDetail";
 import ColumnCodeDetail from "./pages/detailed/ColumnCodeDetail";
 import InquiryDetail from "./pages/detailed/InquiryDetail";
 import ReportDetail from "./pages/detailed/ReportDetail";
+import NoData from "./components/commons/NoData";
 
 const router = createBrowserRouter([
   {
@@ -112,6 +113,10 @@ const router = createBrowserRouter([
       {
         path: "/inquiry",
         element: <Inquiry />,
+      },
+      {
+        path: "/no-data",
+        element: <NoData />,
       },
       {
         path: "/*",
