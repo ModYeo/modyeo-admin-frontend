@@ -1,14 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import apiManager from "../../modules/apiManager";
-
-import { MODAL_CONTEXT } from "../../provider/ModalProvider";
-import { ObjectType } from "../../components/atoms/Card";
-
 import toastSentences from "../../constants/toastSentences";
+
 import routes from "../../constants/routes";
+import apiManager from "../../modules/apiManager";
 
 export const reportTypesList = [
   "ART",
@@ -17,7 +14,7 @@ export const reportTypesList = [
   "TEAM",
   "TEAM_ART",
   "TEAM_REP",
-] as const;
+];
 
 enum ReportStatusEnum {
   CFRM = "CFRM",
@@ -44,12 +41,10 @@ function contains<T extends string>(
   return list.some((item) => item === value);
 }
 
-interface UseReport {
-  selectedReportType: string;
-  onChangeReportType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-}
-
-const useReport = (): UseReport => {
+const useReport = (target?: {
+  id: number;
+  reportStatusSelectRef: React.RefObject<HTMLSelectElement>;
+}) => {
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
@@ -92,9 +87,33 @@ const useReport = (): UseReport => {
     [navigator, setReportsListAsDefault],
   );
 
+  const onSubmitReportType = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (target) {
+        const {
+          id,
+          reportStatusSelectRef: { current },
+        } = target;
+        if (current) {
+          const { value: selectedStatus } = current;
+
+          const modifiedReportId = await apiManager.patchData(
+            `${routes.server.report.index}/${id}/${selectedStatus}`,
+          );
+
+          if (typeof modifiedReportId === "number")
+            toast.info(toastSentences.MODIFICATION_SUCCESS);
+        }
+      }
+    },
+    [target],
+  );
+
   return {
     selectedReportType,
     onChangeReportType,
+    onSubmitReportType,
   };
 };
 

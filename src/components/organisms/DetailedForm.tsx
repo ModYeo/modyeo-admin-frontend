@@ -5,23 +5,27 @@ import { RequiredInputItem } from "../molcules/SubmitForm";
 
 import useDetailedForm from "../../hooks/common/useDetailedForm";
 
+import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
+
+import ButtonsWrapper from "../molcules/ButtonsWrapper";
 import Input from "../atoms/Input";
 import ImageInput from "../atoms/ImageInput";
 import TextArea from "../atoms/TextArea";
 import ReadOnlyInput from "../atoms/ReadOnlyInput";
+import Select from "../atoms/Select";
 
 import routes from "../../constants/routes";
-import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
-import ButtonsWrapper from "../molcules/ButtonsWrapper";
 
 function DetailedForm<T>({
   path,
   requiredInputItems,
   method = "patch",
+  onSubmit,
 }: {
   path: string;
   requiredInputItems: RequiredInputItem[];
   method?: "post" | "patch";
+  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
 }) {
   const { pathname } = useLocation();
 
@@ -35,7 +39,7 @@ function DetailedForm<T>({
 
   return (
     <>
-      <form onSubmit={submitModifiedData}>
+      <form onSubmit={onSubmit || submitModifiedData}>
         {readOnlyItems?.map(([itemName, value]) => {
           if (itemName === "answer list") return null;
           return (
@@ -56,8 +60,10 @@ function DetailedForm<T>({
           if (item.elementType === "textarea") {
             return <TextArea key={item.itemName} item={item} />;
           }
-          if (item.elementType === "select") {
-            return <Input key={item.itemName} item={item} />;
+          if (item.elementType === "select" && item?.options) {
+            return (
+              <Select key={item.itemName} item={item} options={item.options} />
+            );
           }
           return null;
         })}

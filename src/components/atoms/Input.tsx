@@ -40,6 +40,7 @@ type RequiredInputItem = {
   defaultValue: string | number;
   isPrimary?: boolean;
   disabled?: boolean;
+  options?: string[];
 };
 
 function Input({ item }: { item: RequiredInputItem }) {
