@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import toastSentences from "../../constants/toastSentences";
+import TOAST_SENTENCES from "../../constants/toastSentences";
 
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
@@ -71,7 +71,7 @@ const useReport = (target?: {
       return reportsList;
     });
     if (pathname !== routes.client.report) {
-      toast.error(toastSentences.invalidRequest);
+      toast.error(TOAST_SENTENCES.INVALID_REQUEST);
       navigator(routes.client.report);
     }
   }, [pathname, setReports, navigator]);
@@ -103,7 +103,7 @@ const useReport = (target?: {
           );
 
           if (typeof modifiedReportId === "number")
-            toast.info(toastSentences.MODIFICATION_SUCCESS);
+            toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
         }
       }
     },

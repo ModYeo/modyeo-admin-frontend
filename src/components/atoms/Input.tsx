@@ -26,10 +26,9 @@ const Label = styled.label`
   font-size: 12px;
 `;
 
-// TODO: get rid of key name optional
 type RequiredInputItem = {
   itemName: string;
-  name?: string;
+  name: string;
   refObject: React.RefObject<
     | HTMLInputElement
     | HTMLTextAreaElement

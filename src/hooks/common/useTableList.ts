@@ -57,7 +57,7 @@ const useTableList = ({
   const goToDetailedPage = useCallback(
     (value: string | number) => {
       if (pathname.includes("report"))
-        navigator(`${routes.client.REPORT_DETAIL}/${value}`);
+        navigator(`${routes.client.reportDetail}/${value}`);
       else navigator(`${pathname}/${value}`);
     },
     [pathname, navigator],

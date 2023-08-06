@@ -1,10 +1,4 @@
-import React, {
-  RefObject,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
 import { Label, RequiredInputItem } from "./Input";

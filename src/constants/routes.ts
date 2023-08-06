@@ -3,7 +3,7 @@ const routes = {
     signin: "/",
     admin: "/admin",
     report: "/report/type",
-    REPORT_DETAIL: "/report",
+    reportDetail: "/report",
     notice: "/notice",
     category: "/category",
     advertisement: "/advertisement",

@@ -11,11 +11,10 @@ const useDeleteItem = (
   const navigator = useNavigate();
 
   const deleteThisData = useCallback(() => {
-    return apiManager.deleteData(path, elementId);
+    return apiManager.ELEMENT_DELETEData(path, elementId);
   }, [path, elementId]);
 
   const handleOnClickDeleteBtn = useCallback(async () => {
-    // TODO: 자체 모달로 교체
     const isDeleteConfirmed = window.confirm("이 데이터를 삭제하시겠습니까?");
     if (!isDeleteConfirmed) return;
     const isDataDeleteSuccessful = await deleteThisData();

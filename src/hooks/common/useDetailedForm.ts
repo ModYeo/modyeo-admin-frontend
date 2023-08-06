@@ -6,7 +6,7 @@ import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
 
-import toastSentences from "../../constants/toastSentences";
+import TOAST_SENTENCES from "../../constants/toastSentences";
 import useSubmitForm from "./useSubmitForm";
 import useReadOnlyItems from "../detailed/useReadOnlyItems";
 import useDeleteItem from "../detailed/useDeleteItem";
@@ -78,7 +78,7 @@ const useDetailedForm = <T>(
       if (isElementIdNotModified) {
         handleOnSubmit(e);
       } else {
-        toast.warn(toastSentences.DATA_ID_CANNOT_BE_MODIFIED);
+        toast.warn(TOAST_SENTENCES.DATA_ID_CANNOT_BE_MODIFIED);
       }
     },
     [checkElementIdIntegrity, handleOnSubmit],
@@ -92,15 +92,14 @@ const useDetailedForm = <T>(
     const fetchedDetailedData = await fetchDetailedData();
     if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
     else {
-      // TODO: 예외처리하기
-      toast.error("데이터를 찾을 수 없습니다.");
+      // TODO: 예외처리하기 ex) not fount 컴포넌트 보여주기 등
+      toast.error(TOAST_SENTENCES.DATA_NOT_FOUNT);
     }
   }, [fetchDetailedData]);
 
   useEffect(() => {
     if (Number.isNaN(Number(elementId))) {
-      toast.error("Element not found!");
-      // TODO: not found item 처리
+      toast.error(TOAST_SENTENCES.NOT_VALID_ID);
     } else {
       initializeDetailedData();
     }

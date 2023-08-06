@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import toastSentences from "../constants/toastSentences";
+import TOAST_SENTENCES from "../constants/toastSentences";
 
 class ImageSendManager {
   private fileReader = new FileReader();
@@ -15,7 +15,7 @@ class ImageSendManager {
     };
 
     this.fileReader.onerror = () => {
-      toast.error(toastSentences.imageEncodingFailure);
+      toast.error(TOAST_SENTENCES.IMAGE_ENCODE_FAILED);
     };
   }
 

@@ -1,9 +1,10 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
+
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
-import toastSentences from "../constants/toastSentences";
+import TOAST_SENTENCES from "../constants/toastSentences";
 
 interface IAuth {
   accessToken: string;
@@ -56,7 +57,7 @@ class SignAPIManager implements ISignAPIManager {
       } catch (e) {
         const { response } = e as AxiosError<{ error: { message: string } }>;
         toast.error(
-          response?.data.error.message || toastSentences.signInFailed,
+          response?.data.error.message || TOAST_SENTENCES.SIGN_IN_FAILED,
         );
       }
     }
@@ -77,12 +78,12 @@ class SignAPIManager implements ISignAPIManager {
           status === serverStatus.UNAUTHORIZED
         ) {
           this.authCookieManager.deleteAccessAndRefreshToken();
-          toast.info(toastSentences.signOutSuccess);
+          toast.info(TOAST_SENTENCES.SIGN_OUT_SUCCESS);
           return true;
         }
         throw new Error();
       } catch (e) {
-        toast.error(toastSentences.requestResignIn);
+        toast.error(TOAST_SENTENCES.REQUEST_RESIGN);
       }
     }
     return false;

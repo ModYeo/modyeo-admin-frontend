@@ -13,7 +13,7 @@ function NavBar() {
       <NavBarSection>
         <span>
           <TabButton
-            isChosenTab={pathname.includes(routes.client.report)}
+            isChosenTab={pathname.includes(routes.client.reportDetail)}
             onClick={() => navigator(routes.client.report)}
           >
             게시글 신고관리
