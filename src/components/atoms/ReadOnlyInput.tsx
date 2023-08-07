@@ -3,7 +3,6 @@ import styled from "styled-components";
 
 import { SignInput } from "../../styles/styles";
 
-// TODO: 스타일 정리
 const Wrapper = styled.div`
   margin: 20px 0;
   padding: 10px;

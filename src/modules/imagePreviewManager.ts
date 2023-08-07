@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import toastSentences from "../constants/toastSentences";
+import TOAST_SENTENCES from "../constants/toastSentences";
 
 const EXTENSION_REGEX = /(.*?)\.(jpg|jpeg|png)$/;
 
@@ -45,7 +45,7 @@ class ImagePreviewManager implements IImagePreviewManager {
       !this.checkUploadedImageSizeValidation(file) ||
       !this.checkIfIsImageTypeFile(file)
     ) {
-      toast.error(toastSentences.invalidImageExtension);
+      toast.error(TOAST_SENTENCES.INVALID_IMAGE_EXTENSION);
       return null;
     }
     this.image.src = ImagePreviewManager.URL.createObjectURL(file);

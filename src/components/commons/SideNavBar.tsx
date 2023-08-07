@@ -39,7 +39,7 @@ function SideNavBar() {
       <SideNavBarContainer>
         <div>
           <SideButton
-            isChosenTab={pathname.includes(routes.client.report)}
+            isChosenTab={pathname.includes(routes.client.reportDetail)}
             onClick={() => navigator(routes.client.report)}
           >
             게시글 신고관리
@@ -54,7 +54,7 @@ function SideNavBar() {
             isChosenTab={pathname.includes(routes.client.category)}
             onClick={() => navigator("/category")}
           >
-            카테고리 생성
+            카테고리
           </SideButton>
           <SideButton
             isChosenTab={pathname.includes(routes.client.advertisement)}

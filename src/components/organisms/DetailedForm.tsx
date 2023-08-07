@@ -1,33 +1,32 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 
 import { RequiredInputItem } from "../molcules/SubmitForm";
 
 import useDetailedForm from "../../hooks/common/useDetailedForm";
 
-import Button from "../atoms/Button";
+import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
+
+import ButtonsWrapper from "../molcules/ButtonsWrapper";
 import Input from "../atoms/Input";
 import ImageInput from "../atoms/ImageInput";
 import TextArea from "../atoms/TextArea";
 import ReadOnlyInput from "../atoms/ReadOnlyInput";
+import Select from "../atoms/Select";
 
 import routes from "../../constants/routes";
-import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
-
-const ButtonWrapper = styled.div`
-  text-align: right;
-`;
 
 function DetailedForm<T>({
   path,
   requiredInputItems,
+  method = "patch",
+  onSubmit,
 }: {
   path: string;
   requiredInputItems: RequiredInputItem[];
+  method?: "post" | "patch";
+  onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
 }) {
-  const navigator = useNavigate();
-
   const { pathname } = useLocation();
 
   const {
@@ -35,11 +34,12 @@ function DetailedForm<T>({
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
-  } = useDetailedForm<T>(path, requiredInputItems);
+    deleteElementInTheDataArray,
+  } = useDetailedForm<T>(path, requiredInputItems, method);
 
   return (
     <>
-      <form onSubmit={submitModifiedData}>
+      <form onSubmit={onSubmit || submitModifiedData}>
         {readOnlyItems?.map(([itemName, value]) => {
           if (itemName === "answer list") return null;
           return (
@@ -60,53 +60,33 @@ function DetailedForm<T>({
           if (item.elementType === "textarea") {
             return <TextArea key={item.itemName} item={item} />;
           }
+          if (item.elementType === "select" && item?.options) {
+            return (
+              <Select key={item.itemName} item={item} options={item.options} />
+            );
+          }
           return null;
         })}
-        <ButtonWrapper>
-          <Button type="submit" size="lg" bgColor="blue">
-            submit
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="red"
-            disabled={
-              pathname.includes(routes.client.inquiry) ||
-              pathname.includes(routes.client.report)
-            }
-            onClick={handleOnClickDeleteBtn}
-          >
-            delete
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="grey"
-            onClick={resetAllItems}
-          >
-            reset
-          </Button>
-          &ensp;
-          <Button
-            type="button"
-            size="lg"
-            bgColor="grey"
-            onClick={() => navigator(-1)}
-          >
-            back
-          </Button>
-        </ButtonWrapper>
+        <ButtonsWrapper
+          isDisabled={
+            pathname.includes(routes.client.inquiry) ||
+            pathname.includes(routes.client.report)
+          }
+          deleteElement={handleOnClickDeleteBtn}
+          resetAllItems={resetAllItems}
+        />
       </form>
-      {/* TODO: 아래 컴포넌트화 */}
       {readOnlyItems?.map(([itemName, value]) => {
         if (itemName === "answer list") {
           const answerList = value as Record<string, string | number>[];
           return (
             <div key={itemName}>
               {answerList.map((answer) => (
-                <AnswerDetail key={answer["answerId"]} answer={answer} />
+                <AnswerDetail
+                  key={answer["answerId"]}
+                  answer={answer}
+                  deleteElementInTheDataArray={deleteElementInTheDataArray}
+                />
               ))}
             </div>
           );

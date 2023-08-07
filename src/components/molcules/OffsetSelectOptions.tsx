@@ -1,8 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-import Button from "../atoms/Button";
-
 import COLOR_CONST from "../../constants/colorConst";
 
 const Select = styled.select`

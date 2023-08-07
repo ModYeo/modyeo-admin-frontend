@@ -1,12 +1,42 @@
-import React from "react";
+import React, { useMemo, useRef } from "react";
 
 import DetailedForm from "../../components/organisms/DetailedForm";
 
 import routes from "../../constants/routes";
+import { RequiredInputItem } from "../../components/atoms/Input";
 
 function InquiryDetail() {
+  const inquiryIdInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const contentInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const requiredInputItems: RequiredInputItem[] = useMemo(() => {
+    return [
+      {
+        itemName: "id",
+        name: "inquiryId",
+        refObject: inquiryIdInputRef,
+        elementType: "input",
+        defaultValue: "",
+        disabled: true,
+        isPrimary: true,
+      },
+      {
+        itemName: "answer",
+        name: "content",
+        refObject: contentInputRef,
+        elementType: "textarea",
+        defaultValue: "",
+      },
+    ];
+  }, []);
+
   return (
-    <DetailedForm path={routes.server.inquiry.index} requiredInputItems={[]} />
+    <DetailedForm
+      path={routes.server.inquiry.index}
+      requiredInputItems={requiredInputItems}
+      method="post"
+    />
   );
 }
 

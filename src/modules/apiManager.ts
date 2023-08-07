@@ -1,22 +1,31 @@
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
+
 import authCookieManager, { AuthCookieManager } from "./authCookie";
+
+import { IAuth } from "./signAPI";
+
 import routes from "../constants/routes";
 import serverStatus from "../constants/serverStatus";
-import toastSentences from "../constants/toastSentences";
-import { IAuth } from "./signAPI";
+import TOAST_SENTENCES from "../constants/toastSentences";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
-  postNewDataElem: <T extends object>(
+  postData(
     path: string,
-    obj: T,
-  ) => Promise<number | null>;
-  deleteData: (path: string, objectId: number) => Promise<boolean>;
-  modifyData: <T extends object>(
+    obj: object,
+    option?: {
+      isXapiKeyNeeded: boolean;
+    },
+  ): Promise<number | null>;
+  ELEMENT_DELETEData: (path: string, objectId: number) => Promise<boolean>;
+  patchData(
     path: string,
-    obj?: T,
-  ) => Promise<number | null>;
+    obj?: object,
+    option?: {
+      isXapiKeyNeeded: boolean;
+    },
+  ): Promise<number | null>;
   fetchDetailedData: <T>(path: string, elemId?: number) => Promise<T | null>;
 }
 
@@ -68,7 +77,7 @@ export class APIManager implements IAPIManager {
       const bodyData = config.data as BodyDataType | undefined;
 
       if (bodyData && this.includesXSS(bodyData))
-        throw new AxiosError(toastSentences.includeXSS);
+        throw new AxiosError(TOAST_SENTENCES.MAY_XSS_BE_INCLUDED);
       return configCopied;
     });
     this.apiAxios.interceptors.response.use(
@@ -213,21 +222,6 @@ export class APIManager implements IAPIManager {
     }
   }
 
-  // TODO: delete this func
-  async postNewDataElem<T>(path: string, obj: object) {
-    try {
-      const {
-        data: { data: newElemId },
-      } = await this.apiAxios.post<{ data: number }>(path, {
-        ...obj,
-        useYn: this.useYn,
-      });
-      return newElemId;
-    } catch (e) {
-      return null;
-    }
-  }
-
   async postData(
     path: string,
     obj: object,
@@ -256,31 +250,16 @@ export class APIManager implements IAPIManager {
     }
   }
 
-  async deleteData(path: string, targetDataId: number) {
+  async ELEMENT_DELETEData(path: string, targetDataId: number) {
     try {
       const { status } = await this.apiAxios.delete(`${path}/${targetDataId}`);
       if (this.checkIfIsRequestSucceeded(status)) {
-        toast.info(toastSentences.deleted);
+        toast.info(TOAST_SENTENCES.ELEMENT_DELETED);
         return true;
       }
       throw new Error();
     } catch (e) {
       return false;
-    }
-  }
-
-  // TODO: delete this func
-  async modifyData<T extends object>(path: string, obj?: T) {
-    try {
-      const {
-        data: { data: modifieElemId },
-      } = await this.apiAxios.patch<{ data: number }>(path, {
-        ...obj,
-        useYn: this.useYn,
-      });
-      return modifieElemId;
-    } catch (e) {
-      return null;
     }
   }
 
@@ -335,7 +314,7 @@ export class APIManager implements IAPIManager {
   }
 
   private showErrorMessageToast = (errorMessage?: string) => {
-    toast.error(errorMessage || toastSentences.noErrorMessageFromServer);
+    toast.error(errorMessage || TOAST_SENTENCES.WRONG_IN_SERVER);
   };
 }
 

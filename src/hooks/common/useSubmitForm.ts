@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { RequiredInputItem } from "../../components/atoms/Input";
 
 import apiManager from "../../modules/apiManager";
-import toastSentences from "../../constants/toastSentences";
+import TOAST_SENTENCES from "../../constants/toastSentences";
 
 const useSubmitForm = (
   path: string,
@@ -31,7 +31,7 @@ const useSubmitForm = (
 
   const handlePostSuccess = useCallback(() => {
     if (method === "post") navigator(-1);
-    if (method === "patch") toast.info(toastSentences.MODIFICATION_SUCCESS);
+    if (method === "patch") toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
   }, [method, navigator]);
 
   const checkInvalidDataValue = useCallback((data: object) => {
@@ -43,7 +43,7 @@ const useSubmitForm = (
   const processWithPostData = useCallback(
     async (data: object, option: { isXapiKeyNeeded: boolean }) => {
       if (checkInvalidDataValue(data)) {
-        toast.warn(toastSentences.FORM_NOT_FULLFILLED);
+        toast.warn(TOAST_SENTENCES.FORM_NOT_FULLFILLED);
         return;
       }
       if (method === "post") {
@@ -85,17 +85,14 @@ const useSubmitForm = (
         value: boolean;
       },
     ) => {
-      // TODO: delete name property key optional
       if (
         item.elementType === "input" &&
-        item.name &&
         item.refObject.current &&
         "value" in item.refObject.current
       ) {
         data[item.name] = item.refObject.current.value;
       } else if (
         item.elementType === "textarea" &&
-        item.name &&
         item.refObject.current &&
         "value" in item.refObject.current
       ) {

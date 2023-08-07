@@ -26,17 +26,20 @@ const Label = styled.label`
   font-size: 12px;
 `;
 
-// TODO: get rid of key name optional
 type RequiredInputItem = {
   itemName: string;
-  name?: string;
+  name: string;
   refObject: React.RefObject<
-    HTMLInputElement | HTMLTextAreaElement | { file: File | null }
+    | HTMLInputElement
+    | HTMLTextAreaElement
+    | HTMLSelectElement
+    | { file: File | null }
   >;
-  elementType: "input" | "textarea" | "image";
+  elementType: "input" | "textarea" | "image" | "select";
   defaultValue: string | number;
   isPrimary?: boolean;
   disabled?: boolean;
+  options?: string[];
 };
 
 function Input({ item }: { item: RequiredInputItem }) {

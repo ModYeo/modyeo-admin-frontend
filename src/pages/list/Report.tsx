@@ -1,29 +1,25 @@
 import React from "react";
+import useReport, { reportTypesList } from "../../hooks/components/useReport";
+
 import ListTable from "../../components/organisms/ListTable";
+import Select from "../../components/atoms/Select";
+
 import routes from "../../constants/routes";
 
-export const reportTypesList = [
-  "ART",
-  "MEMBER",
-  "REP",
-  "TEAM",
-  "TEAM_ART",
-  "TEAM_REP",
-] as const;
-
-enum ReportStatusEnum {
-  CFRM = "CFRM",
-  CPNN = "CPNN",
-  RCPT = "RCPT",
-}
-
 function Report() {
+  const { selectedReportType, onChangeReportType } = useReport();
+
   return (
-    <ListTable
-      requestUrl={routes.server.report.type}
-      elementKey="id"
-      elementTitleKey="title"
-    />
+    <>
+      <Select options={reportTypesList} onChange={onChangeReportType} />
+      {selectedReportType && selectedReportType !== "-" && (
+        <ListTable
+          requestUrl={`${routes.server.report.type}/${selectedReportType}`}
+          elementKey="id"
+          elementTitleKey="title"
+        />
+      )}
+    </>
   );
 }
 

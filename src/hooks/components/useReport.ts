@@ -1,14 +1,11 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import apiManager from "../../modules/apiManager";
+import TOAST_SENTENCES from "../../constants/toastSentences";
 
-import { MODAL_CONTEXT } from "../../provider/ModalProvider";
-import { ObjectType } from "../../components/atoms/Card";
-
-import toastSentences from "../../constants/toastSentences";
 import routes from "../../constants/routes";
+import apiManager from "../../modules/apiManager";
 
 export const reportTypesList = [
   "ART",
@@ -17,7 +14,7 @@ export const reportTypesList = [
   "TEAM",
   "TEAM_ART",
   "TEAM_REP",
-] as const;
+];
 
 enum ReportStatusEnum {
   CFRM = "CFRM",
@@ -26,8 +23,6 @@ enum ReportStatusEnum {
 }
 
 type ReportTypeType = (typeof reportTypesList)[number];
-
-const REPORT_STATUS_LIST = Object.values(ReportStatusEnum);
 
 interface IReport {
   contents: string;
@@ -39,14 +34,6 @@ interface IReport {
   title: string;
 }
 
-interface IDetailedReport extends IReport {
-  createdBy: number;
-  createdTime: Array<number>;
-  reportType: ReportTypeType;
-  updatedBy: number;
-  updatedTime: Array<number>;
-}
-
 function contains<T extends string>(
   list: ReadonlyArray<T>,
   value: string,
@@ -54,20 +41,10 @@ function contains<T extends string>(
   return list.some((item) => item === value);
 }
 
-interface UseReport {
-  reports: Array<IReport>;
-  selectedReportType: string;
-  onChangeReportType: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onChangeTargetReportStatus: (
-    changedReportStatus: ReportStatusEnum,
-    reportId: number,
-  ) => Promise<void>;
-  initializeDetailedReport: (reportId: number) => Promise<void>;
-}
-
-const useReport = (): UseReport => {
-  const { isModalVisible, injectDetailedElement } = useContext(MODAL_CONTEXT);
-
+const useReport = (target?: {
+  id: number;
+  reportStatusSelectRef: React.RefObject<HTMLSelectElement>;
+}) => {
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
@@ -88,25 +65,13 @@ const useReport = (): UseReport => {
     return isValidReportType ? reportTypePathParam : "-";
   }, [isValidReportType, reportTypePathParam]);
 
-  const fetchReports = useCallback(() => {
-    return apiManager.fetchData<IReport>(
-      routes.server.report.type,
-      reportTypePathParam,
-    );
-  }, [reportTypePathParam]);
-
-  const initializaReportsList = useCallback(async () => {
-    const fetchedReport = await fetchReports();
-    if (fetchedReport) setReports(fetchedReport.reverse());
-  }, [fetchReports]);
-
   const setReportsListAsDefault = useCallback(() => {
     setReports((reportsList) => {
       if (reportsList.length !== 0) return [];
       return reportsList;
     });
     if (pathname !== routes.client.report) {
-      toast.error(toastSentences.invalidRequest);
+      toast.error(TOAST_SENTENCES.INVALID_REQUEST);
       navigator(routes.client.report);
     }
   }, [pathname, setReports, navigator]);
@@ -122,59 +87,33 @@ const useReport = (): UseReport => {
     [navigator, setReportsListAsDefault],
   );
 
-  const sendPatchReportRequest = useCallback(
-    (changedReportStatus: ReportStatusEnum, reportId: number) => {
-      return apiManager.modifyData(
-        `${routes.server.report.index}/${reportId}/${changedReportStatus}`,
-      );
+  const onSubmitReportType = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      if (target) {
+        const {
+          id,
+          reportStatusSelectRef: { current },
+        } = target;
+        if (current) {
+          const { value: selectedStatus } = current;
+
+          const modifiedReportId = await apiManager.patchData(
+            `${routes.server.report.index}/${id}/${selectedStatus}`,
+          );
+
+          if (typeof modifiedReportId === "number")
+            toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
+        }
+      }
     },
-    [],
+    [target],
   );
-
-  const onChangeTargetReportStatus = useCallback(
-    async (changedReportStatus: ReportStatusEnum, reportId: number) => {
-      if (REPORT_STATUS_LIST.includes(changedReportStatus)) {
-        const modifiedReportId = await sendPatchReportRequest(
-          changedReportStatus,
-          reportId,
-        );
-        if (modifiedReportId) toast.info(toastSentences.report.modified);
-      } else toast.error(toastSentences.invalidRequest);
-    },
-    [sendPatchReportRequest],
-  );
-
-  const fetchDetailedReport = useCallback((reportId: number) => {
-    return apiManager.fetchDetailedData<IDetailedReport>(
-      `${routes.server.report.index}/${reportId}`,
-    );
-  }, []);
-
-  const initializeDetailedReport = useCallback(
-    async (reportId: number) => {
-      const fetchedDetailedReport = await fetchDetailedReport(reportId);
-      if (fetchedDetailedReport)
-        injectDetailedElement(fetchedDetailedReport as unknown as ObjectType);
-    },
-    [fetchDetailedReport, injectDetailedElement],
-  );
-
-  useEffect(() => {
-    if (isValidReportType) initializaReportsList();
-    else setReportsListAsDefault();
-  }, [
-    reportTypePathParam,
-    isValidReportType,
-    initializaReportsList,
-    setReportsListAsDefault,
-  ]);
 
   return {
-    reports,
     selectedReportType,
     onChangeReportType,
-    onChangeTargetReportStatus,
-    initializeDetailedReport,
+    onSubmitReportType,
   };
 };
 

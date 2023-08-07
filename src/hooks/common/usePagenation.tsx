@@ -70,10 +70,13 @@ const usePagenation = (listLength: number) => {
       const offset = Number(value);
 
       const params: Record<string, string | number> = {};
+
       if (searchParam) params["search"] = searchParam;
 
-      // TODO: offset validation check
-      if (offset !== 10) params["offset"] = offset;
+      const validatedOffset = checkOffsetValidation(offset);
+
+      if (validatedOffset !== 10) params["offset"] = validatedOffset;
+
       navigator({
         pathname,
         search: `${createSearchParams(
@@ -81,7 +84,7 @@ const usePagenation = (listLength: number) => {
         ).toString()}`,
       });
     },
-    [pathname, searchParam, navigator],
+    [pathname, searchParam, navigator, checkOffsetValidation],
   );
 
   return {
