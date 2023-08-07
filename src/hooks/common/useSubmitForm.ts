@@ -3,10 +3,10 @@ import { useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { RequiredInputItem } from "../../components/atoms/Input";
-
 import apiManager from "../../modules/apiManager";
 import TOAST_SENTENCES from "../../constants/toastSentences";
+
+import { RequiredInputItem } from "../../types";
 
 const useSubmitForm = (
   path: string,

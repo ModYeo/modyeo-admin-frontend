@@ -1,7 +1,8 @@
 import React, { useMemo, useRef } from "react";
-import { RequiredInputItem } from "../../components/atoms/Input";
 import Form from "../../components/organisms/Form";
 import routes from "../../constants/routes";
+
+import { RequiredInputItem } from "../../types";
 
 function ColumnCodeForm() {
   const codeInputRef = useRef<HTMLInputElement>(null);

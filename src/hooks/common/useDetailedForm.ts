@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { RequiredInputItem } from "../../components/atoms/Input";
-
 import apiManager from "../../modules/apiManager";
 
 import useSubmitForm from "./useSubmitForm";
@@ -12,6 +10,8 @@ import useDeleteItem from "../detailed/useDeleteItem";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
 import routes from "../../constants/routes";
+
+import { RequiredInputItem } from "../../types";
 
 const useDetailedForm = <T>(
   path: string,

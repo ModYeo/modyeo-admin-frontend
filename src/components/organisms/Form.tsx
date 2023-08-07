@@ -2,14 +2,14 @@ import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 
-import { RequiredInputItem } from "../molcules/SubmitForm";
-
 import useSubmitForm from "../../hooks/common/useSubmitForm";
 
 import Button from "../atoms/Button";
 import Input from "../atoms/Input";
 import ImageInput from "../atoms/ImageInput";
 import TextArea from "../atoms/TextArea";
+
+import { RequiredInputItem } from "../../types";
 
 const ButtonWrapper = styled.div`
   text-align: right;

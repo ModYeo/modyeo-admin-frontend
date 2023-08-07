@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { Label, RequiredInputItem } from "./Input";
+import { Label } from "./Input";
 import imagePreviewManager from "../../modules/imagePreviewManager";
 
 import COLOR_CONST from "../../constants/colorConst";
+import { RequiredInputItem } from "../../types";
 
 const Wrapper = styled.div`
   margin: 20px 0;

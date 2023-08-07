@@ -1,8 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
-import { RequiredInputItem } from "../molcules/SubmitForm";
-
 import useDetailedForm from "../../hooks/common/useDetailedForm";
 
 import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
@@ -15,6 +13,8 @@ import ReadOnlyInput from "../atoms/ReadOnlyInput";
 import Select from "../atoms/Select";
 
 import routes from "../../constants/routes";
+
+import { RequiredInputItem } from "../../types";
 
 function DetailedForm<T>({
   path,

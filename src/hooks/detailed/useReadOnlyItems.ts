@@ -1,6 +1,6 @@
 /* eslint-disable no-param-reassign */
 import { useCallback, useMemo } from "react";
-import { RequiredInputItem } from "../../components/atoms/Input";
+import { RequiredInputItem } from "../../types";
 
 const useReadOnlyItems = (
   data: Record<string, string | number>,
