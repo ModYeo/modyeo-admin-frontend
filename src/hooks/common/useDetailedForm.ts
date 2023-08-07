@@ -10,6 +10,7 @@ import useDeleteItem from "../detailed/useDeleteItem";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
 import routes from "../../constants/routes";
+import serverStatus from "../../constants/serverStatus";
 
 import { RequiredInputItem } from "../../types";
 
@@ -93,9 +94,15 @@ const useDetailedForm = <T>(
   }, [path, elementId]);
 
   const initializeDetailedData = useCallback(async () => {
-    const fetchedDetailedData = await fetchDetailedData();
-    if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
-    else navigator(routes.client.noData);
+    try {
+      const fetchedDetailedData = await fetchDetailedData();
+      if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
+      else navigator(routes.client.noData);
+    } catch (e) {
+      const { message, cause } = e as Error;
+      toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
+      if (cause === serverStatus.UNAUTHORIZED) navigator(routes.client.signin);
+    }
   }, [navigator, fetchDetailedData]);
 
   useEffect(() => {

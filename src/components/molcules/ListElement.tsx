@@ -5,7 +5,7 @@ import styled from "styled-components";
 import Card from "../atoms/Card";
 import { Button } from "../../styles/styles";
 
-const ListElemInnerWrapper = styled.div`
+const Wrapper = styled.div`
   & Button {
     opacity: 0;
   }
@@ -54,7 +54,7 @@ function ListElement({
   deleteElement,
 }: ListElementInterface) {
   return (
-    <ListElemInnerWrapper>
+    <Wrapper>
       <Card element={listElement} />
       <br />
       <div>
@@ -83,7 +83,7 @@ function ListElement({
           </Button>
         )}
       </div>
-    </ListElemInnerWrapper>
+    </Wrapper>
   );
 }
 

@@ -11,9 +11,10 @@ const ListWrapper = styled.div`
   margin: 20px 0;
 `;
 
-// TODO: add spinner url as background: url()
 const ListSkeleton = styled(ListWrapper)`
-  min-height: 370px;
+  min-height: 460px;
+  background: url(/images/loading.gif) no-repeat center center/contain;
+  opacity: 0.1;
 `;
 
 function List({

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
@@ -18,7 +19,7 @@ interface IAPIManager {
       isXapiKeyNeeded: boolean;
     },
   ): Promise<number | null>;
-  ELEMENT_DELETEData: (path: string, objectId: number) => Promise<boolean>;
+  deleteData: (path: string, objectId: number) => Promise<boolean>;
   patchData(
     path: string,
     obj?: object,
@@ -110,7 +111,10 @@ export class APIManager implements IAPIManager {
                 return Promise.reject(reRequestError);
               }
             }
-          } else this.authCookieManager.deleteAccessAndRefreshToken();
+          } else {
+            this.authCookieManager.deleteAccessAndRefreshToken();
+            throw new Error("token reissue has failed", { cause: 401 });
+          }
         } else {
           this.showErrorMessageToast(
             error.response?.data.error.message || error.message,
@@ -209,17 +213,13 @@ export class APIManager implements IAPIManager {
   }
 
   async fetchData<T>(path: string, typeParam?: string) {
-    try {
-      const {
-        data: { data: fetchedData },
-      } = await this.apiAxios.get<{
-        data: Array<T> | { content: Array<T> };
-      }>(`${path}/${typeParam || ""}`);
-      if ("content" in fetchedData) return fetchedData.content;
-      return fetchedData;
-    } catch (e) {
-      return null;
-    }
+    const {
+      data: { data: fetchedData },
+    } = await this.apiAxios.get<{
+      data: Array<T> | { content: Array<T> };
+    }>(`${path}/${typeParam || ""}`);
+    if ("content" in fetchedData) return fetchedData.content;
+    return fetchedData;
   }
 
   async postData(
@@ -227,40 +227,32 @@ export class APIManager implements IAPIManager {
     obj: object,
     option?: { isXapiKeyNeeded: boolean },
   ) {
-    try {
-      const {
-        data: { data: newElemId },
-      } = await this.apiAxios.post<{ data: number }>(
-        path,
-        {
-          ...obj,
-          useYn: this.useYn,
-        },
-        option?.isXapiKeyNeeded
-          ? {
-              headers: {
-                "x-api-key": this.xApiKey,
-              },
-            }
-          : {},
-      );
-      return newElemId;
-    } catch (e) {
-      return null;
-    }
+    const {
+      data: { data: newElemId },
+    } = await this.apiAxios.post<{ data: number }>(
+      path,
+      {
+        ...obj,
+        useYn: this.useYn,
+      },
+      option?.isXapiKeyNeeded
+        ? {
+            headers: {
+              "x-api-key": this.xApiKey,
+            },
+          }
+        : {},
+    );
+    return newElemId;
   }
 
-  async ELEMENT_DELETEData(path: string, targetDataId: number) {
-    try {
-      const { status } = await this.apiAxios.delete(`${path}/${targetDataId}`);
-      if (this.checkIfIsRequestSucceeded(status)) {
-        toast.info(TOAST_SENTENCES.ELEMENT_DELETED);
-        return true;
-      }
-      throw new Error();
-    } catch (e) {
-      return false;
+  async deleteData(path: string, targetDataId: number) {
+    const { status } = await this.apiAxios.delete(`${path}/${targetDataId}`);
+    if (this.checkIfIsRequestSucceeded(status)) {
+      toast.info(TOAST_SENTENCES.ELEMENT_DELETED);
+      return true;
     }
+    return false;
   }
 
   async patchData(
@@ -268,38 +260,30 @@ export class APIManager implements IAPIManager {
     obj?: object,
     option?: { isXapiKeyNeeded: boolean },
   ) {
-    try {
-      const {
-        data: { data: modifieElemId },
-      } = await this.apiAxios.patch<{ data: number }>(
-        path,
-        {
-          ...obj,
-          useYn: this.useYn,
-        },
-        option?.isXapiKeyNeeded
-          ? {
-              headers: {
-                "x-api-key": this.xApiKey,
-              },
-            }
-          : {},
-      );
-      return modifieElemId;
-    } catch (e) {
-      return null;
-    }
+    const {
+      data: { data: modifieElemId },
+    } = await this.apiAxios.patch<{ data: number }>(
+      path,
+      {
+        ...obj,
+        useYn: this.useYn,
+      },
+      option?.isXapiKeyNeeded
+        ? {
+            headers: {
+              "x-api-key": this.xApiKey,
+            },
+          }
+        : {},
+    );
+    return modifieElemId;
   }
 
   async fetchDetailedData<T>(path: string, elemId?: number) {
-    try {
-      const {
-        data: { data: fetchedDetailedData },
-      } = await this.apiAxios.get<{ data: T }>(`${path}/${elemId || ""}`);
-      return fetchedDetailedData;
-    } catch (e) {
-      return null;
-    }
+    const {
+      data: { data: fetchedDetailedData },
+    } = await this.apiAxios.get<{ data: T }>(`${path}/${elemId || ""}`);
+    return fetchedDetailedData;
   }
 
   private checkIfIsRequestSucceeded(status: number): boolean {

@@ -119,8 +119,12 @@ const router = createBrowserRouter([
         element: <NoData />,
       },
       {
+        path: "/",
+        element: <h1>메뉴에서 관리할 항목을 선택하세요.</h1>,
+      },
+      {
         path: "/*",
-        element: <>no page</>,
+        element: <h1>해당하는 페이지가 없습니다! :(</h1>,
       },
     ],
   },

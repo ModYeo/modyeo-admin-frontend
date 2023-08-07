@@ -4,7 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import apiManager from "../../modules/apiManager";
+
 import TOAST_SENTENCES from "../../constants/toastSentences";
+import serverStatus from "../../constants/serverStatus";
+import routes from "../../constants/routes";
 
 import { RequiredInputItem } from "../../types";
 
@@ -29,7 +32,7 @@ const useSubmitForm = (
     [path],
   );
 
-  const handlePostSuccess = useCallback(() => {
+  const handleRequestSuccess = useCallback(() => {
     if (method === "post") navigator(-1);
     if (method === "patch") toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
   }, [method, navigator]);
@@ -46,20 +49,29 @@ const useSubmitForm = (
         toast.warn(TOAST_SENTENCES.FORM_NOT_FULLFILLED);
         return;
       }
-      if (method === "post") {
-        const newElemId = await sendPostRequest(data, option);
-        if (typeof newElemId === "number") handlePostSuccess();
-      } else if (method === "patch") {
-        const modifieElemId = await sendPatchRequest(data, option);
-        if (typeof modifieElemId === "number") handlePostSuccess();
+
+      try {
+        if (method === "post") {
+          const newElemId = await sendPostRequest(data, option);
+          if (typeof newElemId === "number") handleRequestSuccess();
+        } else if (method === "patch") {
+          const modifieElemId = await sendPatchRequest(data, option);
+          if (typeof modifieElemId === "number") handleRequestSuccess();
+        }
+      } catch (e) {
+        const { message, cause } = e as Error;
+        toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
+        if (cause === serverStatus.UNAUTHORIZED)
+          navigator(routes.client.signin);
       }
     },
     [
       method,
+      navigator,
       checkInvalidDataValue,
       sendPostRequest,
       sendPatchRequest,
-      handlePostSuccess,
+      handleRequestSuccess,
     ],
   );
 
