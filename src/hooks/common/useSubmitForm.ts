@@ -1,12 +1,12 @@
 /* eslint-disable no-param-reassign */
 import { useCallback } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import apiManager from "../../modules/apiManager";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
-import serverStatus from "../../constants/serverStatus";
+import SERVER_STATUS from "../../constants/serverStatus";
 import routes from "../../constants/routes";
 
 import { RequiredInputItem } from "../../types";
@@ -17,6 +17,8 @@ const useSubmitForm = (
   method: "post" | "patch",
 ) => {
   const navigator = useNavigate();
+
+  const { pathname } = useLocation();
 
   const sendPostRequest = useCallback(
     async (data: object, option: { isXapiKeyNeeded: boolean }) => {
@@ -32,10 +34,18 @@ const useSubmitForm = (
     [path],
   );
 
-  const handleRequestSuccess = useCallback(() => {
-    if (method === "post") navigator(-1);
-    if (method === "patch") toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
-  }, [method, navigator]);
+  const handleRequestSuccess = useCallback(
+    (newElemId?: number) => {
+      if (method === "post") {
+        toast.info(TOAST_SENTENCES.REGISTRATION_SUCCESS);
+        if (newElemId)
+          navigator(`${pathname.replace("/write", "")}/${newElemId}`);
+        else navigator(-1);
+      }
+      if (method === "patch") toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
+    },
+    [method, pathname, navigator],
+  );
 
   const checkInvalidDataValue = useCallback((data: object) => {
     return Object.entries(data).some(
@@ -53,7 +63,7 @@ const useSubmitForm = (
       try {
         if (method === "post") {
           const newElemId = await sendPostRequest(data, option);
-          if (typeof newElemId === "number") handleRequestSuccess();
+          if (typeof newElemId === "number") handleRequestSuccess(newElemId);
         } else if (method === "patch") {
           const modifieElemId = await sendPatchRequest(data, option);
           if (typeof modifieElemId === "number") handleRequestSuccess();
@@ -61,7 +71,7 @@ const useSubmitForm = (
       } catch (e) {
         const { message, cause } = e as Error;
         toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
-        if (cause === serverStatus.UNAUTHORIZED)
+        if (cause === SERVER_STATUS.UNAUTHORIZED)
           navigator(routes.client.signin);
       }
     },

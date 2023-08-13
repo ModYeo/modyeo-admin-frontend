@@ -10,7 +10,7 @@ import useDeleteItem from "../detailed/useDeleteItem";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
 import routes from "../../constants/routes";
-import serverStatus from "../../constants/serverStatus";
+import SERVER_STATUS from "../../constants/serverStatus";
 
 import { RequiredInputItem } from "../../types";
 
@@ -18,13 +18,14 @@ const useDetailedForm = <T>(
   path: string,
   requiredInputItems: RequiredInputItem[],
   method?: "post" | "patch",
+  subPath?: string,
 ) => {
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
 
   const { handleOnSubmit } = useSubmitForm(
-    path,
+    subPath || path,
     requiredInputItems,
     method || "patch",
   );
@@ -101,7 +102,7 @@ const useDetailedForm = <T>(
     } catch (e) {
       const { message, cause } = e as Error;
       toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
-      if (cause === serverStatus.UNAUTHORIZED) navigator(routes.client.signin);
+      if (cause === SERVER_STATUS.UNAUTHORIZED) navigator(routes.client.signin);
     }
   }, [navigator, fetchDetailedData]);
 

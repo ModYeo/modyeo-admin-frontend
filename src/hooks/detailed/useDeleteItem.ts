@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import apiManager from "../../modules/apiManager";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
-import serverStatus from "../../constants/serverStatus";
+import SERVER_STATUS from "../../constants/serverStatus";
 import routes from "../../constants/routes";
 
 const useDeleteItem = (
@@ -31,7 +31,7 @@ const useDeleteItem = (
     } catch (e) {
       const { message, cause } = e as Error;
       toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
-      if (cause === serverStatus.UNAUTHORIZED) navigator(routes.client.signin);
+      if (cause === SERVER_STATUS.UNAUTHORIZED) navigator(routes.client.signin);
       else return false;
     }
   }, [option?.willKeepURLAfterDelete, deleteThisData, navigator]);

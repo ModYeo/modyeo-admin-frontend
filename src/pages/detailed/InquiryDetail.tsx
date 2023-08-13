@@ -35,6 +35,7 @@ function InquiryDetail() {
   return (
     <DetailedForm
       path={routes.server.inquiry.index}
+      subPath={routes.server.answer}
       requiredInputItems={requiredInputItems}
       method="post"
     />

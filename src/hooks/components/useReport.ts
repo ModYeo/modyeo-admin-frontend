@@ -6,7 +6,7 @@ import TOAST_SENTENCES from "../../constants/toastSentences";
 
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
-import serverStatus from "../../constants/serverStatus";
+import SERVER_STATUS from "../../constants/serverStatus";
 
 export const reportTypesList = [
   "ART",
@@ -109,7 +109,7 @@ const useReport = (target?: {
           } catch (error) {
             const { message, cause } = error as Error;
             toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
-            if (cause === serverStatus.UNAUTHORIZED)
+            if (cause === SERVER_STATUS.UNAUTHORIZED)
               navigator(routes.client.signin);
           }
         }

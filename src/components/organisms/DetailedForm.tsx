@@ -18,11 +18,13 @@ import { RequiredInputItem } from "../../types";
 
 function DetailedForm<T>({
   path,
+  subPath,
   requiredInputItems,
   method = "patch",
   onSubmit,
 }: {
   path: string;
+  subPath?: string;
   requiredInputItems: RequiredInputItem[];
   method?: "post" | "patch";
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -35,7 +37,7 @@ function DetailedForm<T>({
     handleOnClickDeleteBtn,
     submitModifiedData,
     deleteElementInTheDataArray,
-  } = useDetailedForm<T>(path, requiredInputItems, method);
+  } = useDetailedForm<T>(path, requiredInputItems, method, subPath);
 
   return (
     <>

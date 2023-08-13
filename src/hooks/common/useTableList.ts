@@ -10,7 +10,7 @@ import usePagenation from "./usePagenation";
 import apiManager from "../../modules/apiManager";
 
 import routes from "../../constants/routes";
-import serverStatus from "../../constants/serverStatus";
+import SERVER_STATUS from "../../constants/serverStatus";
 import TOAST_SENTENCES from "../../constants/toastSentences";
 
 const useTableList = ({
@@ -37,7 +37,7 @@ const useTableList = ({
     } catch (e) {
       const { message, cause } = e as Error;
       toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
-      if (cause === serverStatus.UNAUTHORIZED) navigator(routes.client.signin);
+      if (cause === SERVER_STATUS.UNAUTHORIZED) navigator(routes.client.signin);
     }
   }, [navigator, fetchList]);
 

@@ -7,7 +7,7 @@ import authCookieManager, { AuthCookieManager } from "./authCookie";
 import { IAuth } from "./signAPI";
 
 import routes from "../constants/routes";
-import serverStatus from "../constants/serverStatus";
+import SERVER_STATUS from "../constants/serverStatus";
 import TOAST_SENTENCES from "../constants/toastSentences";
 
 interface IAPIManager {
@@ -46,7 +46,7 @@ export class APIManager implements IAPIManager {
 
   private authCookieManager: AuthCookieManager;
 
-  private xApiKey = "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
+  private xApiKey = process.env.REACT_APP_X_API_KEY;
 
   private useYn = "Y";
 
@@ -91,7 +91,7 @@ export class APIManager implements IAPIManager {
         }>,
       ) => {
         const errorStatus = error.response?.status;
-        if (errorStatus === serverStatus.UNAUTHORIZED) {
+        if (errorStatus === SERVER_STATUS.UNAUTHORIZED) {
           const isTokenReissueSuccessful = await this.reissueAccessToken();
           if (isTokenReissueSuccessful) {
             const requestData = error.config?.data
@@ -288,9 +288,9 @@ export class APIManager implements IAPIManager {
 
   private checkIfIsRequestSucceeded(status: number): boolean {
     if (
-      status === serverStatus.OK ||
-      status === serverStatus.CREATED ||
-      status === serverStatus.NO_CONTENT
+      status === SERVER_STATUS.OK ||
+      status === SERVER_STATUS.CREATED ||
+      status === SERVER_STATUS.NO_CONTENT
     ) {
       return true;
     }
