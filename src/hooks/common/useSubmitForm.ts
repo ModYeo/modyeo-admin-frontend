@@ -10,6 +10,7 @@ import SERVER_STATUS from "../../constants/serverStatus";
 import routes from "../../constants/routes";
 
 import { RequiredInputItem } from "../../types";
+import imageSendManager from "../../modules/imageSendManager";
 
 const useSubmitForm = (
   path: string,
@@ -21,15 +22,15 @@ const useSubmitForm = (
   const { pathname } = useLocation();
 
   const sendPostRequest = useCallback(
-    async (data: object, option: { isXapiKeyNeeded: boolean }) => {
-      return apiManager.postData(path, data, option);
+    async (data: object) => {
+      return apiManager.postData(path, data);
     },
     [path],
   );
 
   const sendPatchRequest = useCallback(
-    async (data: object, option: { isXapiKeyNeeded: boolean }) => {
-      return apiManager.patchData(path, data, option);
+    async (data: object) => {
+      return apiManager.patchData(path, data);
     },
     [path],
   );
@@ -54,7 +55,7 @@ const useSubmitForm = (
   }, []);
 
   const processWithPostData = useCallback(
-    async (data: object, option: { isXapiKeyNeeded: boolean }) => {
+    async (data: object) => {
       if (checkInvalidDataValue(data)) {
         toast.warn(TOAST_SENTENCES.FORM_NOT_FULLFILLED);
         return;
@@ -62,10 +63,10 @@ const useSubmitForm = (
 
       try {
         if (method === "post") {
-          const newElemId = await sendPostRequest(data, option);
+          const newElemId = await sendPostRequest(data);
           if (typeof newElemId === "number") handleRequestSuccess(newElemId);
         } else if (method === "patch") {
-          const modifieElemId = await sendPatchRequest(data, option);
+          const modifieElemId = await sendPatchRequest(data);
           if (typeof modifieElemId === "number") handleRequestSuccess();
         }
       } catch (e) {
@@ -88,25 +89,24 @@ const useSubmitForm = (
   const generateFileReader = useCallback(
     (data: Record<string, any>) => {
       const fileReader = new FileReader();
-      fileReader.onload = () => {
+
+      fileReader.onload = async () => {
         const encodedResult = fileReader.result;
-        data.imageData = encodedResult;
-        data.resource = "image/test.jpg";
-        processWithPostData(data, { isXapiKeyNeeded: true });
+
+        const imagePath = await imageSendManager.sendImageToBucket({
+          imageData: encodedResult as string,
+          resource: `${pathname}-${Date.now()}.jpg`.replace("/", ""),
+        });
+
+        data.imagePath = imagePath;
       };
       return fileReader;
     },
-    [processWithPostData],
+    [pathname],
   );
 
   const assemblePostData = useCallback(
-    (
-      item: RequiredInputItem,
-      data: Record<string, any>,
-      isPostReqAlreadySent: {
-        value: boolean;
-      },
-    ) => {
+    (item: RequiredInputItem, data: Record<string, any>) => {
       if (
         item.elementType === "input" &&
         item.refObject.current &&
@@ -127,26 +127,23 @@ const useSubmitForm = (
       ) {
         const fileReader = generateFileReader(data);
         fileReader.readAsDataURL(item.refObject.current.file);
-        isPostReqAlreadySent.value = true;
       }
     },
     [generateFileReader],
   );
 
   const handleOnSubmit = useCallback(
-    async (e: React.FormEvent<HTMLFormElement>) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       const data: Record<string, any> = {};
 
-      const isPostReqAlreadySent = { value: false };
+      requiredInputItems.forEach((item) => assemblePostData(item, data));
 
-      requiredInputItems.forEach((item) =>
-        assemblePostData(item, data, isPostReqAlreadySent),
-      );
-
-      if (!isPostReqAlreadySent.value)
-        await processWithPostData(data, { isXapiKeyNeeded: false });
+      // TODO: 프로미스로 교체
+      setTimeout(async () => {
+        await processWithPostData(data);
+      }, 3000);
     },
     [requiredInputItems, assemblePostData, processWithPostData],
   );

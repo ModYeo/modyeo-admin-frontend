@@ -1,27 +1,51 @@
 import { toast } from "react-toastify";
+import axios from "axios";
+
 import TOAST_SENTENCES from "../constants/toastSentences";
 
 class ImageSendManager {
-  private fileReader = new FileReader();
+  private imageSendAxios = axios.create({
+    baseURL: process.env.REACT_APP_IMAGE_S3_URL,
+  });
 
-  private postDataToServer: (
-    encodedImage?: string,
-  ) => Promise<void> | undefined = () => undefined;
+  private endPoint = "/prod/modyeo-dev-image";
 
-  constructor() {
-    this.fileReader.onload = () => {
-      const encodedResult = this.fileReader.result;
-      this.postDataToServer(encodedResult as string);
-    };
+  private xApiKey = process.env.REACT_APP_X_API_KEY;
 
-    this.fileReader.onerror = () => {
-      toast.error(TOAST_SENTENCES.IMAGE_ENCODE_FAILED);
-    };
+  public imagePath = "";
+
+  public async sendImageToBucket(data: {
+    imageData: string;
+    resource: string;
+  }) {
+    try {
+      const {
+        data: {
+          body: { url },
+        },
+      } = await this.imageSendAxios.post<{ body: { url: string } }>(
+        this.endPoint,
+        data,
+        {
+          headers: {
+            "x-api-key": this.xApiKey,
+          },
+        },
+      );
+      return url;
+    } catch (e) {
+      const { message } = e as Error;
+      toast.error(message || TOAST_SENTENCES.IMAGE_NOT_UPLOADED);
+      return "";
+    }
   }
 
-  public encodeImageFile(file: File, callback: () => Promise<void>) {
-    this.fileReader.readAsDataURL(file);
-    this.postDataToServer = callback;
+  public getImagePath() {
+    return this.imagePath;
+  }
+
+  public setImagePath(imagePath: string) {
+    if (imagePath && typeof imagePath === "string") this.imagePath = imagePath;
   }
 }
 

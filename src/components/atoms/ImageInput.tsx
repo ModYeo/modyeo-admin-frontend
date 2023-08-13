@@ -73,7 +73,13 @@ const DEFAULT_IMAGE_SIZE = {
   height: 0,
 } as const;
 
-function ImageInput({ item }: { item: RequiredInputItem }) {
+function ImageInput({
+  item,
+  imagePath,
+}: {
+  item: RequiredInputItem;
+  imagePath?: string;
+}) {
   const { elementId, labelValue } = useMemo(() => {
     const { itemName } = item;
     return { elementId: `id-${itemName}`, labelValue: `* ${itemName}` };
@@ -169,6 +175,9 @@ function ImageInput({ item }: { item: RequiredInputItem }) {
           accept="image/*"
           ref={imageInputRef}
         />
+        {!previewImageSrc.current && imagePath && (
+          <img src={imagePath} alt="" />
+        )}
         {previewImageSrc.current ? (
           <img
             src={previewImageSrc.current}

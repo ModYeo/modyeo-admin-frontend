@@ -12,21 +12,9 @@ import TOAST_SENTENCES from "../constants/toastSentences";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
-  postData(
-    path: string,
-    obj: object,
-    option?: {
-      isXapiKeyNeeded: boolean;
-    },
-  ): Promise<number | null>;
+  postData(path: string, obj: object): Promise<number | null>;
   deleteData: (path: string, objectId: number) => Promise<boolean>;
-  patchData(
-    path: string,
-    obj?: object,
-    option?: {
-      isXapiKeyNeeded: boolean;
-    },
-  ): Promise<number | null>;
+  patchData(path: string, obj?: object): Promise<number | null>;
   fetchDetailedData: <T>(path: string, elemId?: number) => Promise<T | null>;
 }
 
@@ -222,27 +210,13 @@ export class APIManager implements IAPIManager {
     return fetchedData;
   }
 
-  async postData(
-    path: string,
-    obj: object,
-    option?: { isXapiKeyNeeded: boolean },
-  ) {
+  async postData(path: string, obj: object) {
     const {
       data: { data: newElemId },
-    } = await this.apiAxios.post<{ data: number }>(
-      path,
-      {
-        ...obj,
-        useYn: this.useYn,
-      },
-      option?.isXapiKeyNeeded
-        ? {
-            headers: {
-              "x-api-key": this.xApiKey,
-            },
-          }
-        : {},
-    );
+    } = await this.apiAxios.post<{ data: number }>(path, {
+      ...obj,
+      useYn: this.useYn,
+    });
     return newElemId;
   }
 
@@ -255,27 +229,13 @@ export class APIManager implements IAPIManager {
     return false;
   }
 
-  async patchData(
-    path: string,
-    obj?: object,
-    option?: { isXapiKeyNeeded: boolean },
-  ) {
+  async patchData(path: string, obj?: object) {
     const {
       data: { data: modifieElemId },
-    } = await this.apiAxios.patch<{ data: number }>(
-      path,
-      {
-        ...obj,
-        useYn: this.useYn,
-      },
-      option?.isXapiKeyNeeded
-        ? {
-            headers: {
-              "x-api-key": this.xApiKey,
-            },
-          }
-        : {},
-    );
+    } = await this.apiAxios.patch<{ data: number }>(path, {
+      ...obj,
+      useYn: this.useYn,
+    });
     return modifieElemId;
   }
 

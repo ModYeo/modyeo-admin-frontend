@@ -33,6 +33,7 @@ function DetailedForm<T>({
 
   const {
     readOnlyItems,
+    imagePath,
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
@@ -57,7 +58,13 @@ function DetailedForm<T>({
             return <Input key={item.itemName} item={item} />;
           }
           if (item.elementType === "image") {
-            return <ImageInput key={item.itemName} item={item} />;
+            return (
+              <ImageInput
+                key={item.itemName}
+                item={item}
+                imagePath={imagePath}
+              />
+            );
           }
           if (item.elementType === "textarea") {
             return <TextArea key={item.itemName} item={item} />;

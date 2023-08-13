@@ -32,6 +32,14 @@ const useDetailedForm = <T>(
 
   const [detailedData, setDetailedData] = useState<T | null>(null);
 
+  const imagePath = useMemo(() => {
+    if (detailedData instanceof Object) {
+      const copied = { ...detailedData } as Record<string, unknown>;
+      return copied.imagePath as string;
+    }
+    return "";
+  }, [detailedData]);
+
   const elementId = useMemo(
     () => pathname.split("/")[2],
     [pathname],
@@ -116,6 +124,7 @@ const useDetailedForm = <T>(
 
   return {
     readOnlyItems,
+    imagePath,
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
