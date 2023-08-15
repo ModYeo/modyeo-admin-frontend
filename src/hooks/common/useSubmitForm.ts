@@ -4,13 +4,13 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import apiManager from "../../modules/apiManager";
+import imageSendManager from "../../modules/imageSendManager";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
 import SERVER_STATUS from "../../constants/serverStatus";
 import routes from "../../constants/routes";
 
 import { RequiredInputItem } from "../../types";
-import imageSendManager from "../../modules/imageSendManager";
 
 const useSubmitForm = (
   path: string,
@@ -87,7 +87,10 @@ const useSubmitForm = (
   );
 
   const generateFileReader = useCallback(
-    (data: Record<string, any>) => {
+    (
+      data: Record<string, unknown>,
+      callback: (data: object) => Promise<void>,
+    ) => {
       const fileReader = new FileReader();
 
       fileReader.onload = async () => {
@@ -98,7 +101,10 @@ const useSubmitForm = (
           resource: `${pathname}-${Date.now()}.jpg`.replace("/", ""),
         });
 
-        data.imagePath = imagePath;
+        if (imagePath) {
+          data.imagePath = imagePath;
+          callback(data);
+        }
       };
       return fileReader;
     },
@@ -125,11 +131,11 @@ const useSubmitForm = (
         "file" in item.refObject.current &&
         item.refObject.current.file
       ) {
-        const fileReader = generateFileReader(data);
+        const fileReader = generateFileReader(data, processWithPostData);
         fileReader.readAsDataURL(item.refObject.current.file);
       }
     },
-    [generateFileReader],
+    [generateFileReader, processWithPostData],
   );
 
   const handleOnSubmit = useCallback(
@@ -139,13 +145,8 @@ const useSubmitForm = (
       const data: Record<string, any> = {};
 
       requiredInputItems.forEach((item) => assemblePostData(item, data));
-
-      // TODO: 프로미스로 교체
-      setTimeout(async () => {
-        await processWithPostData(data);
-      }, 3000);
     },
-    [requiredInputItems, assemblePostData, processWithPostData],
+    [requiredInputItems, assemblePostData],
   );
 
   return { handleOnSubmit };
