@@ -4,6 +4,8 @@ import styled from "styled-components";
 import { SignInput } from "../../styles/styles";
 import COLOR_CONST from "../../constants/colorConst";
 
+import { RequiredInputItem } from "../../types";
+
 const Wrapper = styled.div<{ isReadOnly?: boolean }>`
   margin: 20px 0;
   padding: 10px;
@@ -25,22 +27,6 @@ const InputElement = styled(SignInput)`
 const Label = styled.label`
   font-size: 12px;
 `;
-
-type RequiredInputItem = {
-  itemName: string;
-  name: string;
-  refObject: React.RefObject<
-    | HTMLInputElement
-    | HTMLTextAreaElement
-    | HTMLSelectElement
-    | { file: File | null }
-  >;
-  elementType: "input" | "textarea" | "image" | "select";
-  defaultValue: string | number;
-  isPrimary?: boolean;
-  disabled?: boolean;
-  options?: string[];
-};
 
 function Input({ item }: { item: RequiredInputItem }) {
   const { elementId, labelValue } = useMemo(() => {
@@ -67,4 +53,3 @@ function Input({ item }: { item: RequiredInputItem }) {
 
 export default Input;
 export { Wrapper, Label };
-export type { RequiredInputItem };

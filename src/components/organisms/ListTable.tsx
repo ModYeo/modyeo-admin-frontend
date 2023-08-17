@@ -6,7 +6,7 @@ import useTableList from "../../hooks/common/useTableList";
 
 import OffsetSelectOptions from "../molcules/OffsetSelectOptions";
 import SearchForm from "../molcules/SearchForm";
-import List from "../molcules/\bList";
+import List from "../molcules/List";
 import Pagenation from "../molcules/Pagenation";
 import Button from "../atoms/Button";
 

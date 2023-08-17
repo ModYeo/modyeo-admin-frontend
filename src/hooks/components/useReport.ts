@@ -6,6 +6,7 @@ import TOAST_SENTENCES from "../../constants/toastSentences";
 
 import routes from "../../constants/routes";
 import apiManager from "../../modules/apiManager";
+import SERVER_STATUS from "../../constants/serverStatus";
 
 export const reportTypesList = [
   "ART",
@@ -96,18 +97,25 @@ const useReport = (target?: {
           reportStatusSelectRef: { current },
         } = target;
         if (current) {
-          const { value: selectedStatus } = current;
+          try {
+            const { value: selectedStatus } = current;
 
-          const modifiedReportId = await apiManager.patchData(
-            `${routes.server.report.index}/${id}/${selectedStatus}`,
-          );
+            const modifiedReportId = await apiManager.patchData(
+              `${routes.server.report.index}/${id}/${selectedStatus}`,
+            );
 
-          if (typeof modifiedReportId === "number")
-            toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
+            if (typeof modifiedReportId === "number")
+              toast.info(TOAST_SENTENCES.MODIFICATION_SUCCESS);
+          } catch (error) {
+            const { message, cause } = error as Error;
+            toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
+            if (cause === SERVER_STATUS.UNAUTHORIZED)
+              navigator(routes.client.signin);
+          }
         }
       }
     },
-    [target],
+    [target, navigator],
   );
 
   return {

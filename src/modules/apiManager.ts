@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-catch */
 import axios, { AxiosError, AxiosInstance } from "axios";
 import { toast } from "react-toastify";
 
@@ -6,26 +7,14 @@ import authCookieManager, { AuthCookieManager } from "./authCookie";
 import { IAuth } from "./signAPI";
 
 import routes from "../constants/routes";
-import serverStatus from "../constants/serverStatus";
+import SERVER_STATUS from "../constants/serverStatus";
 import TOAST_SENTENCES from "../constants/toastSentences";
 
 interface IAPIManager {
   fetchData: <T>(path: string, typeParam?: string) => Promise<Array<T> | null>;
-  postData(
-    path: string,
-    obj: object,
-    option?: {
-      isXapiKeyNeeded: boolean;
-    },
-  ): Promise<number | null>;
-  ELEMENT_DELETEData: (path: string, objectId: number) => Promise<boolean>;
-  patchData(
-    path: string,
-    obj?: object,
-    option?: {
-      isXapiKeyNeeded: boolean;
-    },
-  ): Promise<number | null>;
+  postData(path: string, obj: object): Promise<number | null>;
+  deleteData: (path: string, objectId: number) => Promise<boolean>;
+  patchData(path: string, obj?: object): Promise<number | null>;
   fetchDetailedData: <T>(path: string, elemId?: number) => Promise<T | null>;
 }
 
@@ -45,7 +34,7 @@ export class APIManager implements IAPIManager {
 
   private authCookieManager: AuthCookieManager;
 
-  private xApiKey = "G3VdJJgjE898YCnUWJIhGazm2LSPlNJN3rjNnKs1";
+  private xApiKey = process.env.REACT_APP_X_API_KEY;
 
   private useYn = "Y";
 
@@ -90,7 +79,7 @@ export class APIManager implements IAPIManager {
         }>,
       ) => {
         const errorStatus = error.response?.status;
-        if (errorStatus === serverStatus.UNAUTHORIZED) {
+        if (errorStatus === SERVER_STATUS.UNAUTHORIZED) {
           const isTokenReissueSuccessful = await this.reissueAccessToken();
           if (isTokenReissueSuccessful) {
             const requestData = error.config?.data
@@ -110,7 +99,10 @@ export class APIManager implements IAPIManager {
                 return Promise.reject(reRequestError);
               }
             }
-          } else this.authCookieManager.deleteAccessAndRefreshToken();
+          } else {
+            this.authCookieManager.deleteAccessAndRefreshToken();
+            throw new Error("token reissue has failed", { cause: 401 });
+          }
         } else {
           this.showErrorMessageToast(
             error.response?.data.error.message || error.message,
@@ -209,104 +201,56 @@ export class APIManager implements IAPIManager {
   }
 
   async fetchData<T>(path: string, typeParam?: string) {
-    try {
-      const {
-        data: { data: fetchedData },
-      } = await this.apiAxios.get<{
-        data: Array<T> | { content: Array<T> };
-      }>(`${path}/${typeParam || ""}`);
-      if ("content" in fetchedData) return fetchedData.content;
-      return fetchedData;
-    } catch (e) {
-      return null;
-    }
+    const {
+      data: { data: fetchedData },
+    } = await this.apiAxios.get<{
+      data: Array<T> | { content: Array<T> };
+    }>(`${path}/${typeParam || ""}`);
+    if ("content" in fetchedData) return fetchedData.content;
+    return fetchedData;
   }
 
-  async postData(
-    path: string,
-    obj: object,
-    option?: { isXapiKeyNeeded: boolean },
-  ) {
-    try {
-      const {
-        data: { data: newElemId },
-      } = await this.apiAxios.post<{ data: number }>(
-        path,
-        {
-          ...obj,
-          useYn: this.useYn,
-        },
-        option?.isXapiKeyNeeded
-          ? {
-              headers: {
-                "x-api-key": this.xApiKey,
-              },
-            }
-          : {},
-      );
-      return newElemId;
-    } catch (e) {
-      return null;
-    }
+  async postData(path: string, obj: object) {
+    const {
+      data: { data: newElemId },
+    } = await this.apiAxios.post<{ data: number }>(path, {
+      ...obj,
+      useYn: this.useYn,
+    });
+    return newElemId;
   }
 
-  async ELEMENT_DELETEData(path: string, targetDataId: number) {
-    try {
-      const { status } = await this.apiAxios.delete(`${path}/${targetDataId}`);
-      if (this.checkIfIsRequestSucceeded(status)) {
-        toast.info(TOAST_SENTENCES.ELEMENT_DELETED);
-        return true;
-      }
-      throw new Error();
-    } catch (e) {
-      return false;
+  async deleteData(path: string, targetDataId: number) {
+    const { status } = await this.apiAxios.delete(`${path}/${targetDataId}`);
+    if (this.checkIfIsRequestSucceeded(status)) {
+      toast.info(TOAST_SENTENCES.ELEMENT_DELETED);
+      return true;
     }
+    return false;
   }
 
-  async patchData(
-    path: string,
-    obj?: object,
-    option?: { isXapiKeyNeeded: boolean },
-  ) {
-    try {
-      const {
-        data: { data: modifieElemId },
-      } = await this.apiAxios.patch<{ data: number }>(
-        path,
-        {
-          ...obj,
-          useYn: this.useYn,
-        },
-        option?.isXapiKeyNeeded
-          ? {
-              headers: {
-                "x-api-key": this.xApiKey,
-              },
-            }
-          : {},
-      );
-      return modifieElemId;
-    } catch (e) {
-      return null;
-    }
+  async patchData(path: string, obj?: object) {
+    const {
+      data: { data: modifieElemId },
+    } = await this.apiAxios.patch<{ data: number }>(path, {
+      ...obj,
+      useYn: this.useYn,
+    });
+    return modifieElemId;
   }
 
   async fetchDetailedData<T>(path: string, elemId?: number) {
-    try {
-      const {
-        data: { data: fetchedDetailedData },
-      } = await this.apiAxios.get<{ data: T }>(`${path}/${elemId || ""}`);
-      return fetchedDetailedData;
-    } catch (e) {
-      return null;
-    }
+    const {
+      data: { data: fetchedDetailedData },
+    } = await this.apiAxios.get<{ data: T }>(`${path}/${elemId || ""}`);
+    return fetchedDetailedData;
   }
 
   private checkIfIsRequestSucceeded(status: number): boolean {
     if (
-      status === serverStatus.OK ||
-      status === serverStatus.CREATED ||
-      status === serverStatus.NO_CONTENT
+      status === SERVER_STATUS.OK ||
+      status === SERVER_STATUS.CREATED ||
+      status === SERVER_STATUS.NO_CONTENT
     ) {
       return true;
     }

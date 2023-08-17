@@ -1,10 +1,11 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import styled from "styled-components";
 
-import { Label, RequiredInputItem } from "./Input";
+import { Label } from "./Input";
 import imagePreviewManager from "../../modules/imagePreviewManager";
 
 import COLOR_CONST from "../../constants/colorConst";
+import { RequiredInputItem } from "../../types";
 
 const Wrapper = styled.div`
   margin: 20px 0;
@@ -72,7 +73,13 @@ const DEFAULT_IMAGE_SIZE = {
   height: 0,
 } as const;
 
-function ImageInput({ item }: { item: RequiredInputItem }) {
+function ImageInput({
+  item,
+  imagePath,
+}: {
+  item: RequiredInputItem;
+  imagePath?: string;
+}) {
   const { elementId, labelValue } = useMemo(() => {
     const { itemName } = item;
     return { elementId: `id-${itemName}`, labelValue: `* ${itemName}` };
@@ -168,6 +175,9 @@ function ImageInput({ item }: { item: RequiredInputItem }) {
           accept="image/*"
           ref={imageInputRef}
         />
+        {!previewImageSrc.current && imagePath && (
+          <img src={imagePath} alt="" />
+        )}
         {previewImageSrc.current ? (
           <img
             src={previewImageSrc.current}

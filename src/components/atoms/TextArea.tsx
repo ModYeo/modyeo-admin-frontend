@@ -1,7 +1,8 @@
 import React, { RefObject } from "react";
 import styled from "styled-components";
 
-import { RequiredInputItem, Label, Wrapper } from "./Input";
+import { Label, Wrapper } from "./Input";
+import { RequiredInputItem } from "../../types";
 
 const TextAreaElement = styled.textarea`
   width: 100%;

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import authCookieManager, { AuthCookieManager } from "./authCookie";
 
 import routes from "../constants/routes";
-import serverStatus from "../constants/serverStatus";
+import SERVER_STATUS from "../constants/serverStatus";
 import TOAST_SENTENCES from "../constants/toastSentences";
 
 interface IAuth {
@@ -74,8 +74,8 @@ class SignAPIManager implements ISignAPIManager {
           refreshToken,
         });
         if (
-          status === serverStatus.OK ||
-          status === serverStatus.UNAUTHORIZED
+          status === SERVER_STATUS.OK ||
+          status === SERVER_STATUS.UNAUTHORIZED
         ) {
           this.authCookieManager.deleteAccessAndRefreshToken();
           toast.info(TOAST_SENTENCES.SIGN_OUT_SUCCESS);
@@ -114,7 +114,7 @@ class SignAPIManager implements ISignAPIManager {
           refreshToken,
         },
       );
-      if (status === serverStatus.OK) return true;
+      if (status === SERVER_STATUS.OK) return true;
       throw new Error();
     } catch (e) {
       return false;

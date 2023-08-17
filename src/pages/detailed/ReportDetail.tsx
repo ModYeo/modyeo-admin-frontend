@@ -2,11 +2,12 @@ import React, { useMemo, useRef } from "react";
 import { useLocation } from "react-router-dom";
 
 import DetailedForm from "../../components/organisms/DetailedForm";
-import { RequiredInputItem } from "../../components/atoms/Input";
 
 import useReport from "../../hooks/components/useReport";
 
 import routes from "../../constants/routes";
+
+import { RequiredInputItem } from "../../types";
 
 function ReportDetail() {
   const { pathname } = useLocation();

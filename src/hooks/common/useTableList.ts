@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import { ObjectType } from "../../components/atoms/Card";
 
@@ -7,7 +8,10 @@ import useSearch from "./useSearch";
 import usePagenation from "./usePagenation";
 
 import apiManager from "../../modules/apiManager";
+
 import routes from "../../constants/routes";
+import SERVER_STATUS from "../../constants/serverStatus";
+import TOAST_SENTENCES from "../../constants/toastSentences";
 
 const useTableList = ({
   requestUrl,
@@ -27,9 +31,15 @@ const useTableList = ({
   }, [requestUrl]);
 
   const initializeElementList = useCallback(async () => {
-    const fetchedList = await fetchList();
-    if (fetchedList) setList(fetchedList.reverse());
-  }, [fetchList]);
+    try {
+      const fetchedList = await fetchList();
+      if (fetchedList) setList(fetchedList.reverse());
+    } catch (e) {
+      const { message, cause } = e as Error;
+      toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
+      if (cause === SERVER_STATUS.UNAUTHORIZED) navigator(routes.client.signin);
+    }
+  }, [navigator, fetchList]);
 
   const { filteredList, searchInputRef, onSubmitSearchForm } = useSearch(
     elementTitleKey,

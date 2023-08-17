@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
-import { RequiredInputItem } from "../../components/atoms/Input";
-
 import apiManager from "../../modules/apiManager";
 
 import useSubmitForm from "./useSubmitForm";
@@ -12,23 +10,35 @@ import useDeleteItem from "../detailed/useDeleteItem";
 
 import TOAST_SENTENCES from "../../constants/toastSentences";
 import routes from "../../constants/routes";
+import SERVER_STATUS from "../../constants/serverStatus";
+
+import { RequiredInputItem } from "../../types";
 
 const useDetailedForm = <T>(
   path: string,
   requiredInputItems: RequiredInputItem[],
   method?: "post" | "patch",
+  subPath?: string,
 ) => {
   const navigator = useNavigate();
 
   const { pathname } = useLocation();
 
   const { handleOnSubmit } = useSubmitForm(
-    path,
+    subPath || path,
     requiredInputItems,
     method || "patch",
   );
 
   const [detailedData, setDetailedData] = useState<T | null>(null);
+
+  const imagePath = useMemo(() => {
+    if (detailedData instanceof Object) {
+      const copied = { ...detailedData } as Record<string, unknown>;
+      return copied.imagePath as string;
+    }
+    return "";
+  }, [detailedData]);
 
   const elementId = useMemo(
     () => pathname.split("/")[2],
@@ -93,9 +103,15 @@ const useDetailedForm = <T>(
   }, [path, elementId]);
 
   const initializeDetailedData = useCallback(async () => {
-    const fetchedDetailedData = await fetchDetailedData();
-    if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
-    else navigator(routes.client.noData);
+    try {
+      const fetchedDetailedData = await fetchDetailedData();
+      if (fetchedDetailedData) setDetailedData(fetchedDetailedData);
+      else navigator(routes.client.noData);
+    } catch (e) {
+      const { message, cause } = e as Error;
+      toast.error(message || TOAST_SENTENCES.WRONG_IN_SERVER);
+      if (cause === SERVER_STATUS.UNAUTHORIZED) navigator(routes.client.signin);
+    }
   }, [navigator, fetchDetailedData]);
 
   useEffect(() => {
@@ -108,6 +124,7 @@ const useDetailedForm = <T>(
 
   return {
     readOnlyItems,
+    imagePath,
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,

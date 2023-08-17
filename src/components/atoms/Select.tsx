@@ -8,9 +8,9 @@ import React, {
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
-import { RequiredInputItem } from "./Input";
-
 import COLOR_CONST from "../../constants/colorConst";
+
+import { RequiredInputItem } from "../../types";
 
 const Wrapper = styled.div<{ isReadOnly?: boolean }>`
   margin: 20px 0;

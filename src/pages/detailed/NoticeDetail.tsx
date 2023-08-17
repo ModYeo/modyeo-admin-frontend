@@ -1,7 +1,8 @@
 import React, { useMemo, useRef } from "react";
-import { RequiredInputItem } from "../../components/atoms/Input";
 import DetailedForm from "../../components/organisms/DetailedForm";
 import routes from "../../constants/routes";
+
+import { RequiredInputItem } from "../../types";
 
 function NoticeDetail() {
   const noticeIdInputRef = useRef<HTMLInputElement>(null);

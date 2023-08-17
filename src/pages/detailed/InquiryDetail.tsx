@@ -3,7 +3,8 @@ import React, { useMemo, useRef } from "react";
 import DetailedForm from "../../components/organisms/DetailedForm";
 
 import routes from "../../constants/routes";
-import { RequiredInputItem } from "../../components/atoms/Input";
+
+import { RequiredInputItem } from "../../types";
 
 function InquiryDetail() {
   const inquiryIdInputRef = useRef<HTMLTextAreaElement>(null);
@@ -34,6 +35,7 @@ function InquiryDetail() {
   return (
     <DetailedForm
       path={routes.server.inquiry.index}
+      subPath={routes.server.answer}
       requiredInputItems={requiredInputItems}
       method="post"
     />

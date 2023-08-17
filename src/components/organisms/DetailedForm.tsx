@@ -1,8 +1,6 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 
-import { RequiredInputItem } from "../molcules/SubmitForm";
-
 import useDetailedForm from "../../hooks/common/useDetailedForm";
 
 import AnswerDetail from "../../pages/detailed/answer/AnswerDetail";
@@ -16,13 +14,17 @@ import Select from "../atoms/Select";
 
 import routes from "../../constants/routes";
 
+import { RequiredInputItem } from "../../types";
+
 function DetailedForm<T>({
   path,
+  subPath,
   requiredInputItems,
   method = "patch",
   onSubmit,
 }: {
   path: string;
+  subPath?: string;
   requiredInputItems: RequiredInputItem[];
   method?: "post" | "patch";
   onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -31,11 +33,12 @@ function DetailedForm<T>({
 
   const {
     readOnlyItems,
+    imagePath,
     resetAllItems,
     handleOnClickDeleteBtn,
     submitModifiedData,
     deleteElementInTheDataArray,
-  } = useDetailedForm<T>(path, requiredInputItems, method);
+  } = useDetailedForm<T>(path, requiredInputItems, method, subPath);
 
   return (
     <>
@@ -55,7 +58,13 @@ function DetailedForm<T>({
             return <Input key={item.itemName} item={item} />;
           }
           if (item.elementType === "image") {
-            return <ImageInput key={item.itemName} item={item} />;
+            return (
+              <ImageInput
+                key={item.itemName}
+                item={item}
+                imagePath={imagePath}
+              />
+            );
           }
           if (item.elementType === "textarea") {
             return <TextArea key={item.itemName} item={item} />;

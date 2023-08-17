@@ -13,10 +13,14 @@ const TOAST_SENTENCES = {
 
   INVALID_REQUEST: "올바르지 않은 요청입니다.",
   INVALID_IMAGE_EXTENSION: "jpg, jpeg, png 파일만 업로드 가능합니다.",
+
   IMAGE_ENCODE_FAILED:
     "이미지 인코딩에 실패했습니다. 다른 사진을 사용하거나 잠시 후에, 다시 시도해주세요.",
+  IMAGE_NOT_UPLOADED: "이미지를 서버로 업로드하는데 실패했습니다.",
+
   FORM_NOT_FULLFILLED: "양식을 완성해주세요.",
   DATA_ID_CANNOT_BE_MODIFIED: "양식의 id를 바꿀 수 없습니다!",
+  REGISTRATION_SUCCESS: "게시글이 성공적으로 등록되었습니다.",
   MODIFICATION_SUCCESS: "데이터를 수정했습니다.",
   DATA_NOT_FOUNT: "데이터를 찾을 수 없습니다.",
   NOT_VALID_ID: "유효한 데이터의 id가 아닙니다.",

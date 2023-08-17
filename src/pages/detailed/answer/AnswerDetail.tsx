@@ -4,14 +4,16 @@ import styled from "styled-components";
 
 import useSubmitForm from "../../../hooks/common/useSubmitForm";
 import useReadOnlyItems from "../../../hooks/detailed/useReadOnlyItems";
+import useDeleteItem from "../../../hooks/detailed/useDeleteItem";
 
 import ReadOnlyInput from "../../../components/atoms/ReadOnlyInput";
-import Input, { RequiredInputItem } from "../../../components/atoms/Input";
+import Input from "../../../components/atoms/Input";
 import Button from "../../../components/atoms/Button";
 import TextArea from "../../../components/atoms/TextArea";
 
 import routes from "../../../constants/routes";
-import useDeleteItem from "../../../hooks/detailed/useDeleteItem";
+
+import { RequiredInputItem } from "../../../types";
 
 const AnswerForm = styled.form`
   background-color: #eee;
