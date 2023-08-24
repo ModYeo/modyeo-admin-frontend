@@ -112,7 +112,11 @@ const useSubmitForm = (
   );
 
   const assemblePostData = useCallback(
-    (item: RequiredInputItem, data: Record<string, any>) => {
+    (
+      item: RequiredInputItem,
+      data: Record<string, any>,
+      isImageSendIncluded: { value: boolean },
+    ) => {
       if (
         item.elementType === "input" &&
         item.refObject.current &&
@@ -131,6 +135,7 @@ const useSubmitForm = (
         "file" in item.refObject.current &&
         item.refObject.current.file
       ) {
+        isImageSendIncluded.value = true;
         const fileReader = generateFileReader(data, processWithPostData);
         fileReader.readAsDataURL(item.refObject.current.file);
       }
@@ -144,9 +149,15 @@ const useSubmitForm = (
 
       const data: Record<string, any> = {};
 
-      requiredInputItems.forEach((item) => assemblePostData(item, data));
+      const isImageSendIncluded = { value: false };
+
+      requiredInputItems.forEach((item) =>
+        assemblePostData(item, data, isImageSendIncluded),
+      );
+
+      if (!isImageSendIncluded.value) processWithPostData(data);
     },
-    [requiredInputItems, assemblePostData],
+    [requiredInputItems, assemblePostData, processWithPostData],
   );
 
   return { handleOnSubmit };
