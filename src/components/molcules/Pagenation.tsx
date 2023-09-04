@@ -16,22 +16,23 @@ function Pagenation({
   changePagenation,
 }: {
   filteredListLength: number;
-  pagenationButtonValues: number[];
+  pagenationButtonValues: (number | string)[];
   currentPage: number;
   currentOffset: number;
   changePagenation: (value: number) => void;
 }) {
+  console.log(pagenationButtonValues);
   return (
     <ButtonWrapper>
       {filteredListLength > currentOffset &&
         pagenationButtonValues.map((value) => (
           <Button
-            key={value}
+            key={value as number}
             bgColor="blue"
             size="sm"
             type="button"
             isChosen={currentPage === value}
-            onClick={() => changePagenation(value)}
+            onClick={() => changePagenation(value as number)}
           >
             {value}
           </Button>

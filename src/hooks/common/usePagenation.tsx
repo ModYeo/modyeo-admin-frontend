@@ -40,8 +40,23 @@ const usePagenation = (listLength: number) => {
 
   const pagenationButtonValues = useMemo(() => {
     const pagenationLimit = Math.ceil(listLength / currentOffset);
-    return Array.from({ length: pagenationLimit }, (_, i) => i + 1);
-  }, [listLength, currentOffset]);
+
+    const buttonValues = Array.from({ length: 5 }, (_, i) => {
+      return i + currentPage - 2;
+    }).filter((val) => val > 0 && val <= pagenationLimit);
+
+    const btnValuesArray: (string | number)[] = [...buttonValues];
+
+    if (buttonValues[0] > 1) {
+      btnValuesArray.unshift("first");
+    }
+
+    if (pagenationLimit > buttonValues[buttonValues.length - 1]) {
+      btnValuesArray.push("last");
+    }
+
+    return btnValuesArray;
+  }, [listLength, currentPage, currentOffset]);
 
   const [slicePoint, endOfSlice] = useMemo(() => {
     const currentSlicePoint = (currentPage - 1) * currentOffset;
